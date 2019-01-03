@@ -10,14 +10,16 @@ import Foundation
 import IGListKit
 
 final class UserViewModel: ListDiffable {
-    let postID: String
+    let postId: String
     let username: String
     let timestamp: Date
-    
-    init(postID: String, username: String, timestamp: Date) {
-        self.postID = postID
+    let imageUrl: String
+
+    init(postId: String, username: String, timestamp: Date, imageUrl: String) {
+        self.postId = postId
         self.username = username
         self.timestamp = timestamp
+        self.imageUrl = imageUrl
     }
     
     //Since there will only be one UserViewModel in one Post, we can hardcode an identifier

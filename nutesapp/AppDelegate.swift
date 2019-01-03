@@ -24,10 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         firestore.configureDB()
         
         if let user = Auth.auth().currentUser {
-            guard let username = UserDefaults.standard.string(forKey: "username") else {
+            guard let username = UserDefaults.standard.string(forKey: "username"),
+            let fullname = UserDefaults.standard.string(forKey: "fullname") else {
                 return false
             }
-            firestore.currentUser = User(uid: user.uid, username: username)
+            firestore.currentUser = User(uid: user.uid, fullname: fullname, username: username)
             let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mainscreen") as! UITabBarController
             self.window?.rootViewController = tabBarController
             self.window?.makeKeyAndVisible()

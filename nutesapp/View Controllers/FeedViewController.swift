@@ -20,7 +20,7 @@ class FeedViewController: UIViewController {
     @IBAction func logout(_ sender: Any) {
         do {
             try Auth.auth().signOut()
-            print("User logged out!")
+            print("\(firestore.currentUser.username) logged out!")
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SignUpVC") as! SignUpViewController
             self.present(vc, animated: true, completion: nil)
             

@@ -11,19 +11,27 @@ import IGListKit
 
 class User {
     let uid: String
+    let fullname: String
     let username: String
     let posts: Int
+    let followers: Int
+    let following: Int
     let isFollowing: Bool
+    let imageUrl: String
     
-    init(uid: String, username: String, posts: Int, isFollowing: Bool) {
+    init(uid: String, fullname:String, username: String, posts: Int, followers:Int, following:Int, isFollowing: Bool, imageUrl: String) {
         self.uid = uid
+        self.fullname = fullname
         self.username = username
         self.posts = posts
+        self.followers = followers
+        self.following = following
         self.isFollowing = isFollowing
+        self.imageUrl = imageUrl
     }
     
-    convenience init(uid: String, username: String) {
-        self.init(uid: uid, username: username, posts: 0, isFollowing: false)
+    convenience init(uid: String, fullname:String, username: String) {
+        self.init(uid: uid, fullname: fullname, username: username, posts: 0, followers: 0, following: 0, isFollowing: false, imageUrl: "")
     }
 }
 

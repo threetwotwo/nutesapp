@@ -555,7 +555,7 @@ final class FirestoreManager {
                 return nil
             }, completion: { (object, error) in
                 if error == nil {
-                    self.currentUser = User(uid: uid, username: username)
+                    self.currentUser = User(uid: uid, fullname: fullname, username: username)
                     self.defaults.set(username, forKey: "username")
                     completion()
                 }
@@ -569,6 +569,7 @@ final class FirestoreManager {
             guard error == nil,
                 let document = document,
                 let uid = document.get("uid") as? String,
+                let fullname = document.get("fullname") as? String,
                 let email = document.get("email") as? String else {return}
             
             Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
@@ -576,8 +577,9 @@ final class FirestoreManager {
                     print(error?.localizedDescription ?? "error in logging in")
                     return
                 }
-                self.currentUser = User(uid: uid, username: username)
+                self.currentUser = User(uid: uid, fullname: fullname, username: username)
                 self.defaults.set(username, forKey: "username")
+                self.defaults.set(fullname, forKey: "fullname")
                 completion()
             }
         }
