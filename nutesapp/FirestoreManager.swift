@@ -10,6 +10,7 @@ import Foundation
 import FirebaseAuth
 import FirebaseFirestore
 import IGListKit
+import FirebaseStorage
 
 //Helper class for firebase operations
 final class FirestoreManager {
@@ -25,7 +26,87 @@ final class FirestoreManager {
         db.settings = settings
     }
     
-    //MARK: - Counter
+    //MARK: - Posts
+    
+    func createPost(imageData: Data) {
+        let username = currentUser.username
+        let timestamp = FieldValue.serverTimestamp()
+        
+        //unique id
+        let postID = "\(username)\(Timestamp.init().seconds)"
+        
+        //Cloud Storage image ref
+        let imageRef = Storage.storage().reference().child(postID + ".jpg")
+        
+        //post likes counter
+        let counterRef = db.collection("postLikesCounters").document(postID)
+        createPostLikesCounter(ref: counterRef, numShards: currentUser.followers + 1)
+        
+        //put image in storage
+        imageRef.putData(imageData, metadata: nil) { (metadata, error) in
+            
+            imageRef.downloadURL(completion: { (downloadURL, error) in
+                guard error == nil,
+                let imageUrl = downloadURL?.absoluteString else {
+                    print(error?.localizedDescription ?? "Error uploading")
+                    return
+                }
+                
+                let postRef = self.db.collection("posts").document(postID)
+                let userRef = self.db.collection("users").document(username)
+                
+                //create and update documents
+                self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                    let userDoc: DocumentSnapshot
+                    do {
+                        try userDoc = transaction.getDocument(userRef)
+                    } catch let fetchError as NSError {
+                        errorPointer?.pointee = fetchError
+                        return nil
+                    }
+                    
+                    guard let oldPosts = userDoc.data()?["posts"] as? Int else {
+                        let error = NSError(
+                            domain: "AppErrorDomain",
+                            code: -1,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: "Unable to retrieve posts from snapshot \(userDoc)"
+                            ]
+                        )
+                        errorPointer?.pointee = error
+                        return nil
+                    }
+                    
+                    transaction.setData([
+                        "uid" : self.currentUser.uid,
+                        "username" : username,
+                        "imageURL" : imageUrl,
+                        "timestamp" : timestamp,
+                        "likes" : 0
+                        ], forDocument: postRef)
+                    
+                    transaction.updateData(["posts" : oldPosts + 1], forDocument: userRef)
+                    
+                    return nil
+                }, completion: { (object, error) in
+                    guard error != nil else {
+                        print(error?.localizedDescription as Any)
+                        return
+                    }
+                })
+            })
+        }
+        db.runTransaction({ (transaction, errorpointer) -> Any? in
+            return nil
+        }) { (object, error) in
+            guard error != nil else {
+                print(error?.localizedDescription as Any)
+                return
+            }
+        }
+
+    }
+    
     func createPostLikesCounter(ref: DocumentReference, numShards: Int) {
         ref.setData(["numShards": numShards]){ (err) in
             for i in 0..<numShards {
@@ -128,96 +209,9 @@ final class FirestoreManager {
             }
         }
     }
-    
-    func userDidLikeComment(postID: String, commentID: String,  completion: @escaping (Bool)->()) {
-        let username = currentUser.username
-        let likeID = "\(commentID)_\(username)"
-        let likeRef = db.collection("commentLikes").document(likeID)
-        
-        likeRef.getDocument { (snapshot, error) in
-            guard error == nil, let didLike = snapshot?.exists else {
-                print(error?.localizedDescription ?? "")
-                return
-            }
-            
-            completion(didLike)
-        }
-    }
-    
-    func incrementCommentLikesCounter(postID: String, commentID: String) {
-        let username = currentUser.username
-        let counterID = "\(postID)_\(commentID)"
-        let ref = db.collection("commentLikesCounters").document(commentID)
-        print(ref.documentID)
-        let shardId = Int.random(in: 0..<1)
-        let shardRef = ref.collection("shards").document(String(shardId))
-        
-        let likeID = "\(commentID)_\(username)"
-        print(likeID)
-        let likeRef = db.collection("commentLikes").document(likeID)
-        
-        db.runTransaction({ (transaction, errorPointer) -> Any? in
-            do {
-                //                let shardData = try transaction.getDocument(shardRef).data() ?? [:]
-                //                let shardCount = shardData["count"] as! Int
-                //                transaction.updateData(["count": shardCount + 1], forDocument: shardRef)
-                //
-                let shardCount = try transaction.getDocument(shardRef).get("count") as! Int
-                transaction.updateData(["count": shardCount + 1], forDocument: shardRef)
-                
-                let timestamp = FieldValue.serverTimestamp()
-                
-                transaction.setData([
-                    "postID" : postID,
-                    "commentID" : commentID,
-                    "username"    : username,
-                    "timestamp" : timestamp
-                    ], forDocument: likeRef)
-            }  catch let error as NSError {
-                errorPointer?.pointee = error
-            }
-            return nil
-        }) { (object, error) in
-            // ...
-            if error != nil {
-                print(error?.localizedDescription)
-            }
-        }
-    }
-    
-    func decrementCommentLikesCounter(postID: String, commentID: String) {
-        let username = currentUser.username
-        let counterID = "\(postID)_\(commentID)"
-        let ref = db.collection("commentLikesCounters").document(commentID)
-        
-        let shardId = Int(arc4random_uniform(UInt32(1)))
-        let shardRef = ref.collection("shards").document(String(shardId))
-        
-        let likeID = "\(commentID    )_\(username)"
-        let likeRef = db.collection("commentLikes").document(likeID)
-        
-        db.runTransaction({ (transaction, errorPointer) -> Any? in
-            do {
-                let shardData = try transaction.getDocument(shardRef).data() ?? [:]
-                let shardCount = shardData["count"] as! Int
-                transaction.updateData(["count": shardCount - 1], forDocument: shardRef)
-                
-                
-                transaction.deleteDocument(likeRef)
-                
-            }  catch let error as NSError {
-                errorPointer?.pointee = error
-            }
-            return nil
-            
-        }) { (object, error) in
-            // ...
-            if error != nil {
-                print(error?.localizedDescription ?? "")
-            }
-        }
-    }
-    
+   
+    //MARK: - Likes
+
     func getTotalLikes(ref: DocumentReference, completion: @escaping (Int) -> ()) {
         ref.collection("shards").getDocuments() { (querySnapshot, err) in
             var totalCount = 0
@@ -363,6 +357,96 @@ final class FirestoreManager {
                 }
         }
     }
+    
+    func userDidLikeComment(postID: String, commentID: String,  completion: @escaping (Bool)->()) {
+        let username = currentUser.username
+        let likeID = "\(commentID)_\(username)"
+        let likeRef = db.collection("commentLikes").document(likeID)
+        
+        likeRef.getDocument { (snapshot, error) in
+            guard error == nil, let didLike = snapshot?.exists else {
+                print(error?.localizedDescription ?? "")
+                return
+            }
+            
+            completion(didLike)
+        }
+    }
+    
+    func incrementCommentLikesCounter(postID: String, commentID: String) {
+        let username = currentUser.username
+        let counterID = "\(postID)_\(commentID)"
+        let ref = db.collection("commentLikesCounters").document(commentID)
+        print(ref.documentID)
+        let shardId = Int.random(in: 0..<1)
+        let shardRef = ref.collection("shards").document(String(shardId))
+        
+        let likeID = "\(commentID)_\(username)"
+        print(likeID)
+        let likeRef = db.collection("commentLikes").document(likeID)
+        
+        db.runTransaction({ (transaction, errorPointer) -> Any? in
+            do {
+                //                let shardData = try transaction.getDocument(shardRef).data() ?? [:]
+                //                let shardCount = shardData["count"] as! Int
+                //                transaction.updateData(["count": shardCount + 1], forDocument: shardRef)
+                //
+                let shardCount = try transaction.getDocument(shardRef).get("count") as! Int
+                transaction.updateData(["count": shardCount + 1], forDocument: shardRef)
+                
+                let timestamp = FieldValue.serverTimestamp()
+                
+                transaction.setData([
+                    "postID" : postID,
+                    "commentID" : commentID,
+                    "username"    : username,
+                    "timestamp" : timestamp
+                    ], forDocument: likeRef)
+            }  catch let error as NSError {
+                errorPointer?.pointee = error
+            }
+            return nil
+        }) { (object, error) in
+            // ...
+            if error != nil {
+                print(error?.localizedDescription)
+            }
+        }
+    }
+    
+    func decrementCommentLikesCounter(postID: String, commentID: String) {
+        let username = currentUser.username
+        let counterID = "\(postID)_\(commentID)"
+        let ref = db.collection("commentLikesCounters").document(commentID)
+        
+        let shardId = Int(arc4random_uniform(UInt32(1)))
+        let shardRef = ref.collection("shards").document(String(shardId))
+        
+        let likeID = "\(commentID    )_\(username)"
+        let likeRef = db.collection("commentLikes").document(likeID)
+        
+        db.runTransaction({ (transaction, errorPointer) -> Any? in
+            do {
+                let shardData = try transaction.getDocument(shardRef).data() ?? [:]
+                let shardCount = shardData["count"] as! Int
+                transaction.updateData(["count": shardCount - 1], forDocument: shardRef)
+                
+                
+                transaction.deleteDocument(likeRef)
+                
+            }  catch let error as NSError {
+                errorPointer?.pointee = error
+            }
+            return nil
+            
+        }) { (object, error) in
+            // ...
+            if error != nil {
+                print(error?.localizedDescription ?? "")
+            }
+        }
+    }
+
     
     func getComments(postID: String, limit: Int, completion: @escaping ([Comment])->()) {
         db.collection("comments")
@@ -565,24 +649,63 @@ final class FirestoreManager {
     }
     
     func signIn(forUsername username: String, password: String, completion: @escaping () -> ()) {
-        self.db.collection("usernames").document(username).getDocument { (document, error) in
-            guard error == nil,
-                let document = document,
-                let uid = document.get("uid") as? String,
-                let fullname = document.get("fullname") as? String,
-                let email = document.get("email") as? String else {return}
+        getUserInfo(username: username) { (data) in
+            let uid = data["uid"] as? String
+            let fullname = data["fullname"] as? String
+            let email = data["email"] as? String
+            let posts = data["posts"] as? Int
+            let followers = data["followers"] as? Int
+            let following = data["following"] as? Int
+            let imageUrl = data["imageUrl"] as? String
             
-            Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
+            Auth.auth().signIn(withEmail: email ?? "" , password: password) { (result, error) in
+              
                 guard error == nil else {
                     print(error?.localizedDescription ?? "error in logging in")
                     return
                 }
-                self.currentUser = User(uid: uid, fullname: fullname, username: username)
-                self.defaults.set(username, forKey: "username")
+                
+                self.currentUser = User(
+                    uid: uid ?? "",
+                    fullname: fullname ?? "",
+                    email: email ?? "",
+                    username: username,
+                    posts: posts ?? 0,
+                    followers: followers ?? 0,
+                    following: following ?? 0,
+                    isFollowing: false,
+                    imageUrl: imageUrl ?? ""
+                )
+                self.defaults.set(uid, forKey: "uid")
                 self.defaults.set(fullname, forKey: "fullname")
+                self.defaults.set(email, forKey: "email")
+                self.defaults.set(username, forKey: "username")
+                self.defaults.set(posts, forKey: "posts")
+                self.defaults.set(followers, forKey: "followers")
+                self.defaults.set(following, forKey: "following")
+                self.defaults.set(imageUrl, forKey: "imageUrl")
+                
                 completion()
             }
         }
+//        self.db.collection("usernames").document(username).getDocument { (document, error) in
+//            guard error == nil,
+//                let document = document,
+//                let uid = document.get("uid") as? String,
+//                let fullname = document.get("fullname") as? String,
+//                let email = document.get("email") as? String else {return}
+//
+//            Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
+//                guard error == nil else {
+//                    print(error?.localizedDescription ?? "error in logging in")
+//                    return
+//                }
+//                self.currentUser = User(uid: uid, fullname: fullname, username: username)
+//                self.defaults.set(username, forKey: "username")
+//                self.defaults.set(fullname, forKey: "fullname")
+//                completion()
+//            }
+//        }
     }
     
     //MARK: - Retrieve posts

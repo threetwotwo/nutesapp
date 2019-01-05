@@ -10,10 +10,21 @@ import UIKit
 import Firebase
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegate  {
 
     var window: UIWindow?
-
+    
+    //Present EditVC modally
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if viewController is EditViewController {
+            if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "EditVC") {
+                tabBarController.present(newVC, animated: true)
+                return false
+            }
+        }
+        
+        return true
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -24,11 +35,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         firestore.configureDB()
         
         if let user = Auth.auth().currentUser {
+            
             guard let username = UserDefaults.standard.string(forKey: "username"),
-            let fullname = UserDefaults.standard.string(forKey: "fullname") else {
+            let fullname = UserDefaults.standard.string(forKey: "fullname")
+            else {
                 return false
             }
-            firestore.currentUser = User(uid: user.uid, fullname: fullname, username: username)
+            
+            let posts = UserDefaults.standard.integer(forKey: "posts")
+            let followers = UserDefaults.standard.integer(forKey: "followers")
+            let following = UserDefaults.standard.integer(forKey: "following")
+            let uid = UserDefaults.standard.string(forKey: "uid")
+            let email = UserDefaults.standard.string(forKey: "email")
+            let imageUrl = UserDefaults.standard.string(forKey: "imageUrl")
+            
+            firestore.currentUser = User(
+                uid: user.uid,
+                fullname: fullname,
+                email: user.email ?? "",
+                username: username,
+                posts: posts,
+                followers: followers,
+                following: following,
+                isFollowing: false,
+                imageUrl: imageUrl ?? ""
+            )
+            
             let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mainscreen") as! UITabBarController
             self.window?.rootViewController = tabBarController
             self.window?.makeKeyAndVisible()

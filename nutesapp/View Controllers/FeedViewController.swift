@@ -91,7 +91,8 @@ class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        self.collectionView.addSubview(self.refreshControl)
-//        self.tabBarController?.delegate = UIApplication.shared.delegate as? UITabBarControllerDelegate
+        //For tab bar delegate function in app delegate to work
+        self.tabBarController?.delegate = UIApplication.shared.delegate as? UITabBarControllerDelegate
 //        loadPosts()
 //        let nc = NotificationCenter.default
 //        nc.addObserver(self, selector: #selector(performUpdates), name: Notification.Name("likeButtonPressed"), object: nil)

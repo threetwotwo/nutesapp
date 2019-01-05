@@ -12,6 +12,7 @@ import IGListKit
 class User {
     let uid: String
     let fullname: String
+    let email: String
     let username: String
     let posts: Int
     let followers: Int
@@ -19,9 +20,10 @@ class User {
     let isFollowing: Bool
     let imageUrl: String
     
-    init(uid: String, fullname:String, username: String, posts: Int, followers:Int, following:Int, isFollowing: Bool, imageUrl: String) {
+    init(uid: String, fullname:String, email: String, username: String, posts: Int, followers:Int, following:Int, isFollowing: Bool, imageUrl: String) {
         self.uid = uid
         self.fullname = fullname
+        self.email = email
         self.username = username
         self.posts = posts
         self.followers = followers
@@ -31,7 +33,7 @@ class User {
     }
     
     convenience init(uid: String, fullname:String, username: String) {
-        self.init(uid: uid, fullname: fullname, username: username, posts: 0, followers: 0, following: 0, isFollowing: false, imageUrl: "")
+        self.init(uid: uid, fullname: fullname, email: "", username: username, posts: 0, followers: 0, following: 0, isFollowing: false, imageUrl: "")
     }
 }
 

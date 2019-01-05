@@ -14,6 +14,9 @@
 		435CBBF821DDD51000646A35 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBF721DDD51000646A35 /* Post.swift */; };
 		435CBBFA21DDD51F00646A35 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBF921DDD51F00646A35 /* Comment.swift */; };
 		435CBBFC21DDD53200646A35 /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBFB21DDD53200646A35 /* Counter.swift */; };
+		439204D421DF2BE10031CFCB /* UITextView + centerVertically.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439204D321DF2BE10031CFCB /* UITextView + centerVertically.swift */; };
+		43B0693521DE5902005387C3 /* SpinnerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B0693421DE5902005387C3 /* SpinnerCell.swift */; };
+		43B0693721DE5A1C005387C3 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B0693621DE5A1C005387C3 /* EditViewController.swift */; };
 		43B7CF6221DD2C4A00F08EDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */; };
 		43B7CF6421DD2C4A00F08EDC /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */; };
 		43B7CF6721DD2C4A00F08EDC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43B7CF6521DD2C4A00F08EDC /* Main.storyboard */; };
@@ -64,6 +67,9 @@
 		435CBBF721DDD51000646A35 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		435CBBF921DDD51F00646A35 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		435CBBFB21DDD53200646A35 /* Counter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counter.swift; sourceTree = "<group>"; };
+		439204D321DF2BE10031CFCB /* UITextView + centerVertically.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + centerVertically.swift"; sourceTree = "<group>"; };
+		43B0693421DE5902005387C3 /* SpinnerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerCell.swift; sourceTree = "<group>"; };
+		43B0693621DE5A1C005387C3 /* EditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
 		43B7CF5E21DD2C4A00F08EDC /* nutesapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = nutesapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
@@ -145,6 +151,7 @@
 			children = (
 				43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */,
 				43C1D0FC21DE394A002D720D /* FeedViewController.swift */,
+				43B0693621DE5A1C005387C3 /* EditViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -188,11 +195,11 @@
 			children = (
 				43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */,
 				43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */,
+				43B7CF6521DD2C4A00F08EDC /* Main.storyboard */,
 				43C1D11421DE4F1F002D720D /* Extensions */,
 				435CBBF621DDD4CE00646A35 /* Model */,
 				43C1D10B21DE4DFA002D720D /* Views */,
 				435CBBEF21DDD1AD00646A35 /* View Controllers */,
-				43B7CF6521DD2C4A00F08EDC /* Main.storyboard */,
 				43B7CF6821DD2C4B00F08EDC /* Assets.xcassets */,
 				43B7CF6A21DD2C4B00F08EDC /* LaunchScreen.storyboard */,
 				43B7CF6D21DD2C4B00F08EDC /* Info.plist */,
@@ -237,6 +244,7 @@
 				43C1D10C21DE4E9D002D720D /* UserCell.swift */,
 				43C1D10E21DE4EAB002D720D /* ActionCell.swift */,
 				43C1D11021DE4EB5002D720D /* CommentCell.swift */,
+				43B0693421DE5902005387C3 /* SpinnerCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -250,6 +258,7 @@
 				43C1D11921DE506D002D720D /* ActionTimer.swift */,
 				43C1D11B21DE50C4002D720D /* Date + timeAgo.swift */,
 				43C1D11D21DE50FC002D720D /* UIView + IBInspectables.swift */,
+				439204D321DF2BE10031CFCB /* UITextView + centerVertically.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -486,10 +495,13 @@
 				43C1D11321DE4F17002D720D /* AttributedText.swift in Sources */,
 				43C1D0FB21DE2C04002D720D /* FirestoreManager.swift in Sources */,
 				435CBBFA21DDD51F00646A35 /* Comment.swift in Sources */,
+				43B0693721DE5A1C005387C3 /* EditViewController.swift in Sources */,
 				43C1D11E21DE50FC002D720D /* UIView + IBInspectables.swift in Sources */,
 				43B7CF6421DD2C4A00F08EDC /* SignUpViewController.swift in Sources */,
 				43B7CF6221DD2C4A00F08EDC /* AppDelegate.swift in Sources */,
+				43B0693521DE5902005387C3 /* SpinnerCell.swift in Sources */,
 				43C1D10F21DE4EAB002D720D /* ActionCell.swift in Sources */,
+				439204D421DF2BE10031CFCB /* UITextView + centerVertically.swift in Sources */,
 				43C1D10D21DE4E9D002D720D /* UserCell.swift in Sources */,
 				435CBBF821DDD51000646A35 /* Post.swift in Sources */,
 				43C1D10221DE450D002D720D /* ImageViewModel.swift in Sources */,
