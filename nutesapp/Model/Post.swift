@@ -11,21 +11,22 @@ import IGListKit
 import FirebaseFirestore
 
 class Post {
+    
     private var identifier: String = UUID().uuidString
     let id: String
     let username: String
     let timestamp: Date
-    let imageURL: URL
+    let url: URL
     let likes: Int
     let followedUsernames: [String]
     let didLike: Bool
     let comments: [Comment]
     
-    init(id: String, username: String, timestamp: Date, imageURL: URL, likes: Int, followedUsernames: [String], didLike: Bool, comments: [Comment]) {
+    init(id: String, username: String, timestamp: Date, url: URL, likes: Int, followedUsernames: [String], didLike: Bool, comments: [Comment]) {
         self.id = id
         self.username = username
         self.timestamp = timestamp
-        self.imageURL = imageURL
+        self.url = url
         self.likes = likes
         self.followedUsernames = followedUsernames
         self.didLike = didLike

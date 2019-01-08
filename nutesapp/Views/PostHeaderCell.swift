@@ -1,5 +1,5 @@
 //
-//  UserCell.swift
+//  PostHeaderCell.swift
 //  nutesapp
 //
 //  Created by Gary Piong on 03/01/19.
@@ -9,14 +9,14 @@
 import UIKit
 import IGListKit
 
-class UserCell: UICollectionViewCell, ListBindable {
+class PostHeaderCell: UICollectionViewCell, ListBindable {
     
     
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     
     func bindViewModel(_ viewModel: Any) {
-        guard let viewModel = viewModel as? UserViewModel else { return }
+        guard let viewModel = viewModel as? PostHeaderViewModel else { return }
         usernameLabel.text = viewModel.username
     }
     

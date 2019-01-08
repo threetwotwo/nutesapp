@@ -1,5 +1,5 @@
 //
-//  EditViewController.swift
+//  createPostViewController.swift
 //  nutesapp
 //
 //  Created by Gary Piong on 03/01/19.
@@ -11,7 +11,7 @@ import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
 
-class EditViewController: UIViewController, UITextViewDelegate {
+class createPostViewController: UIViewController, UITextViewDelegate {
     
     //MARK: - IBOutlets
     @IBOutlet weak var cancelButton: UIButton!
@@ -87,7 +87,7 @@ class EditViewController: UIViewController, UITextViewDelegate {
 //                        db!.collection("posts").document(postID).setData([
 //                            "uid" : FirestoreManager.shared.currentUser.uid,
 //                            "username" : username,
-//                            "imageURL" : url,
+//                            "url" : url,
 //                            "timestamp" : timestamp,
 //                            "likes" : 0
 //                        ]){
@@ -105,11 +105,11 @@ class EditViewController: UIViewController, UITextViewDelegate {
 //                            let user = db!.collection("users").document(username)
 //                            user.getDocument { (document, error) in
 //                                guard let document = document,
-//                                    let postCount = document.get("posts") as? Int else {
+//                                    let postCount = document.get("postCount") as? Int else {
 //                                        print("Document does not exist")
 //                                        return
 //                                }
-//                                user.updateData(["posts" : postCount + 1])
+//                                user.updateData(["postCount" : postCount + 1])
 //                            }
 //                        }
 //                    }

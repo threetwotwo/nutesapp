@@ -9,44 +9,46 @@
 import Foundation
 import IGListKit
 
-class User {
+class User: Codable {
+    private var identifier: String = UUID().uuidString
+
     let uid: String
     let fullname: String
     let email: String
     let username: String
-    let posts: Int
-    let followers: Int
-    let following: Int
+    let postCount: Int
+    let followerCount: Int
+    let followingCount: Int
     let isFollowing: Bool
-    let imageUrl: String
+    let url: String
     
-    init(uid: String, fullname:String, email: String, username: String, posts: Int, followers:Int, following:Int, isFollowing: Bool, imageUrl: String) {
+    init(uid: String, fullname:String, email: String, username: String, postCount: Int, followerCount:Int, followingCount:Int, isFollowing: Bool, url: String) {
         self.uid = uid
         self.fullname = fullname
         self.email = email
         self.username = username
-        self.posts = posts
-        self.followers = followers
-        self.following = following
+        self.postCount = postCount
+        self.followerCount = followerCount
+        self.followingCount = followingCount
         self.isFollowing = isFollowing
-        self.imageUrl = imageUrl
+        self.url = url
     }
     
     convenience init(uid: String, fullname:String, username: String) {
-        self.init(uid: uid, fullname: fullname, email: "", username: username, posts: 0, followers: 0, following: 0, isFollowing: false, imageUrl: "")
+        self.init(uid: uid, fullname: fullname, email: "", username: username, postCount: 0, followerCount: 0, followingCount: 0, isFollowing: false, url: "")
     }
 }
 
 extension User: ListDiffable {
     
     func diffIdentifier() -> NSObjectProtocol {
-        return uid as NSString
+        return identifier as NSString
     }
     
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
         guard self !== object else { return true }
         guard let object = object as? User else { return false }
-        return (self.uid) == (object.uid)
+        return (self.username) == (object.username)
     }
     
 }

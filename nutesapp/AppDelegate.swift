@@ -14,10 +14,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
 
     var window: UIWindow?
     
-    //Present EditVC modally
+    //Present VC modally
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        if viewController is EditViewController {
-            if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "EditVC") {
+        if viewController is createPostViewController {
+            if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "CreatePostVC") {
                 tabBarController.present(newVC, animated: true)
                 return false
             }
@@ -42,23 +42,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
                 return false
             }
             
-            let posts = UserDefaults.standard.integer(forKey: "posts")
-            let followers = UserDefaults.standard.integer(forKey: "followers")
-            let following = UserDefaults.standard.integer(forKey: "following")
+            let postCount = UserDefaults.standard.integer(forKey: "postCount")
+            let followers = UserDefaults.standard.integer(forKey: "followerCount")
+            let following = UserDefaults.standard.integer(forKey: "followingCount")
             let uid = UserDefaults.standard.string(forKey: "uid")
             let email = UserDefaults.standard.string(forKey: "email")
-            let imageUrl = UserDefaults.standard.string(forKey: "imageUrl")
+            let url = UserDefaults.standard.string(forKey: "url")
             
             firestore.currentUser = User(
                 uid: user.uid,
                 fullname: fullname,
                 email: user.email ?? "",
                 username: username,
-                posts: posts,
-                followers: followers,
-                following: following,
+                postCount: postCount,
+                followerCount: followers,
+                followingCount: following,
                 isFollowing: false,
-                imageUrl: imageUrl ?? ""
+                url: url ?? ""
             )
             
             let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mainscreen") as! UITabBarController

@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430FB34321E3877B003C83D1 /* SearchCell.swift */; };
+		431D054721E4D13900C20BC3 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */; };
+		433C58CF21E4DC2300BCD083 /* SearchSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */; };
+		435883C521E21B57000DA3EE /* UserHeaderSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */; };
+		435883C821E2223E000DA3EE /* UserHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435883C721E2223E000DA3EE /* UserHeaderViewModel.swift */; };
 		435CBBEC21DDCEDC00646A35 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */; };
 		435CBBED21DDCEDC00646A35 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */; };
 		435CBBEE21DDCEDC00646A35 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */; };
@@ -14,9 +19,15 @@
 		435CBBF821DDD51000646A35 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBF721DDD51000646A35 /* Post.swift */; };
 		435CBBFA21DDD51F00646A35 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBF921DDD51F00646A35 /* Comment.swift */; };
 		435CBBFC21DDD53200646A35 /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBFB21DDD53200646A35 /* Counter.swift */; };
+		438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438E895221E0A7D9006D20D0 /* UserViewController.swift */; };
+		438E895521E0A7E9006D20D0 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438E895421E0A7E9006D20D0 /* SearchViewController.swift */; };
 		439204D421DF2BE10031CFCB /* UITextView + centerVertically.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439204D321DF2BE10031CFCB /* UITextView + centerVertically.swift */; };
+		439FC52F21E31B6B00EB7954 /* UserHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439FC52E21E31B6B00EB7954 /* UserHeaderCell.swift */; };
+		439FC53121E31CE100EB7954 /* UserDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439FC53021E31CE100EB7954 /* UserDetailCell.swift */; };
+		439FC53321E31DF900EB7954 /* UserDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439FC53221E31DF900EB7954 /* UserDetailViewModel.swift */; };
+		439FC53521E342FD00EB7954 /* UserImageSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439FC53421E342FD00EB7954 /* UserImageSectionController.swift */; };
 		43B0693521DE5902005387C3 /* SpinnerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B0693421DE5902005387C3 /* SpinnerCell.swift */; };
-		43B0693721DE5A1C005387C3 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B0693621DE5A1C005387C3 /* EditViewController.swift */; };
+		43B0693721DE5A1C005387C3 /* createPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B0693621DE5A1C005387C3 /* createPostViewController.swift */; };
 		43B7CF6221DD2C4A00F08EDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */; };
 		43B7CF6421DD2C4A00F08EDC /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */; };
 		43B7CF6721DD2C4A00F08EDC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43B7CF6521DD2C4A00F08EDC /* Main.storyboard */; };
@@ -26,12 +37,12 @@
 		43B7CF8221DD2C4B00F08EDC /* nutesappUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B7CF8121DD2C4B00F08EDC /* nutesappUITests.swift */; };
 		43C1D0FB21DE2C04002D720D /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */; };
 		43C1D0FD21DE394A002D720D /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D0FC21DE394A002D720D /* FeedViewController.swift */; };
-		43C1D0FF21DE44B2002D720D /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D0FE21DE44B2002D720D /* UserViewModel.swift */; };
+		43C1D0FF21DE44B2002D720D /* PostHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D0FE21DE44B2002D720D /* PostHeaderViewModel.swift */; };
 		43C1D10221DE450D002D720D /* ImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D10121DE450D002D720D /* ImageViewModel.swift */; };
 		43C1D10421DE453B002D720D /* ActionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D10321DE453B002D720D /* ActionViewModel.swift */; };
 		43C1D10621DE4543002D720D /* CommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D10521DE4543002D720D /* CommentViewModel.swift */; };
 		43C1D10A21DE4DDA002D720D /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D10921DE4DDA002D720D /* ImageCell.swift */; };
-		43C1D10D21DE4E9D002D720D /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D10C21DE4E9D002D720D /* UserCell.swift */; };
+		43C1D10D21DE4E9D002D720D /* PostHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D10C21DE4E9D002D720D /* PostHeaderCell.swift */; };
 		43C1D10F21DE4EAB002D720D /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D10E21DE4EAB002D720D /* ActionCell.swift */; };
 		43C1D11121DE4EB5002D720D /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D11021DE4EB5002D720D /* CommentCell.swift */; };
 		43C1D11321DE4F17002D720D /* AttributedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D11221DE4F17002D720D /* AttributedText.swift */; };
@@ -62,14 +73,25 @@
 
 /* Begin PBXFileReference section */
 		0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.release.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.release.xcconfig"; sourceTree = "<group>"; };
+		430FB34321E3877B003C83D1 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
+		431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
+		433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSectionController.swift; sourceTree = "<group>"; };
+		435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderSectionController.swift; sourceTree = "<group>"; };
+		435883C721E2223E000DA3EE /* UserHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderViewModel.swift; sourceTree = "<group>"; };
 		435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		435CBBF421DDD4C300646A35 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		435CBBF721DDD51000646A35 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		435CBBF921DDD51F00646A35 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		435CBBFB21DDD53200646A35 /* Counter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counter.swift; sourceTree = "<group>"; };
+		438E895221E0A7D9006D20D0 /* UserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
+		438E895421E0A7E9006D20D0 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		439204D321DF2BE10031CFCB /* UITextView + centerVertically.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + centerVertically.swift"; sourceTree = "<group>"; };
+		439FC52E21E31B6B00EB7954 /* UserHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderCell.swift; sourceTree = "<group>"; };
+		439FC53021E31CE100EB7954 /* UserDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailCell.swift; sourceTree = "<group>"; };
+		439FC53221E31DF900EB7954 /* UserDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailViewModel.swift; sourceTree = "<group>"; };
+		439FC53421E342FD00EB7954 /* UserImageSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserImageSectionController.swift; sourceTree = "<group>"; };
 		43B0693421DE5902005387C3 /* SpinnerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerCell.swift; sourceTree = "<group>"; };
-		43B0693621DE5A1C005387C3 /* EditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
+		43B0693621DE5A1C005387C3 /* createPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = createPostViewController.swift; sourceTree = "<group>"; };
 		43B7CF5E21DD2C4A00F08EDC /* nutesapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = nutesapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
@@ -85,12 +107,12 @@
 		43B7CF8321DD2C4B00F08EDC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
 		43C1D0FC21DE394A002D720D /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
-		43C1D0FE21DE44B2002D720D /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
+		43C1D0FE21DE44B2002D720D /* PostHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderViewModel.swift; sourceTree = "<group>"; };
 		43C1D10121DE450D002D720D /* ImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewModel.swift; sourceTree = "<group>"; };
 		43C1D10321DE453B002D720D /* ActionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewModel.swift; sourceTree = "<group>"; };
 		43C1D10521DE4543002D720D /* CommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewModel.swift; sourceTree = "<group>"; };
 		43C1D10921DE4DDA002D720D /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
-		43C1D10C21DE4E9D002D720D /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		43C1D10C21DE4E9D002D720D /* PostHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderCell.swift; sourceTree = "<group>"; };
 		43C1D10E21DE4EAB002D720D /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		43C1D11021DE4EB5002D720D /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		43C1D11221DE4F17002D720D /* AttributedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedText.swift; sourceTree = "<group>"; };
@@ -146,12 +168,24 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		435883C621E2216D000DA3EE /* Section Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */,
+				435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */,
+				439FC53421E342FD00EB7954 /* UserImageSectionController.swift */,
+			);
+			path = "Section Controllers";
+			sourceTree = "<group>";
+		};
 		435CBBEF21DDD1AD00646A35 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */,
 				43C1D0FC21DE394A002D720D /* FeedViewController.swift */,
-				43B0693621DE5A1C005387C3 /* EditViewController.swift */,
+				438E895421E0A7E9006D20D0 /* SearchViewController.swift */,
+				43B0693621DE5A1C005387C3 /* createPostViewController.swift */,
+				438E895221E0A7D9006D20D0 /* UserViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -195,11 +229,13 @@
 			children = (
 				43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */,
 				43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */,
+				431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */,
 				43B7CF6521DD2C4A00F08EDC /* Main.storyboard */,
 				43C1D11421DE4F1F002D720D /* Extensions */,
 				435CBBF621DDD4CE00646A35 /* Model */,
 				43C1D10B21DE4DFA002D720D /* Views */,
 				435CBBEF21DDD1AD00646A35 /* View Controllers */,
+				435883C621E2216D000DA3EE /* Section Controllers */,
 				43B7CF6821DD2C4B00F08EDC /* Assets.xcassets */,
 				43B7CF6A21DD2C4B00F08EDC /* LaunchScreen.storyboard */,
 				43B7CF6D21DD2C4B00F08EDC /* Info.plist */,
@@ -229,7 +265,9 @@
 		43C1D10021DE44BC002D720D /* View Models */ = {
 			isa = PBXGroup;
 			children = (
-				43C1D0FE21DE44B2002D720D /* UserViewModel.swift */,
+				43C1D0FE21DE44B2002D720D /* PostHeaderViewModel.swift */,
+				435883C721E2223E000DA3EE /* UserHeaderViewModel.swift */,
+				439FC53221E31DF900EB7954 /* UserDetailViewModel.swift */,
 				43C1D10121DE450D002D720D /* ImageViewModel.swift */,
 				43C1D10321DE453B002D720D /* ActionViewModel.swift */,
 				43C1D10521DE4543002D720D /* CommentViewModel.swift */,
@@ -241,9 +279,12 @@
 			isa = PBXGroup;
 			children = (
 				43C1D10921DE4DDA002D720D /* ImageCell.swift */,
-				43C1D10C21DE4E9D002D720D /* UserCell.swift */,
+				43C1D10C21DE4E9D002D720D /* PostHeaderCell.swift */,
 				43C1D10E21DE4EAB002D720D /* ActionCell.swift */,
 				43C1D11021DE4EB5002D720D /* CommentCell.swift */,
+				430FB34321E3877B003C83D1 /* SearchCell.swift */,
+				439FC52E21E31B6B00EB7954 /* UserHeaderCell.swift */,
+				439FC53021E31CE100EB7954 /* UserDetailCell.swift */,
 				43B0693421DE5902005387C3 /* SpinnerCell.swift */,
 			);
 			path = Views;
@@ -490,25 +531,36 @@
 				43C1D11C21DE50C4002D720D /* Date + timeAgo.swift in Sources */,
 				43C1D11821DE5004002D720D /* Formatter + separator.swift in Sources */,
 				43C1D10621DE4543002D720D /* CommentViewModel.swift in Sources */,
+				438E895521E0A7E9006D20D0 /* SearchViewController.swift in Sources */,
 				435CBBF521DDD4C300646A35 /* User.swift in Sources */,
 				43C1D11A21DE506D002D720D /* ActionTimer.swift in Sources */,
 				43C1D11321DE4F17002D720D /* AttributedText.swift in Sources */,
 				43C1D0FB21DE2C04002D720D /* FirestoreManager.swift in Sources */,
 				435CBBFA21DDD51F00646A35 /* Comment.swift in Sources */,
-				43B0693721DE5A1C005387C3 /* EditViewController.swift in Sources */,
+				43B0693721DE5A1C005387C3 /* createPostViewController.swift in Sources */,
 				43C1D11E21DE50FC002D720D /* UIView + IBInspectables.swift in Sources */,
+				439FC52F21E31B6B00EB7954 /* UserHeaderCell.swift in Sources */,
 				43B7CF6421DD2C4A00F08EDC /* SignUpViewController.swift in Sources */,
 				43B7CF6221DD2C4A00F08EDC /* AppDelegate.swift in Sources */,
 				43B0693521DE5902005387C3 /* SpinnerCell.swift in Sources */,
+				433C58CF21E4DC2300BCD083 /* SearchSectionController.swift in Sources */,
+				430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */,
 				43C1D10F21DE4EAB002D720D /* ActionCell.swift in Sources */,
 				439204D421DF2BE10031CFCB /* UITextView + centerVertically.swift in Sources */,
-				43C1D10D21DE4E9D002D720D /* UserCell.swift in Sources */,
+				438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */,
+				439FC53321E31DF900EB7954 /* UserDetailViewModel.swift in Sources */,
+				43C1D10D21DE4E9D002D720D /* PostHeaderCell.swift in Sources */,
 				435CBBF821DDD51000646A35 /* Post.swift in Sources */,
+				439FC53521E342FD00EB7954 /* UserImageSectionController.swift in Sources */,
 				43C1D10221DE450D002D720D /* ImageViewModel.swift in Sources */,
 				43C1D0FD21DE394A002D720D /* FeedViewController.swift in Sources */,
-				43C1D0FF21DE44B2002D720D /* UserViewModel.swift in Sources */,
+				43C1D0FF21DE44B2002D720D /* PostHeaderViewModel.swift in Sources */,
+				439FC53121E31CE100EB7954 /* UserDetailCell.swift in Sources */,
+				435883C821E2223E000DA3EE /* UserHeaderViewModel.swift in Sources */,
+				435883C521E21B57000DA3EE /* UserHeaderSectionController.swift in Sources */,
 				435CBBFC21DDD53200646A35 /* Counter.swift in Sources */,
 				43C1D10421DE453B002D720D /* ActionViewModel.swift in Sources */,
+				431D054721E4D13900C20BC3 /* UserDefaultsManager.swift in Sources */,
 				43C1D10A21DE4DDA002D720D /* ImageCell.swift in Sources */,
 				43C1D11121DE4EB5002D720D /* CommentCell.swift in Sources */,
 				43C1D11621DE4F8A002D720D /* NSMutableAttributedString + bold.swift in Sources */,

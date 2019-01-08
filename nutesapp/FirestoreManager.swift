@@ -16,10 +16,13 @@ import FirebaseStorage
 final class FirestoreManager {
     static let shared = FirestoreManager()
     
+    //MARK: - Variables
+
     var db: Firestore!
     var currentUser: User!
     let defaults = UserDefaults.standard
-    
+    let encoder = JSONEncoder()
+
     func configureDB() {
         let settings = db.settings
         settings.areTimestampsInSnapshotsEnabled = true
@@ -40,14 +43,14 @@ final class FirestoreManager {
         
         //post likes counter
         let counterRef = db.collection("postLikesCounters").document(postID)
-        createPostLikesCounter(ref: counterRef, numShards: currentUser.followers + 1)
+        createPostLikesCounter(ref: counterRef, numShards: currentUser.followerCount + 1)
         
         //put image in storage
         imageRef.putData(imageData, metadata: nil) { (metadata, error) in
             
             imageRef.downloadURL(completion: { (downloadURL, error) in
                 guard error == nil,
-                let imageUrl = downloadURL?.absoluteString else {
+                let url = downloadURL?.absoluteString else {
                     print(error?.localizedDescription ?? "Error uploading")
                     return
                 }
@@ -65,7 +68,7 @@ final class FirestoreManager {
                         return nil
                     }
                     
-                    guard let oldPosts = userDoc.data()?["posts"] as? Int else {
+                    guard let oldPosts = userDoc.data()?["postCount"] as? Int else {
                         let error = NSError(
                             domain: "AppErrorDomain",
                             code: -1,
@@ -78,14 +81,13 @@ final class FirestoreManager {
                     }
                     
                     transaction.setData([
-                        "uid" : self.currentUser.uid,
                         "username" : username,
-                        "imageURL" : imageUrl,
+                        "url" : url,
                         "timestamp" : timestamp,
                         "likes" : 0
                         ], forDocument: postRef)
                     
-                    transaction.updateData(["posts" : oldPosts + 1], forDocument: userRef)
+                    transaction.updateData(["postCount" : oldPosts + 1], forDocument: userRef)
                     
                     return nil
                 }, completion: { (object, error) in
@@ -539,6 +541,40 @@ final class FirestoreManager {
         }
     }
     
+    //MARK: - Get a user
+    func getUser(username: String, completion: @escaping (User)->()) {
+        db.collection("users").document(username).getDocument { (document, error) in
+            
+            guard let document = document,
+            let data = document.data() else {
+                print("document does not exist")
+                return
+            }
+            
+            let uid = data["uid"] as? String
+            let fullname = data["fullname"] as? String
+            let email = data["email"] as? String
+            let postCount = data["postCount"] as? Int
+            let followers = data["followerCount"] as? Int
+            let following = data["followingCount"] as? Int
+            let url = data["url"] as? String
+            
+            let user = User(
+                uid: uid ?? "",
+                fullname: fullname ?? "",
+                email: email ?? "",
+                username: username,
+                postCount: postCount ?? 0,
+                followerCount: followers ?? 0,
+                followingCount: following ?? 0,
+                isFollowing: false,
+                url: url ?? ""
+            )
+            
+            completion(user)
+        }
+    }
+    
     //MARK: - Get a user's info
     func getUserInfo(username: String, completion: @escaping (_ data: [String:Any]) -> ()) {
         db.collection("users").document(username).getDocument { (document, error) in
@@ -567,6 +603,34 @@ final class FirestoreManager {
     
     
     //MARK: - Follow/Unfollow
+    func follow(user: User, completion: @escaping ()->()) {
+        
+        let follower = self.currentUser.username
+        let followed = user.username
+        
+        db.collection("relationships").document("\(follower)_\(followed)").setData([
+            "follower" : follower,
+            "followed" : followed,
+            "timestamp" : FieldValue.serverTimestamp()
+        ]) { error in
+            
+            guard error != nil else {
+                print("Error adding document: \(error)")
+                return
+            }
+            
+            if var savedUsers = self.defaults.array(forKey: "savedUsers") as? [User] {
+                savedUsers.append(user)
+                if let encoded = try? self.encoder.encode(savedUsers) {
+                    let defaults = UserDefaults.standard
+                    defaults.set(encoded, forKey: "savedUsers")
+                }
+            }
+            
+        }
+        
+    }
+    
     func followUser(withUsername followed: String, completion: @escaping ()->()) {
         let follower = self.currentUser.username
         db.collection("relationships").document("\(follower)_\(followed)").setData([
@@ -631,9 +695,9 @@ final class FirestoreManager {
                     "fullname" : fullname,
                     "username" : username,
                     "timestamp" : FieldValue.serverTimestamp(),
-                    "posts" : 0,
-                    "followers" : 0,
-                    "following" : 0
+                    "postCount" : 0,
+                    "followerCount" : 0,
+                    "followingCount" : 0
                     ], forDocument: userRef)
                 
                 return nil
@@ -649,63 +713,21 @@ final class FirestoreManager {
     }
     
     func signIn(forUsername username: String, password: String, completion: @escaping () -> ()) {
-        getUserInfo(username: username) { (data) in
-            let uid = data["uid"] as? String
-            let fullname = data["fullname"] as? String
-            let email = data["email"] as? String
-            let posts = data["posts"] as? Int
-            let followers = data["followers"] as? Int
-            let following = data["following"] as? Int
-            let imageUrl = data["imageUrl"] as? String
-            
-            Auth.auth().signIn(withEmail: email ?? "" , password: password) { (result, error) in
+        
+        getUser(username: username) { (user) in
+
+            Auth.auth().signIn(withEmail: user.email, password: password) { (result, error) in
               
                 guard error == nil else {
                     print(error?.localizedDescription ?? "error in logging in")
                     return
                 }
                 
-                self.currentUser = User(
-                    uid: uid ?? "",
-                    fullname: fullname ?? "",
-                    email: email ?? "",
-                    username: username,
-                    posts: posts ?? 0,
-                    followers: followers ?? 0,
-                    following: following ?? 0,
-                    isFollowing: false,
-                    imageUrl: imageUrl ?? ""
-                )
-                self.defaults.set(uid, forKey: "uid")
-                self.defaults.set(fullname, forKey: "fullname")
-                self.defaults.set(email, forKey: "email")
-                self.defaults.set(username, forKey: "username")
-                self.defaults.set(posts, forKey: "posts")
-                self.defaults.set(followers, forKey: "followers")
-                self.defaults.set(following, forKey: "following")
-                self.defaults.set(imageUrl, forKey: "imageUrl")
+               UserDefaultsManager().updateCurrentUser(user: user)
                 
                 completion()
             }
         }
-//        self.db.collection("usernames").document(username).getDocument { (document, error) in
-//            guard error == nil,
-//                let document = document,
-//                let uid = document.get("uid") as? String,
-//                let fullname = document.get("fullname") as? String,
-//                let email = document.get("email") as? String else {return}
-//
-//            Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
-//                guard error == nil else {
-//                    print(error?.localizedDescription ?? "error in logging in")
-//                    return
-//                }
-//                self.currentUser = User(uid: uid, fullname: fullname, username: username)
-//                self.defaults.set(username, forKey: "username")
-//                self.defaults.set(fullname, forKey: "fullname")
-//                completion()
-//            }
-//        }
     }
     
     //MARK: - Retrieve posts
@@ -733,7 +755,7 @@ final class FirestoreManager {
                 let id = document.documentID
                 let username = document.get("username") as! String
                 let timestamp = (document.get("timestamp") as? Timestamp)?.dateValue()
-                let imageURL = document.get("imageURL") as! String
+                let url = document.get("url") as! String
                 
                 var postLikes: Int = 0
                 var followedUsernames = [String]()
@@ -770,7 +792,7 @@ final class FirestoreManager {
                         id: id,
                         username: username,
                         timestamp: timestamp!,
-                        imageURL: URL(string: imageURL)!,
+                        url: URL(string: url)!,
                         likes: postLikes,
                         followedUsernames: followedUsernames,
                         didLike: userDidLike,
