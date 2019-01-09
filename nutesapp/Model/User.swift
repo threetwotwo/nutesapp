@@ -19,7 +19,7 @@ class User: Codable {
     let postCount: Int
     let followerCount: Int
     let followingCount: Int
-    let isFollowing: Bool
+    var isFollowing: Bool
     let url: String
     
     init(uid: String, fullname:String, email: String, username: String, postCount: Int, followerCount:Int, followingCount:Int, isFollowing: Bool, url: String) {

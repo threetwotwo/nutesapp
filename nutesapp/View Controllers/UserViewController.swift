@@ -14,25 +14,6 @@ class UserViewController: UIViewController, ListAdapterDataSource {
     //MARK: - IBOutlets
     @IBOutlet weak var collectionView: UICollectionView!
     
-    //MARK: - IBActions
-    @IBAction func followButtonPressed(_ sender: UIButton) {
-        print("pressed follow button")
-//        guard let user = user,
-//            let followed = user.username else {return}
-//
-//        if user.isFollowing {
-//            firestore.unfollowUser(withUsername: followed) {
-//                self.user?.isFollowing = false
-//                self.reloadHeader()
-//            }
-//        } else {
-//            firestore.followUser(withUsername: followed) {
-//                self.user?.isFollowing = true
-//                self.reloadHeader()
-//            }
-//        }
-    }
-    
     //MARK: - Variables
     var items: [ListDiffable] = []
     var firestore = FirestoreManager.shared
@@ -41,7 +22,7 @@ class UserViewController: UIViewController, ListAdapterDataSource {
 //    
     let spinToken = "spinner"
 //    var lastSnapshot: DocumentSnapshot?
-    var loading = false
+    var isLoading = false
     var endOfList = false
     
     //MARK: - Adapter
@@ -53,23 +34,59 @@ class UserViewController: UIViewController, ListAdapterDataSource {
         return adapter
     }()
     
+    //MARK: - IBActions
+    @IBAction func followButtonPressed(_ sender: UIButton) {
+        print("pressed follow button")
+        
+        guard let user = user else { return }
+        
+        guard user.username != firestore.currentUser.username else {
+            print("Edit profile")
+            return
+        }
+        
+        
+//        guard let user = user,
+//            let followed = user.username else {return}
+        let username = user.username
+//
+        if user.isFollowing {
+            firestore.unfollowUser(withUsername: username) {
+                self.user?.isFollowing = false
+                self.loadHeader()
+            }
+        } else {
+            firestore.followUser(withUsername: username) {
+                self.user?.isFollowing = true
+                self.loadHeader()
+            }
+        }
+    }
+    
     //MARK: - Life Cycle
 
     fileprivate func loadHeader() {
-    
+        
+        if !items.isEmpty {
+            items.remove(at: 0)
+        }
+        
         if let user = user {
             items.insert(user, at: 0)
         } else {
             items.insert(firestore.currentUser, at: 0)
             self.user = firestore.currentUser
         }
-        self.adapter.performUpdates(animated: true)
+        self.adapter.reloadData(completion: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         loadHeader()
+        
+        self.isLoading = true
+        self.adapter.performUpdates(animated: true)
 
         firestore.getPostsForUser(username: user!.username, limit: 99) { (posts, lastSnapshot) in
             guard let posts = posts else {return}
@@ -78,6 +95,7 @@ class UserViewController: UIViewController, ListAdapterDataSource {
 //            if let lastSnapshot = lastSnapshot {
 //                self.lastSnapshot = lastSnapshot
 //            }
+            self.isLoading = false
             self.adapter.performUpdates(animated: true)
         }
     }
@@ -87,7 +105,7 @@ class UserViewController: UIViewController, ListAdapterDataSource {
     func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
         var objects = items as [ListDiffable]
         
-        if loading {
+        if isLoading {
             objects.append(spinToken as ListDiffable)
         }
         

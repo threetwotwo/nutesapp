@@ -23,7 +23,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     
     let spinToken = "spinner"
     //    var lastSnapshot: DocumentSnapshot?
-    var loading = false
+    var isLoading = false
     
     //MARK: - Adapter
     lazy var adapter: ListAdapter = {
@@ -34,13 +34,16 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
         //        adapter.scrollViewDelegate = self
         return adapter
     }()
-
+    
     //MARK: - Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         //[DEBUG] Load all users from db
+        self.isLoading = true
+        self.adapter.performUpdates(animated: true)
+        
         firestore.db.collection("usernames").getDocuments { (documents, error) in
             guard error == nil,
             let documents = documents?.documents else {
@@ -54,7 +57,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
                     self.items.append(user)
                     self.adapter.performUpdates(animated: true)
                 })
-
+                self.isLoading = false
             }
             
         }
@@ -65,7 +68,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
         var objects = items as [ListDiffable]
         
-        if loading {
+        if isLoading {
             objects.append(spinToken as ListDiffable)
         }
         

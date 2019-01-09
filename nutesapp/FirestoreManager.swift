@@ -257,7 +257,6 @@ final class FirestoreManager {
                         }
                         
                         if usernames.count == limit {
-                            print("reached limit \(usernames.count)")
                             limitReached = true
                         }
                         dsg.leave()
@@ -265,8 +264,6 @@ final class FirestoreManager {
             }
             dsg.notify(queue: .main, execute: {
                 completion(usernames.count, usernames)
-                print("usernames = \(usernames)")
-                
             })
             
         }
@@ -554,24 +551,36 @@ final class FirestoreManager {
             let uid = data["uid"] as? String
             let fullname = data["fullname"] as? String
             let email = data["email"] as? String
-            let postCount = data["postCount"] as? Int
+            let posts = data["postCount"] as? Int
             let followers = data["followerCount"] as? Int
             let following = data["followingCount"] as? Int
             let url = data["url"] as? String
+            var isFollowingUser: Bool = false
             
-            let user = User(
-                uid: uid ?? "",
-                fullname: fullname ?? "",
-                email: email ?? "",
-                username: username,
-                postCount: postCount ?? 0,
-                followerCount: followers ?? 0,
-                followingCount: following ?? 0,
-                isFollowing: false,
-                url: url ?? ""
-            )
+            let dsg = DispatchGroup()
             
-            completion(user)
+            if self.currentUser != nil && username != self.currentUser.username {
+                dsg.enter()
+                self.isFollowing(follower: self.currentUser.username, followed: username, completion: { (isFollowing) in
+                    dsg.leave()
+                    isFollowingUser = isFollowing
+                })
+            }
+            
+            dsg.notify(queue: .main, execute: {
+                let user = User(
+                    uid: uid ?? "",
+                    fullname: fullname ?? "",
+                    email: email ?? "",
+                    username: username,
+                    postCount: posts ?? 0,
+                    followerCount: followers ?? 0,
+                    followingCount: following ?? 0,
+                    isFollowing: isFollowingUser,
+                    url: url ?? ""
+                )
+                completion(user)
+            })
         }
     }
     
@@ -659,6 +668,15 @@ final class FirestoreManager {
     }
     
     //MARK: - Get followed users
+    func isFollowing(follower: String, followed: String, completion: @escaping (Bool)->()) {
+        let relationshipID = follower + "_" + followed
+        db.collection("relationships").document(relationshipID).getDocument { (document, error) in
+            if let document = document {
+                completion(document.exists)
+            }
+        }
+    }
+    
     func getFollowedUsers(for username: String, completion: @escaping ([QueryDocumentSnapshot]) -> ()) {
         db.collection("relationships").whereField("follower", isEqualTo: username).getDocuments { (documents, error) in
             guard error == nil,
