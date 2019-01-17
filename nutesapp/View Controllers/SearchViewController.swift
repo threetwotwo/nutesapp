@@ -44,7 +44,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
         self.isLoading = true
         self.adapter.performUpdates(animated: true)
         
-        firestore.db.collection("usernames").getDocuments { (documents, error) in
+        firestore.db.collection("users").getDocuments { (documents, error) in
             guard error == nil,
             let documents = documents?.documents else {
                 print(error?.localizedDescription ?? "Error getting users")

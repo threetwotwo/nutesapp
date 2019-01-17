@@ -9,11 +9,49 @@
 import Foundation
 import IGListKit
 
-class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource {
+protocol UserHeaderSectionControllerDelegate: class {
+    func followButtonPressed(user: User)
+}
+
+class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UserHeaderCellDelegate {
     
+    var user: User? = nil
+    var firestore = FirestoreManager.shared
+    var followerCount: Int? = nil
+     var delegate: UserHeaderSectionControllerDelegate? = nil
+
     override init() {
         super.init()
         dataSource = self
+    }
+    
+    func didTapFollowButton(cell: UserHeaderCell) {
+        
+        guard let user = object else {return}
+        
+        self.user?.isFollowing = !(self.user?.isFollowing)!
+
+        let buttonTitle = user.isFollowing ? "Unfollow" : "Follow"
+        self.followerCount = user.isFollowing ? self.followerCount ?? 0 + 1 : self.followerCount ?? 0 - 1
+        
+        if (self.user?.isFollowing)! {
+            followerCount = followerCount! + 1
+            firestore.followUser(withUsername: user.username) {
+                print("followed \(user.username)")
+            }
+        } else {
+            followerCount = followerCount! - 1
+            firestore.unfollowUser(withUsername: user.username) {
+                print("unfollowed \(user.username)")
+            }
+        }
+
+        cell.followButton.setTitle(buttonTitle, for: [])
+        cell.followersLabel.text = "\(followerCount!)"
+        
+        self.user = User(user: self.user!, followerCount: followerCount!, isFollowing: (self.user?.isFollowing)!)
+
+        delegate?.followButtonPressed(user: self.user!)
     }
     
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
@@ -44,6 +82,13 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         }
         
         let cell = context.dequeueReusableCellFromStoryboard(withIdentifier: identifier, for: self, at: index)
+        
+        if let cell = cell as? UserHeaderCell,
+            let model = viewModel as? UserHeaderViewModel {
+            cell.delegate = self
+            self.user = User(uid: "", fullname: model.fullname, email: "", username: model.username, postCount: model.postCount, followerCount: model.followerCount, followingCount: model.followingCount, isFollowing: model.isFollowing, url: "")
+            self.followerCount = self.user?.followerCount
+        }
         
         return cell as! UICollectionViewCell & ListBindable
     }

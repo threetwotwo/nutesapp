@@ -89,7 +89,7 @@ class createPostViewController: UIViewController, UITextViewDelegate {
 //                            "username" : username,
 //                            "url" : url,
 //                            "timestamp" : timestamp,
-//                            "likes" : 0
+//                            "likeCount" : 0
 //                        ]){
 //                            error in
 //                            guard error == nil else {

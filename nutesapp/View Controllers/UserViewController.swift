@@ -9,7 +9,16 @@
 import UIKit
 import IGListKit
 
-class UserViewController: UIViewController, ListAdapterDataSource {
+//protocol UserViewControllerDelegate: class {
+//    func didChangeUser(user: User)
+//}
+
+class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSectionControllerDelegate {
+    
+    func followButtonPressed(user: User) {
+        delegate?.followButtonPressed(user: user)
+    }
+    
 
     //MARK: - IBOutlets
     @IBOutlet weak var collectionView: UICollectionView!
@@ -18,6 +27,9 @@ class UserViewController: UIViewController, ListAdapterDataSource {
     var items: [ListDiffable] = []
     var firestore = FirestoreManager.shared
     var user: User?
+    var sectionIndex: Int?
+    
+     var delegate: UserHeaderSectionControllerDelegate? = nil
 //    var listener: ListenerRegistration!
 //    
     let spinToken = "spinner"
@@ -34,34 +46,35 @@ class UserViewController: UIViewController, ListAdapterDataSource {
         return adapter
     }()
     
+    
     //MARK: - IBActions
-    @IBAction func followButtonPressed(_ sender: UIButton) {
-        print("pressed follow button")
-        
-        guard let user = user else { return }
-        
-        guard user.username != firestore.currentUser.username else {
-            print("Edit profile")
-            return
-        }
-        
-        
-//        guard let user = user,
-//            let followed = user.username else {return}
-        let username = user.username
+//    @IBAction func followButtonPressed(_ sender: UIButton) {
+//        print("pressed follow button")
 //
-        if user.isFollowing {
-            firestore.unfollowUser(withUsername: username) {
-                self.user?.isFollowing = false
-                self.loadHeader()
-            }
-        } else {
-            firestore.followUser(withUsername: username) {
-                self.user?.isFollowing = true
-                self.loadHeader()
-            }
-        }
-    }
+//        guard let user = user else { return }
+//
+//        guard user.username != firestore.currentUser.username else {
+//            print("Edit profile")
+//            return
+//        }
+//
+//
+////        guard let user = user,
+////            let followed = user.username else {return}
+//        let username = user.username
+////
+//        if user.isFollowing {
+//            firestore.unfollowUser(withUsername: username) {
+//                self.user?.isFollowing = false
+//                self.loadHeader()
+//            }
+//        } else {
+//            firestore.followUser(withUsername: username) {
+//                self.user?.isFollowing = true
+//                self.loadHeader()
+//            }
+//        }
+//    }
     
     //MARK: - Life Cycle
 
@@ -82,7 +95,6 @@ class UserViewController: UIViewController, ListAdapterDataSource {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         loadHeader()
         
         self.isLoading = true
@@ -118,7 +130,9 @@ class UserViewController: UIViewController, ListAdapterDataSource {
         } else {
             switch object {
             case is User:
-                return UserHeaderSectionController()
+                let sectionController = UserHeaderSectionController()
+                sectionController.delegate = self
+                return sectionController
             case is Post:
                 return UserImageSectionController()
             default:

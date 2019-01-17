@@ -10,8 +10,7 @@ import Foundation
 import IGListKit
 
 class User: Codable {
-    private var identifier: String = UUID().uuidString
-
+    
     let uid: String
     let fullname: String
     let email: String
@@ -37,18 +36,20 @@ class User: Codable {
     convenience init(uid: String, fullname:String, username: String) {
         self.init(uid: uid, fullname: fullname, email: "", username: username, postCount: 0, followerCount: 0, followingCount: 0, isFollowing: false, url: "")
     }
+    
+    convenience init(user: User, followerCount: Int, isFollowing: Bool) {
+        self.init(uid: user.uid, fullname: user.fullname, email: user.email, username: user.username, postCount: user.postCount, followerCount: followerCount, followingCount: user.followingCount, isFollowing: isFollowing, url: user.url)
+    }
 }
 
 extension User: ListDiffable {
     
     func diffIdentifier() -> NSObjectProtocol {
-        return identifier as NSString
+        return username as NSString
     }
     
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
-        guard self !== object else { return true }
-        guard let object = object as? User else { return false }
-        return (self.username) == (object.username)
+        return true
     }
     
 }

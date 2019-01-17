@@ -16,18 +16,20 @@ class Post {
     let id: String
     let username: String
     let timestamp: Date
-    let url: URL
-    let likes: Int
+    let userURL: String
+    let postURL: String
+    let likeCount: Int
     let followedUsernames: [String]
     let didLike: Bool
     let comments: [Comment]
     
-    init(id: String, username: String, timestamp: Date, url: URL, likes: Int, followedUsernames: [String], didLike: Bool, comments: [Comment]) {
+    init(id: String, username: String, timestamp: Date, userURL: String, postURL: String, likeCount: Int, followedUsernames: [String], didLike: Bool, comments: [Comment]) {
         self.id = id
         self.username = username
         self.timestamp = timestamp
-        self.url = url
-        self.likes = likes
+        self.userURL = userURL
+        self.postURL = postURL
+        self.likeCount = likeCount
         self.followedUsernames = followedUsernames
         self.didLike = didLike
         self.comments = comments

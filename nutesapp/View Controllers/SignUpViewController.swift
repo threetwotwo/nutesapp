@@ -60,26 +60,39 @@ class SignUpViewController: UIViewController {
     }
     
     fileprivate func updateUsernameMessage(using username: String) {
+        
         guard isSignupMode else {return}
         
-        firestore.db.collection("usernames").document(username).getDocument { (document, error) in
-            guard error == nil,
-                let document = document else {
-                    print(error?.localizedDescription ?? "error in fetching document")
-                    return
-            }
+        firestore.usernameExists(username, completion: { (exists) in
             
-            var message = ""
-            
-            if document.exists {
-                message = "username taken"
+            if exists {
+                self.usernameMessageLabel.text = "username taken"
                 self.signupButton.isEnabled = false
             } else {
-                message = "✓"
+                self.usernameMessageLabel.text  = "✓"
                 self.signupButton.isEnabled = true
             }
-            self.usernameMessageLabel.text = message
-        }
+            
+        })
+        
+//        firestore.db.collection("usernames").document(username).getDocument { (document, error) in
+//            guard error == nil,
+//                let document = document else {
+//                    print(error?.localizedDescription ?? "error in fetching document")
+//                    return
+//            }
+//
+//            var message = ""
+//
+//            if document.exists {
+//                message = "username taken"
+//                self.signupButton.isEnabled = false
+//            } else {
+//                message = "✓"
+//                self.signupButton.isEnabled = true
+//            }
+//            self.usernameMessageLabel.text = message
+//        }
     }
     
     fileprivate func updateButtons() {
@@ -92,6 +105,7 @@ class SignUpViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         // Do any additional setup after loading the view, typically from a nib.
         usernameMessageLabel.text = ""
         usernameField.delegate = self

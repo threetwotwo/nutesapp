@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4301BF3121EF758F00CB377C /* DatabaseManager.swift */; };
 		430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430FB34321E3877B003C83D1 /* SearchCell.swift */; };
 		431D054721E4D13900C20BC3 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */; };
 		433C58CF21E4DC2300BCD083 /* SearchSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */; };
+		4355B29721EC9299000093EF /* FeedSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4355B29621EC9299000093EF /* FeedSectionController.swift */; };
 		435883C521E21B57000DA3EE /* UserHeaderSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */; };
 		435883C821E2223E000DA3EE /* UserHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435883C721E2223E000DA3EE /* UserHeaderViewModel.swift */; };
 		435CBBEC21DDCEDC00646A35 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */; };
@@ -51,6 +53,9 @@
 		43C1D11A21DE506D002D720D /* ActionTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D11921DE506D002D720D /* ActionTimer.swift */; };
 		43C1D11C21DE50C4002D720D /* Date + timeAgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D11B21DE50C4002D720D /* Date + timeAgo.swift */; };
 		43C1D11E21DE50FC002D720D /* UIView + IBInspectables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D11D21DE50FC002D720D /* UIView + IBInspectables.swift */; };
+		43CBFBBC21ECCCE600192ADA /* CommentActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBFBBB21ECCCE600192ADA /* CommentActionCell.swift */; };
+		43CBFBBE21ECCF4D00192ADA /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBFBBD21ECCF4D00192ADA /* CommentViewController.swift */; };
+		43CBFBC021ECCF8600192ADA /* CommentSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBFBBF21ECCF8600192ADA /* CommentSectionController.swift */; };
 		FE97F2583C761A5D2EBBBE1C /* Pods_nutesapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63C2C5452072E7E0CCC7D170 /* Pods_nutesapp.framework */; };
 /* End PBXBuildFile section */
 
@@ -73,9 +78,11 @@
 
 /* Begin PBXFileReference section */
 		0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.release.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.release.xcconfig"; sourceTree = "<group>"; };
+		4301BF3121EF758F00CB377C /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		430FB34321E3877B003C83D1 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSectionController.swift; sourceTree = "<group>"; };
+		4355B29621EC9299000093EF /* FeedSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSectionController.swift; sourceTree = "<group>"; };
 		435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderSectionController.swift; sourceTree = "<group>"; };
 		435883C721E2223E000DA3EE /* UserHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderViewModel.swift; sourceTree = "<group>"; };
 		435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -121,6 +128,9 @@
 		43C1D11921DE506D002D720D /* ActionTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionTimer.swift; sourceTree = "<group>"; };
 		43C1D11B21DE50C4002D720D /* Date + timeAgo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date + timeAgo.swift"; sourceTree = "<group>"; };
 		43C1D11D21DE50FC002D720D /* UIView + IBInspectables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView + IBInspectables.swift"; sourceTree = "<group>"; };
+		43CBFBBB21ECCCE600192ADA /* CommentActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentActionCell.swift; sourceTree = "<group>"; };
+		43CBFBBD21ECCF4D00192ADA /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
+		43CBFBBF21ECCF8600192ADA /* CommentSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentSectionController.swift; sourceTree = "<group>"; };
 		5C5FB4C67B21E2162CA727F8 /* Pods-nutesapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.debug.xcconfig"; sourceTree = "<group>"; };
 		63C2C5452072E7E0CCC7D170 /* Pods_nutesapp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_nutesapp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -171,6 +181,8 @@
 		435883C621E2216D000DA3EE /* Section Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				43CBFBBF21ECCF8600192ADA /* CommentSectionController.swift */,
+				4355B29621EC9299000093EF /* FeedSectionController.swift */,
 				433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */,
 				435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */,
 				439FC53421E342FD00EB7954 /* UserImageSectionController.swift */,
@@ -182,6 +194,7 @@
 			isa = PBXGroup;
 			children = (
 				43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */,
+				43CBFBBD21ECCF4D00192ADA /* CommentViewController.swift */,
 				43C1D0FC21DE394A002D720D /* FeedViewController.swift */,
 				438E895421E0A7E9006D20D0 /* SearchViewController.swift */,
 				43B0693621DE5A1C005387C3 /* createPostViewController.swift */,
@@ -229,6 +242,7 @@
 			children = (
 				43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */,
 				43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */,
+				4301BF3121EF758F00CB377C /* DatabaseManager.swift */,
 				431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */,
 				43B7CF6521DD2C4A00F08EDC /* Main.storyboard */,
 				43C1D11421DE4F1F002D720D /* Extensions */,
@@ -282,6 +296,7 @@
 				43C1D10C21DE4E9D002D720D /* PostHeaderCell.swift */,
 				43C1D10E21DE4EAB002D720D /* ActionCell.swift */,
 				43C1D11021DE4EB5002D720D /* CommentCell.swift */,
+				43CBFBBB21ECCCE600192ADA /* CommentActionCell.swift */,
 				430FB34321E3877B003C83D1 /* SearchCell.swift */,
 				439FC52E21E31B6B00EB7954 /* UserHeaderCell.swift */,
 				439FC53021E31CE100EB7954 /* UserDetailCell.swift */,
@@ -547,11 +562,16 @@
 				430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */,
 				43C1D10F21DE4EAB002D720D /* ActionCell.swift in Sources */,
 				439204D421DF2BE10031CFCB /* UITextView + centerVertically.swift in Sources */,
+				43CBFBBC21ECCCE600192ADA /* CommentActionCell.swift in Sources */,
+				4355B29721EC9299000093EF /* FeedSectionController.swift in Sources */,
+				43CBFBC021ECCF8600192ADA /* CommentSectionController.swift in Sources */,
 				438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */,
 				439FC53321E31DF900EB7954 /* UserDetailViewModel.swift in Sources */,
+				4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */,
 				43C1D10D21DE4E9D002D720D /* PostHeaderCell.swift in Sources */,
 				435CBBF821DDD51000646A35 /* Post.swift in Sources */,
 				439FC53521E342FD00EB7954 /* UserImageSectionController.swift in Sources */,
+				43CBFBBE21ECCF4D00192ADA /* CommentViewController.swift in Sources */,
 				43C1D10221DE450D002D720D /* ImageViewModel.swift in Sources */,
 				43C1D0FD21DE394A002D720D /* FeedViewController.swift in Sources */,
 				43C1D0FF21DE44B2002D720D /* PostHeaderViewModel.swift in Sources */,

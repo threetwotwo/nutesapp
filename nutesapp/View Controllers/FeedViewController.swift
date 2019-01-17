@@ -34,8 +34,8 @@ class FeedViewController: UIViewController {
         let updater = ListAdapterUpdater()
         let adapter = ListAdapter(updater: updater, viewController: self, workingRangeSize: 1)
         adapter.collectionView = collectionView
-//        adapter.dataSource = self
-//        adapter.scrollViewDelegate = self
+        adapter.dataSource = self
+        adapter.scrollViewDelegate = self
         return adapter
     }()
     
@@ -73,7 +73,7 @@ class FeedViewController: UIViewController {
                 print(relationship.documentID)
                 guard let username = relationship.data()["followed"] as? String else {return}
                 print(username)
-                self.firestore.getPostsForUser(username: username, limit: 30, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+                self.firestore.getPostsForUser(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
                     guard let posts = posts else {return}
                     for post in posts {
                         
@@ -90,12 +90,10 @@ class FeedViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.collectionView.addSubview(self.refreshControl)
+        self.collectionView.addSubview(self.refreshControl)
         //For tab bar delegate function in app delegate to work
         self.tabBarController?.delegate = UIApplication.shared.delegate as? UITabBarControllerDelegate
-//        loadPosts()
-//        let nc = NotificationCenter.default
-//        nc.addObserver(self, selector: #selector(performUpdates), name: Notification.Name("likeButtonPressed"), object: nil)
+        loadPosts()
     }
     
     @objc func performUpdates() {
@@ -106,45 +104,45 @@ class FeedViewController: UIViewController {
 }
 
 //MARK: - List adapter data source
-//
-//extension FeedViewController: ListAdapterDataSource {
-//    func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
-//        var objects = items as [ListDiffable]
-//
-//        if loading {
-//            objects.append(spinToken as ListDiffable)
-//        }
-//
-//        return objects
-//    }
-//
-//    func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
-//        if let obj = object as? String, obj == spinToken {
-//            return spinnerSectionController()
-//        } else {
-//            return FeedSectionController()
-//        }
-//    }
-//
-//    func emptyView(for listAdapter: ListAdapter) -> UIView? {
-//        return nil
-//    }
-//
-//}
-//
-//extension FeedViewController: UIScrollViewDelegate {
-//    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-//        let distance = scrollView.contentSize.height - (targetContentOffset.pointee.y + scrollView.bounds.height)
-//        if !loading && distance < 200 {
-//            loading = true
-//            adapter.performUpdates(animated: true, completion: nil)
-//            DispatchQueue.global(qos: .default).async {
-//                // fake background loading task
-//                DispatchQueue.main.async {
-//                    self.loading = false
-//                    self.loadPosts()
-//                }
-//            }
-//        }
-//    }
-//}
+
+extension FeedViewController: ListAdapterDataSource {
+    func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
+        var objects = items as [ListDiffable]
+
+        if loading {
+            objects.append(spinToken as ListDiffable)
+        }
+
+        return objects
+    }
+
+    func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
+        if let obj = object as? String, obj == spinToken {
+            return spinnerSectionController()
+        } else {
+            return FeedSectionController()
+        }
+    }
+
+    func emptyView(for listAdapter: ListAdapter) -> UIView? {
+        return nil
+    }
+
+}
+
+extension FeedViewController: UIScrollViewDelegate {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let distance = scrollView.contentSize.height - (targetContentOffset.pointee.y + scrollView.bounds.height)
+        if !loading && distance < 200 {
+            loading = true
+            adapter.performUpdates(animated: true, completion: nil)
+            DispatchQueue.global(qos: .default).async {
+                // fake background loading task
+                DispatchQueue.main.async {
+                    self.loading = false
+                    self.loadPosts()
+                }
+            }
+        }
+    }
+}

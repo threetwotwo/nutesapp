@@ -13,17 +13,17 @@ final class UserHeaderViewModel: ListDiffable {
     let username: String
     let fullname: String
     let url: String
-    let posts: Int
-    let followers: Int
-    let following: Int
+    let postCount: Int
+    let followerCount: Int
+    let followingCount: Int
     let isFollowing: Bool
     
     init(username: String, fullname: String, posts: Int, followers: Int, following: Int, isFollowing: Bool, url: String) {
         self.username = username
         self.fullname = fullname
-        self.posts = posts
-        self.followers = followers
-        self.following = following
+        self.postCount = posts
+        self.followerCount = followers
+        self.followingCount = following
         self.isFollowing = isFollowing
         self.url = url
     }

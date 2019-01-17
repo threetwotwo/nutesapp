@@ -24,7 +24,7 @@ class UserImageSectionController: ListBindingSectionController<User>, ListBindin
         guard let object = object as? Post else { fatalError() }
         
         let results: [ListDiffable] = [
-            ImageViewModel(url: object.url)
+            ImageViewModel(url: object.postURL)
         ]
         
         return results

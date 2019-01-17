@@ -42,11 +42,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
                 return false
             }
             
+            //get from user defaults
             let postCount = UserDefaults.standard.integer(forKey: "postCount")
             let followers = UserDefaults.standard.integer(forKey: "followerCount")
             let following = UserDefaults.standard.integer(forKey: "followingCount")
-            let uid = UserDefaults.standard.string(forKey: "uid")
-            let email = UserDefaults.standard.string(forKey: "email")
             let url = UserDefaults.standard.string(forKey: "url")
             
             firestore.currentUser = User(

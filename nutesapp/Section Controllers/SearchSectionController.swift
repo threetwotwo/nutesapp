@@ -9,19 +9,21 @@
 import Foundation
 import IGListKit
 
-class SearchSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource {
+class SearchSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UserHeaderSectionControllerDelegate {
     
-    var user: User?
+    func followButtonPressed(user: User) {
+        print("followButtonPressed")
+        didUpdate(to: user)
+    }
     
     override init() {
         super.init()
         dataSource = self
     }
     
+    
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         guard let object = object as? User else { fatalError() }
-        
-        self.user = object
         
         let results: [ListDiffable] = [
             UserHeaderViewModel(username: object.username, fullname: object.fullname, posts: object.postCount, followers: object.followerCount, following: object.followingCount, isFollowing: object.isFollowing, url: object.url)
@@ -60,10 +62,19 @@ class SearchSectionController: ListBindingSectionController<User>, ListBindingSe
     
     override func didSelectItem(at index: Int) {
         
-        guard let user = user
+        guard let user = object
         ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UserVC") as? UserViewController else { return }
         
         vc.user = user
+        vc.delegate = self
+//        print(vc.delegate.debugDescription)
+        
+        //pass section index from searchVC to userVC
+//        if let parentVC = (viewController as? SearchViewController),
+//            let sectionIndex = parentVC.collectionView.indexPathsForSelectedItems?.first?.section {
+//            vc.sectionIndex = sectionIndex
+//        }
+        
         viewController?.navigationController?.pushViewController(vc, animated: true)
         
     }
