@@ -820,10 +820,7 @@
                                             <constraint firstItem="lky-4U-rZ2" firstAttribute="leading" secondItem="qPe-R4-cPo" secondAttribute="trailing" constant="8" id="paY-Yb-xDR"/>
                                         </constraints>
                                         <connections>
-                                            <outlet property="leadingConstraint" destination="YEo-rT-rDO" id="3lC-RG-KHs"/>
-                                            <outlet property="profileImageView" destination="ngO-lA-KJc" id="IOo-cZ-rIK"/>
                                             <outlet property="textLabel" destination="lky-4U-rZ2" id="jmR-yf-tO8"/>
-                                            <outlet property="timestampLabel" destination="pCk-7f-mSW" id="3Yr-Jt-d91"/>
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="commentreply" id="6Tc-Em-B2n" customClass="CommentCell" customModule="nutesapp" customModuleProvider="target">
@@ -891,9 +888,7 @@
                                             <constraint firstItem="uRv-h9-eY2" firstAttribute="leading" secondItem="udC-au-rZr" secondAttribute="trailing" constant="8" id="xDF-mi-QqM"/>
                                         </constraints>
                                         <connections>
-                                            <outlet property="profileImageView" destination="eLL-Qx-cmf" id="Bo8-f6-dS2"/>
                                             <outlet property="textLabel" destination="uRv-h9-eY2" id="5sh-ow-icQ"/>
-                                            <outlet property="timestampLabel" destination="Qgu-m1-YK4" id="05k-u7-Tlz"/>
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="commentaction" id="D5J-8R-rrc" customClass="CommentActionCell" customModule="nutesapp">
@@ -935,7 +930,6 @@
                                             <constraint firstItem="Lph-D6-Mkn" firstAttribute="leading" secondItem="J6G-vC-z0m" secondAttribute="trailing" constant="16" id="xCY-hF-5ti"/>
                                         </constraints>
                                         <connections>
-                                            <outlet property="leadingConstraint" destination="b8k-ww-XeO" id="9Up-Tq-Tos"/>
                                             <outlet property="likeButton" destination="Lph-D6-Mkn" id="52e-3t-dpZ"/>
                                             <outlet property="likesLabel" destination="qTA-t7-Xbd" id="KdO-KS-bGY"/>
                                             <outlet property="replyButton" destination="J6G-vC-z0m" id="sP8-pJ-W0k"/>
@@ -980,7 +974,6 @@
                                             <constraint firstItem="qUn-94-JfW" firstAttribute="leading" secondItem="lou-Ek-D2D" secondAttribute="leading" constant="116" id="qUS-uD-06l"/>
                                         </constraints>
                                         <connections>
-                                            <outlet property="leadingConstraint" destination="qUS-uD-06l" id="S6m-jS-aU2"/>
                                             <outlet property="likeButton" destination="eu2-cx-XDZ" id="VaY-PF-AFQ"/>
                                             <outlet property="likesLabel" destination="lqR-y2-XzK" id="TLd-7x-qcc"/>
                                             <outlet property="replyButton" destination="qUn-94-JfW" id="Bwo-cm-e78"/>

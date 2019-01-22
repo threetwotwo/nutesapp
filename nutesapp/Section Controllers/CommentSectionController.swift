@@ -12,8 +12,7 @@ import IGListKit
 class CommentSectionController: ListBindingSectionController<Comment>,
     ListBindingSectionControllerDataSource,
 CommentActionCellDelegate {
-    
-    var postID: String = ""
+    var post: Post?
     let firestore = FirestoreManager.shared
     var comment: Comment!
     var localLikes: Int? = nil
@@ -29,10 +28,10 @@ CommentActionCellDelegate {
         
         if didLike! {
             localLikes = (localLikes ?? object?.likes ?? 0) + 1
-//            firestore.incrementCommentLikesCounter(postID: postID, commentID: comment.commentID)
+            firestore.like(comment: comment)
         } else {
             localLikes = (localLikes ?? object?.likes ?? 0) - 1
-//            firestore.decrementCommentLikesCounter(postID: postID, commentID: comment.commentID)
+            firestore.unlike(comment: comment)
         }
         
         cell.likesLabel.text = "\(localLikes!)"
@@ -42,7 +41,7 @@ CommentActionCellDelegate {
     func didTapReply(cell: CommentActionCell) {
         guard let vc = viewController as? CommentViewController,
             let commentTextField = vc.commentTextField else {return}
-        vc.parentID = comment?.parentID == nil ? comment.commentID : comment.parentID
+        vc.replyingTo = self.comment
         let index = vc.collectionView.indexPath(for: cell)?.section
         //Toggle keyboard by hiding keyboard when the same reply button is pressed twice
         if commentTextField.isFirstResponder && vc.replyIndex == index {
@@ -65,14 +64,14 @@ CommentActionCellDelegate {
         super.init()
         dataSource = self
         guard let vc = viewController as? CommentViewController else {return}
-        postID = vc.postID
+        post = vc.post
     }
     
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         guard let object = object as? Comment else { fatalError() }
         comment = object
         let results: [ListDiffable] = [
-            CommentViewModel(username: object.username, text: object.text, timestamp: object.timestamp),
+            CommentViewModel(username: object.username, text: object.text, timestamp: object.timestamp.dateValue()),
             ActionViewModel(likes: object.likes, followedUsernames: [], didLike: object.didLike)
         ]
         return results

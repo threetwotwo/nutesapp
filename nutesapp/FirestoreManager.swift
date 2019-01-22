@@ -18,7 +18,6 @@ final class FirestoreManager {
     static let shared = FirestoreManager()
 
     //MARK: - Variables
-
     var db: Firestore!
     var currentUser: User!
     let defaults = UserDefaults.standard
@@ -28,6 +27,93 @@ final class FirestoreManager {
         let settings = db.settings
         settings.areTimestampsInSnapshotsEnabled = true
         db.settings = settings
+    }
+    
+    //MARK: - Retrieve posts
+    func getPostsForUser(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[ListDiffable]?, _ lastSnapshot: DocumentSnapshot?) -> ()) {
+        
+        var query: Query!
+        
+        //Pagination
+        if lastSnapshot == nil {
+            query = db
+                .collection("posts").whereField("username", isEqualTo: username)
+                .order(by: "timestamp", descending: true)
+                .limit(to: limit)
+        } else {
+            query = db
+                .collection("posts").whereField("username", isEqualTo: username)
+                .order(by: "timestamp", descending: true)
+                .limit(to: limit)
+                .start(afterDocument: lastSnapshot!)
+        }
+        
+        query.getDocuments { (documents, error) in
+            guard error == nil,
+                let documents = documents?.documents else {
+                    print(error?.localizedDescription ?? "Error fetching posts!")
+                    return
+            }
+            var items = [ListDiffable]()
+            let dsg = DispatchGroup()
+            
+            for document in documents {
+                let id = document.documentID
+                let username = document.get("username") as! String
+                var likeCount = 0
+                let timestamp = (document.get("timestamp") as? Timestamp)?.dateValue()
+                let postUrl = document.get("post_url") as! String
+                
+                var followedUsernames = [String]()
+                var userDidLike = false
+                var postComments = [Comment]()
+                
+                dsg.enter()
+                RtdbManager().getPostLikes(postID: id, completion: { (likes) in
+                    likeCount = likes
+                    dsg.leave()
+                })
+                
+                dsg.enter()
+                self.getFollowedLikes(postID: id, limit: 2, completion: { (int, usernames) in
+                    followedUsernames = usernames
+                    dsg.leave()
+                })
+                
+                dsg.enter()
+                self.didLike(postID: id, completion: { (didLike) in
+                    userDidLike = didLike
+                    dsg.leave()
+                })
+                
+                dsg.enter()
+                self.getComments(postID: id, limit: 20, completion: { (comments) in
+                    postComments = comments
+                    print(comments.count)
+                    dsg.leave()
+                })
+                
+                dsg.notify(queue: .main) {
+                    let post = Post(
+                        id: id,
+                        username: username,
+                        timestamp: timestamp!,
+                        userURL: "",
+                        postURL: postUrl,
+                        likeCount: likeCount,
+                        followedUsernames: followedUsernames,
+                        didLike: userDidLike,
+                        comments: postComments
+                    )
+                    items.append(post)
+                }
+            }
+            dsg.notify(queue: .main) {
+                
+                let lastSnapshot = documents.last
+                completion(items, lastSnapshot)
+            }
+        }
     }
     
     //MARK: - Posts
@@ -203,38 +289,149 @@ final class FirestoreManager {
     }
     
     //MARK: - Comments
-    //if parentID is nil then it is a root comment, if not then it's a reply
-    func createComment(postID: String, username: String, text: String, parentID: String? = nil) {
-        let timestamp = FieldValue.serverTimestamp()
-        let commentID = "\(postID)_\(username)\(Timestamp().seconds)"
-        let counterRef = db.collection("commentLikesCounters").document(commentID)
-        let shardsRef = counterRef.collection("shards")
-        let commentRef = db.collection("comments").document(commentID)
+    
+    func retrieveComments(postID: String, limit:Int, completion: @escaping ([Comment])->()) {
+        let query = db
+            .collection("posts").document(postID)
+            .collection("comments")
+            .whereField("parent_id", isEqualTo: NSNull())
+            .limit(to: limit)
+        
+        query.getDocuments { (snap, error) in
+            guard error == nil,
+            let docs = snap?.documents else {
+                print(error?.localizedDescription ?? "Error getting comments")
+                return
+            }
+            
+            var comments = [Comment]()
+            for doc in docs {
+                let data = doc.data()
+                let comment: Comment
+                
+                let dsg = DispatchGroup()
+                
+                var didLike: Bool = false
+                
+                dsg.enter()
+                self.userDidLikeComment(postID: postID, commentID: doc.documentID
+                    , completion: { (bool) in
+                        didLike = bool
+                        dsg.leave()
+                })
+                comment = Comment(
+                    parentID: nil,
+                    commentID: doc.documentID,
+                    postID: data["post_id"] as? String ?? "",
+                    username: data["username"] as? String ?? "",
+                    text: data["text"] as? String ?? "",
+                    likes: 0,
+                    timestamp: data["timestamp"] as? Timestamp ?? Timestamp(),
+                    didLike: false)
+                comments.append(comment)
+                
+                let query = self.db
+                    .collection("posts").document(postID)
+                    .collection("comments")
+                    .limit(to: limit)
+                
+                query.getDocuments(completion: { (snap, error) in
+                    guard error == nil else {
+                        print(error?.localizedDescription ?? "Error getting replies")
+                        return
+                    }
+                })
+            }
+            completion(comments)
+        }
+        
+    }
+    
+    func comment(comment: Comment, post: Post, text: String, completion: (()->())? = nil) {
+        
+        let username = currentUser.username
+        let timestamp = comment.timestamp
+        let commentID = "\(username)_\(timestamp.seconds)"
+        
+        let commentRef = db
+            .collection("posts").document(post.id)
+            .collection("comments").document(commentID)
+        
+        let parentID: Any = comment.parentID == nil ? NSNull() : comment.parentID ?? ""
         
         db.runTransaction({ (transaction, errorPointer) -> Any? in
-            do {
-                //create counter with 10 shards
-                transaction.setData(["numShards": 1], forDocument: counterRef)
-                for i in 0..<1 {
-                    transaction.setData(["count" : 0], forDocument: shardsRef.document(String(i)))
-                }
-                transaction.setData([
-                    "post_id" : postID,
-                    "parent_id" : parentID,
-                    "username" : username,
-                    "text" : text,
-                    "timestamp" : timestamp
-                    ], forDocument: commentRef)
-                
-            } catch let error as NSError {
-                errorPointer?.pointee = error
-            }
+            transaction.setData([
+                "parent_id" : parentID,
+                "post_id" : post.id,
+                "username" : username,
+                "text" : text,
+                "timestamp" : comment.timestamp
+                ], forDocument: commentRef)
             return nil
         }) { (object, error) in
-            // ...
-            if error != nil {
-                print(error?.localizedDescription)
+            guard error == nil else {
+                print(error?.localizedDescription ?? "Error commenting")
+                return
             }
+            completion?()
+        }
+    }
+    
+    func like(comment: Comment, completion: (()->())? = nil) {
+        
+        let username = currentUser.username
+        let timestamp = FieldValue.serverTimestamp()
+
+        let likeRef = db
+            .collection("posts").document(comment.postID)
+            .collection("comments").document(comment.id)
+            .collection("likes").document(username)
+        
+        db.runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.setData([
+                "username" : username,
+                "timestamp" : timestamp
+                ], forDocument: likeRef)
+            return nil
+        }) { (object, error) in
+            guard error == nil else {
+                print(error?.localizedDescription ?? "Error commenting")
+                return
+            }
+            completion?()
+        }
+    }
+    
+    func unlike(comment: Comment, completion: (()->())? = nil) {
+        
+        let likeRef = db
+            .collection("posts").document(comment.postID)
+            .collection("comments").document(comment.id)
+            .collection("likes").document(currentUser.username)
+        
+        db.runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.deleteDocument(likeRef)
+            return nil
+        }) { (object, error) in
+            guard error == nil else {
+                print(error?.localizedDescription ?? "Error commenting")
+                return
+            }
+            completion?()
+        }
+    }
+    
+    func userDidLikeComment(postID: String, commentID: String,  completion: @escaping (Bool)->()) {
+        let username = currentUser.username
+        let likeRef = db.collection("posts").document(postID).collection("comments").document(commentID).collection("likes").document(username)
+        
+        likeRef.getDocument { (snapshot, error) in
+            guard error == nil, let didLike = snapshot?.exists else {
+                print(error?.localizedDescription ?? "")
+                return
+            }
+            
+            completion(didLike)
         }
     }
     
@@ -260,17 +457,12 @@ final class FirestoreManager {
                         let postID = data["post_id"] as! String
                         let username = data["username"] as! String
                         let text = data["text"] as! String
-                        let timestamp = (data["timestamp"] as? Timestamp)?.dateValue()
-                        let shardsRef = self.db.collection("commentLikesCounters").document(document.documentID)
+                        let timestamp = data["timestamp"] as? Timestamp
                         
                         var commentLikes: Int = 0
                         var commentDidLike = false
                         
-//                        dsg.enter()
-//                        self.getTotalLikes(ref: shardsRef, completion: { (likes) in
-//                            commentLikes = likes
-//                            dsg.leave()
-//                        })
+
                         
                         dsg.enter()
                         self.userDidLikeComment(postID: postID, commentID: document.documentID, completion: { (didLike) in
@@ -279,7 +471,7 @@ final class FirestoreManager {
                         })
                         
                         dsg.notify(queue: .main, execute: {
-                            let comment = Comment(parentID: parentID, commentID: document.documentID, postID: postID, username: username, text: text, likes: commentLikes, timestamp: timestamp ?? Date(), didLike: commentDidLike)
+                            let comment = Comment(parentID: parentID, commentID: document.documentID, postID: postID, username: username, text: text, likes: commentLikes, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike)
                             comments.append(comment)
                         })
                     }
@@ -290,24 +482,9 @@ final class FirestoreManager {
         }
     }
     
-    func userDidLikeComment(postID: String, commentID: String,  completion: @escaping (Bool)->()) {
-        let username = currentUser.username
-        let likeID = "\(commentID)_\(username)"
-        let likeRef = db.collection("commentLikes").document(likeID)
-        
-        likeRef.getDocument { (snapshot, error) in
-            guard error == nil, let didLike = snapshot?.exists else {
-                print(error?.localizedDescription ?? "")
-                return
-            }
-            
-            completion(didLike)
-        }
-    }
     
     func getComments(postID: String, limit: Int, completion: @escaping ([Comment])->()) {
-        db.collection("comments")
-            .whereField("post_id", isEqualTo: postID)
+        db.collection("posts").document(postID).collection("comments")
             .whereField("parent_id", isEqualTo: NSNull())
             .limit(to: limit)
             .getDocuments { (snapshot, error) in
@@ -327,14 +504,12 @@ final class FirestoreManager {
                         let postID = data["post_id"] as! String
                         let username = data["username"] as! String
                         let text = data["text"] as! String
-                        let timestamp = (data["timestamp"] as? Timestamp)?.dateValue()
+                        let timestamp = data["timestamp"] as? Timestamp
                         let commentID = document.documentID
-                        let shardsRef = self.db.collection("commentLikesCounters").document(commentID)
-                        print("getcomments = \(commentID)")
-                        
-                        var commentLikes: Int = 0
+
                         var commentReplies = [Comment]()
                         var commentDidLike = false
+                        var commentLikes = 0
                         
                         dsg.enter()
                         self.getReplies(commentID: document.documentID, limit: 20, completion: { (replies) in
@@ -342,11 +517,12 @@ final class FirestoreManager {
                             dsg.leave()
                         })
                     
-//                        dsg.enter()
-//                        self.getTotalLikes(ref: shardsRef, completion: { (likes) in
-//                            commentLikes = likes
-//                            dsg.leave()
-//                        })
+                        dsg.enter()
+                        RtdbManager().getLikes(commentID: commentID, completion: { (likes) in
+                            print(commentID)
+                            commentLikes = likes
+                            dsg.leave()
+                        })
                         
                         dsg.enter()
                         self.userDidLikeComment(postID: postID, commentID: commentID, completion: { (didLike) in
@@ -355,7 +531,7 @@ final class FirestoreManager {
                         })
                         
                         dsg.notify(queue: .main, execute: {
-                            let comment = Comment(parentID: nil, commentID: commentID, postID: postID, username: username, text: text, likes: commentLikes, timestamp: timestamp ?? Date(), didLike: commentDidLike)
+                            let comment = Comment(parentID: nil, commentID: commentID, postID: postID, username: username, text: text, likes: commentLikes, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike)
                             comments.append(comment)
                             comments.append(contentsOf: commentReplies)
                         })
@@ -615,84 +791,6 @@ final class FirestoreManager {
         }
     }
     
-    //MARK: - Retrieve posts
-    func getPostsForUser(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[ListDiffable]?, _ lastSnapshot: DocumentSnapshot?) -> ()) {
-        
-        var query: Query!
-        
-        //Pagination
-        if lastSnapshot == nil {
-            query = db.collection("posts").whereField("username", isEqualTo: username).order(by: "timestamp", descending: true).limit(to: limit)
-        } else {
-            query = db.collection("posts").whereField("username", isEqualTo: username).order(by: "timestamp", descending: true).start(afterDocument: lastSnapshot!).limit(to: limit)
-        }
-        
-        query.getDocuments { (documents, error) in
-            guard error == nil,
-                let documents = documents?.documents else {
-                    print(error?.localizedDescription ?? "Error fetching posts!")
-                    return
-            }
-            var items = [ListDiffable]()
-            let dsg = DispatchGroup()
-            
-            for document in documents {
-                let id = document.documentID
-                let username = document.get("username") as! String
-                var likeCount = 0
-                let timestamp = (document.get("timestamp") as? Timestamp)?.dateValue()
-                let postUrl = document.get("post_url") as! String
-                
-                var followedUsernames = [String]()
-                var userDidLike = false
-                var postComments = [Comment]()
-                
-                dsg.enter()
-                DatabaseManager().getPostLikes(postID: id, completion: { (likes) in
-                    likeCount = likes
-                    dsg.leave()
-                })
-                
-                dsg.enter()
-                self.getFollowedLikes(postID: id, limit: 2, completion: { (int, usernames) in
-                    followedUsernames = usernames
-                    dsg.leave()
-                })
-                
-                dsg.enter()
-                self.didLike(postID: id, completion: { (didLike) in
-                    userDidLike = didLike
-                    dsg.leave()
-                })
-                
-                dsg.enter()
-                self.getComments(postID: id, limit: 20, completion: { (comments) in
-                    postComments = comments
-                    dsg.leave()
-                })
-                
-                dsg.notify(queue: .main) {
-                    let post = Post(
-                        id: id,
-                        username: username,
-                        timestamp: timestamp!,
-                        userURL: "",
-                        postURL: postUrl,
-                        likeCount: likeCount,
-                        followedUsernames: followedUsernames,
-                        didLike: userDidLike,
-                        comments: postComments
-                    )
-                    items.append(post)
-                }
-            }
-            dsg.notify(queue: .main) {
-                
-                let lastSnapshot = documents.last
-                completion(items, lastSnapshot)
-            }
-        }
-    }
     
 }
 

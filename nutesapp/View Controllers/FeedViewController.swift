@@ -52,7 +52,6 @@ class FeedViewController: UIViewController {
             self.viewDidLoad()
             refreshControl.endRefreshing()
         }
-        
     }
     
     

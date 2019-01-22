@@ -46,7 +46,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         guard let post = object
             ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as? CommentViewController else { return }
         vc.items = post.comments
-        
+        vc.post = post
         viewController?.navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -66,7 +66,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             ActionViewModel(likes: likeCount ?? object.likeCount, followedUsernames: object.followedUsernames, didLike: didLike ?? object.didLike)
             ]
         
-        return results
+        return results + object.comments
     }
     
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, cellForViewModel viewModel: Any, at index: Int) -> UICollectionViewCell & ListBindable {
@@ -122,11 +122,18 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     }
     
     override func didSelectItem(at index: Int) {
-        
-        guard let post = object
-            ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UserVC") as? UserViewController else { return }
-        
-        viewController?.navigationController?.pushViewController(vc, animated: true)
-        
+        print(index)
+        switch index {
+        case 0:
+            print("header")
+        case 1:
+            print("image")
+        case 2:
+            print("action")
+        default:
+            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as! CommentViewController
+            vc.items = object?.comments ?? [Comment]()
+            viewController?.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }

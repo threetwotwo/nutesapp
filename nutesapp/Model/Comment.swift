@@ -5,25 +5,25 @@
 //  Created by Gary Piong on 03/01/19.
 //  Copyright © 2019 Gary Piong. All rights reserved.
 //
-
+import Firebase
 import Foundation
 import IGListKit
 
 final class Comment: ListDiffable {
     private var identifier: String = UUID().uuidString
     
-    let commentID: String
+    let id: String
     let parentID: String?
     let postID: String
     let username: String
     let text: String
-    let timestamp: Date
+    let timestamp: Timestamp
     let likes: Int
     let didLike: Bool
     
-    init(parentID: String?, commentID: String, postID: String, username: String, text: String, likes: Int, timestamp: Date, didLike: Bool) {
+    init(parentID: String?, commentID: String, postID: String, username: String, text: String, likes: Int, timestamp: Timestamp, didLike: Bool) {
         self.parentID = parentID
-        self.commentID = commentID
+        self.id = commentID
         self.postID = postID
         self.username = username
         self.text = text
