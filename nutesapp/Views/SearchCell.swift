@@ -17,6 +17,14 @@ class SearchCell: UICollectionViewCell, ListBindable {
     
     func bindViewModel(_ viewModel: Any) {
         guard let viewModel = viewModel as? UserHeaderViewModel else { return }
+        
+        if let url = URL(string: viewModel.url) {
+            imageView.sd_setImage(with: url)
+        }
+        
+        //round the corners
+        imageView.layer.cornerRadius = imageView.frame.size.width/2
+        
         usernameLabel.text = viewModel.username
         fullnameLabel.text = viewModel.fullname
     }

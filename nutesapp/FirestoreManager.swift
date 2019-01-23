@@ -30,7 +30,7 @@ final class FirestoreManager {
     }
     
     //MARK: - Retrieve posts
-    func getPostsForUser(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[ListDiffable]?, _ lastSnapshot: DocumentSnapshot?) -> ()) {
+    func getPosts(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[ListDiffable]?, _ lastSnapshot: DocumentSnapshot?) -> ()) {
         
         var query: Query!
         
@@ -63,13 +63,20 @@ final class FirestoreManager {
                 var likeCount = 0
                 let timestamp = (document.get("timestamp") as? Timestamp)?.dateValue()
                 let postUrl = document.get("post_url") as! String
+                var userURL = ""
                 
                 var followedUsernames = [String]()
                 var userDidLike = false
                 var postComments = [Comment]()
                 
                 dsg.enter()
-                RtdbManager().getPostLikes(postID: id, completion: { (likes) in
+                DatabaseManager().getUserURL(username: username, completion: { (url) in
+                    userURL = url
+                    dsg.leave()
+                })
+                
+                dsg.enter()
+                DatabaseManager().getPostLikes(postID: id, completion: { (likes) in
                     likeCount = likes
                     dsg.leave()
                 })
@@ -98,7 +105,7 @@ final class FirestoreManager {
                         id: id,
                         username: username,
                         timestamp: timestamp!,
-                        userURL: "",
+                        userURL: userURL,
                         postURL: postUrl,
                         likeCount: likeCount,
                         followedUsernames: followedUsernames,
@@ -121,7 +128,7 @@ final class FirestoreManager {
     func createPost(imageData: Data) {
         //createdBy
         let username = currentUser.username
-        let userURL = currentUser.url
+        
         //createdAt
         let timestamp = FieldValue.serverTimestamp()
         
@@ -168,7 +175,6 @@ final class FirestoreManager {
                     
                     transaction.setData([
                         "username" : username,
-                        "user_url" : userURL,
                         "post_url" : postURL,
                         "timestamp" : timestamp,
                         "like_count" : 0
@@ -435,9 +441,8 @@ final class FirestoreManager {
         }
     }
     
-    func getReplies(commentID: String, limit: Int, completion: @escaping ([Comment]) -> ()) {
-        db.collection("comments")
-            .whereField("parent_id", isEqualTo: commentID)
+    func getReplies(postID: String, parentID: String, limit: Int, completion: @escaping ([Comment]) -> ()) {
+        db.collection("posts").document(postID).collection("comments").whereField("parent_id", isEqualTo: parentID)
             .limit(to: limit)
             .getDocuments { (snapshot, error) in
                 
@@ -484,8 +489,7 @@ final class FirestoreManager {
     
     
     func getComments(postID: String, limit: Int, completion: @escaping ([Comment])->()) {
-        db.collection("posts").document(postID).collection("comments")
-            .whereField("parent_id", isEqualTo: NSNull())
+        db.collection("posts").document(postID).collection("comments").whereField("parent_id", isEqualTo: NSNull())
             .limit(to: limit)
             .getDocuments { (snapshot, error) in
                 
@@ -512,13 +516,13 @@ final class FirestoreManager {
                         var commentLikes = 0
                         
                         dsg.enter()
-                        self.getReplies(commentID: document.documentID, limit: 20, completion: { (replies) in
+                        self.getReplies(postID: postID, parentID: commentID, limit: 20, completion: { (replies) in
                             commentReplies = replies
                             dsg.leave()
                         })
                     
                         dsg.enter()
-                        RtdbManager().getLikes(commentID: commentID, completion: { (likes) in
+                        DatabaseManager().getLikes(commentID: commentID, completion: { (likes) in
                             print(commentID)
                             commentLikes = likes
                             dsg.leave()
@@ -571,7 +575,30 @@ final class FirestoreManager {
             }
         }
     }
+    //MARK: - update profile pic
     
+    func updateProfile(image: UIImage, completion: @escaping ()->()) {
+        //Storage ref
+        let imageRef = Storage.storage().reference().child("profiles").child(currentUser.username + ".jpg")
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.25) else {return}
+        
+        imageRef.putData(imageData, metadata: nil) { (metadata, error) in
+            
+            guard error == nil else {
+                print(error?.localizedDescription ?? "Error putting data")
+                return
+            }
+            
+            imageRef.downloadURL(completion: { (url, error) in
+                DatabaseManager().updateUserPic(username: self.currentUser.username, url: url?.absoluteString ?? "", completion: {
+                    completion()
+                })
+            })
+        }
+
+    }
+
     //MARK: - Get a user
     func getUser(username: String, completion: @escaping (User)->()) {
         db.collection("users").document(username).getDocument { (document, error) in
@@ -588,7 +615,7 @@ final class FirestoreManager {
             let posts = data["post_count"] as? Int
             let followers = data["follower_count"] as? Int
             let following = data["following_count"] as? Int
-            let url = data["url"] as? String
+            var userUrl = ""
             var isFollowingUser: Bool = false
             
             let dsg = DispatchGroup()
@@ -601,6 +628,13 @@ final class FirestoreManager {
                 })
             }
             
+            dsg.enter()
+            DatabaseManager().getUserURL(username: username, completion: { (url) in
+                print(url)
+                userUrl = url
+                dsg.leave()
+            })
+            
             dsg.notify(queue: .main, execute: {
                 let user = User(
                     uid: uid ?? "",
@@ -611,7 +645,7 @@ final class FirestoreManager {
                     followerCount: followers ?? 0,
                     followingCount: following ?? 0,
                     isFollowing: isFollowingUser,
-                    url: url ?? ""
+                    url: userUrl
                 )
                 completion(user)
             })

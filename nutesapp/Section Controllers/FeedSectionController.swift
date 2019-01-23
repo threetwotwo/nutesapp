@@ -61,7 +61,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         guard let object = object as? Post else { fatalError() }
         
         let results: [ListDiffable] = [
-            PostHeaderViewModel(postId: object.id, username: object.username, timestamp: object.timestamp, url: ""),
+            PostHeaderViewModel(postId: object.id, username: object.username, timestamp: object.timestamp, url: object.userURL),
             ImageViewModel(url: object.postURL),
             ActionViewModel(likes: likeCount ?? object.likeCount, followedUsernames: object.followedUsernames, didLike: didLike ?? object.didLike)
             ]
@@ -131,9 +131,12 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         case 2:
             print("action")
         default:
-            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as! CommentViewController
-            vc.items = object?.comments ?? [Comment]()
-            viewController?.navigationController?.pushViewController(vc, animated: true)
+            if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as? CommentViewController,
+                let post = object {
+                vc.post = post
+                vc.items = post.comments
+                viewController?.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 }

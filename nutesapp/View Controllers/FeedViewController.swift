@@ -72,16 +72,23 @@ class FeedViewController: UIViewController {
                 print(relationship.documentID)
                 guard let username = relationship.data()["followed"] as? String else {return}
                 print(username)
-                self.firestore.getPostsForUser(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
-                    guard let posts = posts else {return}
+                self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+                    
+                    self.loading = false
+                    
+                    guard let posts = posts else {
+                        return
+                    }
+                    
                     for post in posts {
-                        
                         self.items.append(post)
                     }
+                    
                     if let lastSnapshot = lastSnapshot {
                         self.lastSnapshots[username] = lastSnapshot
                     }
-                    self.adapter.performUpdates(animated: true, completion: nil)
+                    
+                    self.adapter.performUpdates(animated: true)
                 }
             }
         }
@@ -92,6 +99,8 @@ class FeedViewController: UIViewController {
         self.collectionView.addSubview(self.refreshControl)
         //For tab bar delegate function in app delegate to work
         self.tabBarController?.delegate = UIApplication.shared.delegate as? UITabBarControllerDelegate
+        loading = true
+        adapter.performUpdates(animated: true)
         loadPosts()
     }
     
@@ -134,14 +143,8 @@ extension FeedViewController: UIScrollViewDelegate {
         let distance = scrollView.contentSize.height - (targetContentOffset.pointee.y + scrollView.bounds.height)
         if !loading && distance < 200 {
             loading = true
-            adapter.performUpdates(animated: true, completion: nil)
-            DispatchQueue.global(qos: .default).async {
-                // fake background loading task
-                DispatchQueue.main.async {
-                    self.loading = false
-                    self.loadPosts()
-                }
-            }
+            adapter.performUpdates(animated: true)
+            loadPosts()
         }
     }
 }

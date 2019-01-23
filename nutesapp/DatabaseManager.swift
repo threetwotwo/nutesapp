@@ -1,5 +1,5 @@
 //
-//  RtdbManager.swift
+//  DatabaseManager.swift
 //  nutesapp
 //
 //  Created by Gary Piong on 16/01/19.
@@ -9,9 +9,26 @@
 import Foundation
 import FirebaseDatabase
 
-class RtdbManager {
+class DatabaseManager {
         
     let db = Database.database().reference()
+    
+    func getUserURL(username: String, completion: @escaping (String)->()) {
+        db.child("users").child(username).child("user_url").observeSingleEvent(of: .value) { (snap) in
+            let url = snap.value as? String ?? ""
+            completion(url)
+        }
+    }
+    
+    func updateUserPic(username: String, url: String, completion: @escaping ()->()) {
+        db.child("users/\(username)/user_url").setValue(url) { (error, ref) in
+            guard error == nil else {
+                print(error?.localizedDescription ?? "Error updating url")
+                return
+            }
+            completion()
+        }
+    }
     
     func getPostLikes(postID: String, completion: @escaping (Int)->()) {
         db.child("posts").child(postID).observeSingleEvent(of: .value) { (snap) in

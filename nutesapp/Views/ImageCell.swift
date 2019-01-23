@@ -19,6 +19,7 @@ class ImageCell: UICollectionViewCell, ListBindable {
         guard let viewModel = viewModel as? ImageViewModel else { return }
         
         imageView.sd_setImage(with: URL(string: viewModel.url))
+        
     }
     
 }

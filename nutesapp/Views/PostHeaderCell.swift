@@ -17,6 +17,13 @@ class PostHeaderCell: UICollectionViewCell, ListBindable {
     
     func bindViewModel(_ viewModel: Any) {
         guard let viewModel = viewModel as? PostHeaderViewModel else { return }
+        
+        if let url = URL(string: viewModel.url) {
+            profileImageView.sd_setImage(with: url)
+            //round the corners
+            profileImageView.layer.cornerRadius = profileImageView.frame.size.width/2
+        }
+        
         usernameLabel.text = viewModel.username
     }
     

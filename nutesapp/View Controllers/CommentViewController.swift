@@ -118,8 +118,9 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
         let commentID = "\(username)_\(timestamp.seconds)"
         
         if replyingTo != nil {
-            
-            comment = Comment(parentID: replyingTo?.id, commentID: commentID, postID: post?.id ?? "", username: username, text: textField.text!, likes: 0, timestamp: timestamp, didLike: false)
+            //if replying to a reply, set its parentID to the reply's root comment
+            let parentID = replyingTo?.parentID == nil ? replyingTo?.id : replyingTo?.parentID
+            comment = Comment(parentID: parentID, commentID: commentID, postID: post?.id ?? "", username: username, text: textField.text!, likes: 0, timestamp: timestamp, didLike: false)
             
         } else {
 

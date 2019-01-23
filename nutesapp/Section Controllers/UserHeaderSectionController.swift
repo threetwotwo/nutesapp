@@ -13,21 +13,91 @@ protocol UserHeaderSectionControllerDelegate: class {
     func followButtonPressed(user: User)
 }
 
-class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UserHeaderCellDelegate {
+class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UserHeaderCellDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var user: User? = nil
     var firestore = FirestoreManager.shared
     var followerCount: Int? = nil
-     var delegate: UserHeaderSectionControllerDelegate? = nil
-
+    var delegate: UserHeaderSectionControllerDelegate? = nil
+    weak var imageView: UIImageView!
+    
     override init() {
         super.init()
         dataSource = self
     }
     
+    func openGallery()
+    {
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.photoLibrary){
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.allowsEditing = true
+            imagePicker.sourceType = UIImagePickerController.SourceType.photoLibrary
+            viewController?.present(imagePicker, animated: true, completion: nil)
+        }
+        else
+        {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have perission to access gallery.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            viewController?.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func openCamera()
+    {
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera) {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.sourceType = UIImagePickerController.SourceType.camera
+            imagePicker.allowsEditing = false
+            viewController?.present(imagePicker, animated: true, completion: nil)
+        }
+        else
+        {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            viewController?.present(alert, animated: true, completion: nil)
+        }
+    }
+    //MARK:-- ImagePicker delegate
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        guard let selectedImage = info[.originalImage] as? UIImage else {
+            fatalError("Expected a dictionary containing an image, but was provided the following: \(info)")
+        }
+        
+        picker.dismiss(animated: true) {
+            self.firestore.updateProfile(image: selectedImage, completion: {
+                self.imageView.image = selectedImage
+            })
+        }
+        
+    }
+    
     func didTapFollowButton(cell: UserHeaderCell) {
         
         guard let user = object else {return}
+        
+        self.user = User(user: self.user!, followerCount: followerCount!, isFollowing: (self.user?.isFollowing)!)
+        
+        delegate?.followButtonPressed(user: self.user!)
+        
+        guard user.username != firestore.currentUser.username else {
+            print("current user")
+            let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+                self.openCamera()
+            }))
+            
+            alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+                self.openGallery()
+            }))
+            
+            alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+            
+            viewController?.present(alert, animated: true, completion: nil)
+            return
+        }
         
         self.user?.isFollowing = !(self.user?.isFollowing)!
 
@@ -49,9 +119,6 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         cell.followButton.setTitle(buttonTitle, for: [])
         cell.followersLabel.text = "\(followerCount!)"
         
-        self.user = User(user: self.user!, followerCount: followerCount!, isFollowing: (self.user?.isFollowing)!)
-
-        delegate?.followButtonPressed(user: self.user!)
     }
     
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
@@ -86,6 +153,7 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         if let cell = cell as? UserHeaderCell,
             let model = viewModel as? UserHeaderViewModel {
             cell.delegate = self
+            self.imageView = cell.imageView
             self.user = User(uid: "", fullname: model.fullname, email: "", username: model.username, postCount: model.postCount, followerCount: model.followerCount, followingCount: model.followingCount, isFollowing: model.isFollowing, url: "")
             self.followerCount = self.user?.followerCount
         }

@@ -16,6 +16,7 @@ import IGListKit
 class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSectionControllerDelegate {
     
     func followButtonPressed(user: User) {
+
         delegate?.followButtonPressed(user: user)
     }
     
@@ -46,36 +47,6 @@ class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSec
         return adapter
     }()
     
-    
-    //MARK: - IBActions
-//    @IBAction func followButtonPressed(_ sender: UIButton) {
-//        print("pressed follow button")
-//
-//        guard let user = user else { return }
-//
-//        guard user.username != firestore.currentUser.username else {
-//            print("Edit profile")
-//            return
-//        }
-//
-//
-////        guard let user = user,
-////            let followed = user.username else {return}
-//        let username = user.username
-////
-//        if user.isFollowing {
-//            firestore.unfollowUser(withUsername: username) {
-//                self.user?.isFollowing = false
-//                self.loadHeader()
-//            }
-//        } else {
-//            firestore.followUser(withUsername: username) {
-//                self.user?.isFollowing = true
-//                self.loadHeader()
-//            }
-//        }
-//    }
-    
     //MARK: - Life Cycle
 
     fileprivate func loadHeader() {
@@ -100,7 +71,7 @@ class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSec
         self.isLoading = true
         self.adapter.performUpdates(animated: true)
 
-        firestore.getPostsForUser(username: user!.username, limit: 99) { (posts, lastSnapshot) in
+        firestore.getPosts(username: user!.username, limit: 99) { (posts, lastSnapshot) in
             guard let posts = posts else {return}
             
             self.items.append(contentsOf: posts)

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4301BF3221EF758F00CB377C /* RtdbManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4301BF3121EF758F00CB377C /* RtdbManager.swift */; };
+		4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4301BF3121EF758F00CB377C /* DatabaseManager.swift */; };
 		430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430FB34321E3877B003C83D1 /* SearchCell.swift */; };
 		431D054721E4D13900C20BC3 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */; };
 		433C58CF21E4DC2300BCD083 /* SearchSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */; };
@@ -78,7 +78,7 @@
 
 /* Begin PBXFileReference section */
 		0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.release.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.release.xcconfig"; sourceTree = "<group>"; };
-		4301BF3121EF758F00CB377C /* RtdbManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtdbManager.swift; sourceTree = "<group>"; };
+		4301BF3121EF758F00CB377C /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		430FB34321E3877B003C83D1 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSectionController.swift; sourceTree = "<group>"; };
@@ -242,7 +242,7 @@
 			children = (
 				43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */,
 				43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */,
-				4301BF3121EF758F00CB377C /* RtdbManager.swift */,
+				4301BF3121EF758F00CB377C /* DatabaseManager.swift */,
 				431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */,
 				43B7CF6521DD2C4A00F08EDC /* Main.storyboard */,
 				43C1D11421DE4F1F002D720D /* Extensions */,
@@ -567,7 +567,7 @@
 				43CBFBC021ECCF8600192ADA /* CommentSectionController.swift in Sources */,
 				438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */,
 				439FC53321E31DF900EB7954 /* UserDetailViewModel.swift in Sources */,
-				4301BF3221EF758F00CB377C /* RtdbManager.swift in Sources */,
+				4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */,
 				43C1D10D21DE4E9D002D720D /* PostHeaderCell.swift in Sources */,
 				435CBBF821DDD51000646A35 /* Post.swift in Sources */,
 				439FC53521E342FD00EB7954 /* UserImageSectionController.swift in Sources */,
