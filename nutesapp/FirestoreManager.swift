@@ -149,29 +149,9 @@ final class FirestoreManager {
                 }
                 
                 let postRef = self.db.collection("posts").document(postID)
-                let userRef = self.db.collection("users").document(username)
                 
                 //create and update documents
                 self.db.runTransaction({ (transaction, errorPointer) -> Any? in
-                    let userDoc: DocumentSnapshot
-                    do {
-                        try userDoc = transaction.getDocument(userRef)
-                    } catch let fetchError as NSError {
-                        errorPointer?.pointee = fetchError
-                        return nil
-                    }
-                    
-                    guard let postCount = userDoc.data()?["post_count"] as? Int else {
-                        let error = NSError(
-                            domain: "AppErrorDomain",
-                            code: -1,
-                            userInfo: [
-                                NSLocalizedDescriptionKey: "Unable to retrieve posts from snapshot \(userDoc)"
-                            ]
-                        )
-                        errorPointer?.pointee = error
-                        return nil
-                    }
                     
                     transaction.setData([
                         "username" : username,
@@ -179,8 +159,6 @@ final class FirestoreManager {
                         "timestamp" : timestamp,
                         "like_count" : 0
                         ], forDocument: postRef)
-                    
-                    transaction.updateData(["post_count" : postCount + 1], forDocument: userRef)
                     
                     return nil
                 }, completion: { (object, error) in
@@ -295,63 +273,6 @@ final class FirestoreManager {
     }
     
     //MARK: - Comments
-    
-    func retrieveComments(postID: String, limit:Int, completion: @escaping ([Comment])->()) {
-        let query = db
-            .collection("posts").document(postID)
-            .collection("comments")
-            .whereField("parent_id", isEqualTo: NSNull())
-            .limit(to: limit)
-        
-        query.getDocuments { (snap, error) in
-            guard error == nil,
-            let docs = snap?.documents else {
-                print(error?.localizedDescription ?? "Error getting comments")
-                return
-            }
-            
-            var comments = [Comment]()
-            for doc in docs {
-                let data = doc.data()
-                let comment: Comment
-                
-                let dsg = DispatchGroup()
-                
-                var didLike: Bool = false
-                
-                dsg.enter()
-                self.userDidLikeComment(postID: postID, commentID: doc.documentID
-                    , completion: { (bool) in
-                        didLike = bool
-                        dsg.leave()
-                })
-                comment = Comment(
-                    parentID: nil,
-                    commentID: doc.documentID,
-                    postID: data["post_id"] as? String ?? "",
-                    username: data["username"] as? String ?? "",
-                    text: data["text"] as? String ?? "",
-                    likes: 0,
-                    timestamp: data["timestamp"] as? Timestamp ?? Timestamp(),
-                    didLike: false)
-                comments.append(comment)
-                
-                let query = self.db
-                    .collection("posts").document(postID)
-                    .collection("comments")
-                    .limit(to: limit)
-                
-                query.getDocuments(completion: { (snap, error) in
-                    guard error == nil else {
-                        print(error?.localizedDescription ?? "Error getting replies")
-                        return
-                    }
-                })
-            }
-            completion(comments)
-        }
-        
-    }
     
     func comment(comment: Comment, post: Post, text: String, completion: (()->())? = nil) {
         
@@ -613,7 +534,7 @@ final class FirestoreManager {
             let fullname = data["fullname"] as? String
             let email = data["email"] as? String
             let posts = data["post_count"] as? Int
-            let followers = data["follower_count"] as? Int
+            var followers = 0
             let following = data["following_count"] as? Int
             var userUrl = ""
             var isFollowingUser: Bool = false
@@ -629,8 +550,13 @@ final class FirestoreManager {
             }
             
             dsg.enter()
+            DatabaseManager().getFollowerCount(username: username, completion: { (count) in
+                followers = count
+                dsg.leave()
+            })
+            
+            dsg.enter()
             DatabaseManager().getUserURL(username: username, completion: { (url) in
-                print(url)
                 userUrl = url
                 dsg.leave()
             })
@@ -641,11 +567,8 @@ final class FirestoreManager {
                     fullname: fullname ?? "",
                     email: email ?? "",
                     username: username,
-                    postCount: posts ?? 0,
-                    followerCount: followers ?? 0,
-                    followingCount: following ?? 0,
-                    isFollowing: isFollowingUser,
-                    url: userUrl
+                    url: userUrl,
+                    followerCount: followers
                 )
                 completion(user)
             })
@@ -698,8 +621,7 @@ final class FirestoreManager {
             if var savedUsers = self.defaults.array(forKey: "savedUsers") as? [User] {
                 savedUsers.append(user)
                 if let encoded = try? self.encoder.encode(savedUsers) {
-                    let defaults = UserDefaults.standard
-                    defaults.set(encoded, forKey: "savedUsers")
+                    self.defaults.set(encoded, forKey: "savedUsers")
                 }
             }
             
@@ -776,29 +698,21 @@ final class FirestoreManager {
             guard let email = authResult?.user.email,
                 let uid = Auth.auth().currentUser?.uid else { return }
             
-//            let usernameRef = self.db.collection("usernames").document(username)
             let userRef = self.db.collection("users").document(username)
             
             self.db.runTransaction({ (transaction, errorPointer) -> Any? in
-//                transaction.setData([
-//                    "uid" : uid,
-//                    "email" : email
-//                    ], forDocument: usernameRef)
-//                
+             
                 transaction.setData([
                     "email" : email,
                     "fullname" : fullname,
                     "username" : username,
-                    "timestamp" : FieldValue.serverTimestamp(),
-                    "post_count" : 0,
-                    "follower_count" : 0,
-                    "following_count" : 0
+                    "timestamp" : FieldValue.serverTimestamp()
                     ], forDocument: userRef)
                 
                 return nil
             }, completion: { (object, error) in
                 if error == nil {
-                    self.currentUser = User(uid: uid, fullname: fullname, username: username)
+                    self.currentUser = User(uid: uid, fullname: fullname, email: email, username: username, url: "", followerCount: 0)
                     self.defaults.set(username, forKey: "username")
                     completion()
                 }

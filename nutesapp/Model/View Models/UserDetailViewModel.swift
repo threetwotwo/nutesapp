@@ -28,7 +28,7 @@ final class UserDetailViewModel: ListDiffable {
     //It is important to write a good equality method for the view model
     //Because anything something changes, forcing the models to not be equal, the cell will be refresed
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
-        guard let object = object as? UserHeaderViewModel else {return false}
+        guard let object = object as? UserDetailViewModel else {return false}
         return fullname == object.fullname
     }
 }

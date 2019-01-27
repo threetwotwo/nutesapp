@@ -1,5 +1,5 @@
 //
-//  UserImageSectionController.swift
+//  UserBodySectionController.swift
 //  nutesapp
 //
 //  Created by Gary Piong on 07/01/19.
@@ -9,8 +9,7 @@
 import Foundation
 import IGListKit
 
-class UserImageSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource {
-    
+class UserBodySectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource {
     
     override init() {
         super.init()
@@ -39,9 +38,9 @@ class UserImageSectionController: ListBindingSectionController<User>, ListBindin
         switch viewModel {
             
         case is ImageViewModel:
-            identifier = "userImageCell"
+            identifier = "userBody"
         default:
-            identifier = "userImageCell"
+            identifier = "userBody"
         }
         
         return context.dequeueReusableCellFromStoryboard(withIdentifier: identifier, for: self, at: index) as! UICollectionViewCell & ListBindable

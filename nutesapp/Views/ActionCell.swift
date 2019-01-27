@@ -37,6 +37,7 @@ class ActionCell: UICollectionViewCell, ListBindable {
         commentButton.addTarget(self, action: #selector(onComment), for: .touchUpInside)
     }
     
+    
     @objc func onHeart() {
         delegate?.didTapHeart(cell: self)
     }

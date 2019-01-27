@@ -1,5 +1,5 @@
 //
-//  SearchCell.swift
+//  UserHeaderImageCell.swift
 //  nutesapp
 //
 //  Created by Gary Piong on 07/01/19.
@@ -9,11 +9,9 @@
 import UIKit
 import IGListKit
 
-class SearchCell: UICollectionViewCell, ListBindable {
+class UserHeaderImageCell: UICollectionViewCell, ListBindable {
     
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var usernameLabel: UILabel!
-    @IBOutlet weak var fullnameLabel: UILabel!
     
     func bindViewModel(_ viewModel: Any) {
         guard let viewModel = viewModel as? UserImageViewModel else { return }
@@ -24,9 +22,6 @@ class SearchCell: UICollectionViewCell, ListBindable {
         
         //round the corners
         imageView.layer.cornerRadius = imageView.frame.size.width/2
-        
-        usernameLabel.text = viewModel.username
-        fullnameLabel.text = viewModel.fullname
     }
     
 }

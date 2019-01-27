@@ -31,9 +31,13 @@ final class UserDefaultsManager {
         self.defaults.set(user.fullname, forKey: "fullname")
         self.defaults.set(user.email, forKey: "email")
         self.defaults.set(user.username, forKey: "username")
-        self.defaults.set(user.postCount, forKey: "postCount")
-        self.defaults.set(user.followerCount, forKey: "followerCount")
-        self.defaults.set(user.followingCount, forKey: "followingCount")
+//        self.defaults.set(user.postCount, forKey: "postCount")
+//        self.defaults.set(user.followerCount, forKey: "followerCount")
+//        self.defaults.set(user.followingCount, forKey: "followingCount")
         self.defaults.set(user.url, forKey: "url")
+    }
+    
+    func updateUserPic(imageData: Data) {
+        self.defaults.set(imageData, forKey: "userImageData")
     }
 }

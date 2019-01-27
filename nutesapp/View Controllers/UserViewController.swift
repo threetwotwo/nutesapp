@@ -9,17 +9,7 @@
 import UIKit
 import IGListKit
 
-//protocol UserViewControllerDelegate: class {
-//    func didChangeUser(user: User)
-//}
-
-class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSectionControllerDelegate {
-    
-    func followButtonPressed(user: User) {
-
-        delegate?.followButtonPressed(user: user)
-    }
-    
+class UserViewController: UIViewController, ListAdapterDataSource {
 
     //MARK: - IBOutlets
     @IBOutlet weak var collectionView: UICollectionView!
@@ -30,9 +20,6 @@ class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSec
     var user: User?
     var sectionIndex: Int?
     
-     var delegate: UserHeaderSectionControllerDelegate? = nil
-//    var listener: ListenerRegistration!
-//    
     let spinToken = "spinner"
 //    var lastSnapshot: DocumentSnapshot?
     var isLoading = false
@@ -43,7 +30,7 @@ class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSec
         let adapter = ListAdapter(updater: ListAdapterUpdater(), viewController: self, workingRangeSize: 1)
         adapter.collectionView = collectionView
         adapter.dataSource = self
-//        adapter.scrollViewDelegate = self
+        adapter.scrollViewDelegate = self
         return adapter
     }()
     
@@ -61,23 +48,26 @@ class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSec
             items.insert(firestore.currentUser, at: 0)
             self.user = firestore.currentUser
         }
+        
+        title = user?.username
         self.adapter.reloadData(completion: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadHeader()
         
         self.isLoading = true
         self.adapter.performUpdates(animated: true)
+        
+        loadHeader()
 
         firestore.getPosts(username: user!.username, limit: 99) { (posts, lastSnapshot) in
             guard let posts = posts else {return}
             
             self.items.append(contentsOf: posts)
-//            if let lastSnapshot = lastSnapshot {
+            if let lastSnapshot = lastSnapshot {
 //                self.lastSnapshot = lastSnapshot
-//            }
+            }
             self.isLoading = false
             self.adapter.performUpdates(animated: true)
         }
@@ -101,13 +91,11 @@ class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSec
         } else {
             switch object {
             case is User:
-                let sectionController = UserHeaderSectionController()
-                sectionController.delegate = self
-                return sectionController
-            case is Post:
-                return UserImageSectionController()
-            default:
                 return UserHeaderSectionController()
+            case is Post:
+                return UserBodySectionController()
+            default:
+                return ListSectionController()
             }
            
         }
@@ -117,4 +105,16 @@ class UserViewController: UIViewController, ListAdapterDataSource, UserHeaderSec
         return nil
     }
     
+}
+
+//MARK: - UIScrollViewDelegate
+
+extension UserViewController: UIScrollViewDelegate {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let distance = scrollView.contentSize.height - (targetContentOffset.pointee.y + scrollView.bounds.height)
+        if !isLoading && distance < 200 {
+            isLoading = true
+            adapter.performUpdates(animated: true)
+        }
+    }
 }

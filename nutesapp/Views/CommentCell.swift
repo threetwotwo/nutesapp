@@ -14,7 +14,6 @@ class CommentCell: UICollectionViewCell, ListBindable {
     @IBOutlet weak var textLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView?
     
-    
     func bindViewModel(_ viewModel: Any) {
         
         var username: String = ""

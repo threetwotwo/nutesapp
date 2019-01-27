@@ -72,19 +72,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
             let postCount = UserDefaults.standard.integer(forKey: "postCount")
             let followers = UserDefaults.standard.integer(forKey: "followerCount")
             let following = UserDefaults.standard.integer(forKey: "followingCount")
-            let url = UserDefaults.standard.string(forKey: "url")
+            let url = UserDefaults.standard.string(forKey: "url") ?? ""
             
-            firestore.currentUser = User(
-                uid: user.uid,
-                fullname: fullname,
-                email: user.email ?? "",
-                username: username,
-                postCount: postCount,
-                followerCount: followers,
-                followingCount: following,
-                isFollowing: false,
-                url: url ?? ""
-            )
+            firestore.currentUser = User(uid: user.uid, fullname: fullname, email: user.email ?? "", username: username, url: url, followerCount: followers)
             
             let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mainscreen") as! UITabBarController
             self.window?.rootViewController = tabBarController

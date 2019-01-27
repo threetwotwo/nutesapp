@@ -13,6 +13,30 @@ class DatabaseManager {
         
     let db = Database.database().reference()
     
+    //MARK: - User
+    
+    func getPostCount(username: String, completion: @escaping (Int)->()) {
+        db.child("users").child(username).child("post_count").observeSingleEvent(of: .value) { (snap) in
+            let count = snap.value as? Int ?? 0
+            completion(count)
+        }
+    }
+    
+    func getFollowerCount(username: String, completion: @escaping (Int)->()) {
+        db.child("users").child(username).child("follower_count").observeSingleEvent(of: .value) { (snap) in
+            let count = snap.value as? Int ?? 0
+            completion(count)
+        }
+    }
+    
+    func getFollowingCount(username: String, completion: @escaping (Int)->()) {
+        db.child("users").child(username).child("following_count").observeSingleEvent(of: .value) { (snap) in
+            let count = snap.value as? Int ?? 0
+            completion(count)
+        }
+    }
+
+    
     func getUserURL(username: String, completion: @escaping (String)->()) {
         db.child("users").child(username).child("user_url").observeSingleEvent(of: .value) { (snap) in
             let url = snap.value as? String ?? ""

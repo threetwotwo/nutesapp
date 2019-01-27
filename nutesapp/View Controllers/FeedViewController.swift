@@ -72,7 +72,7 @@ class FeedViewController: UIViewController {
                 print(relationship.documentID)
                 guard let username = relationship.data()["followed"] as? String else {return}
                 print(username)
-                self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+                self.firestore.getPosts(username: username, limit: 30, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
                     
                     self.loading = false
                     

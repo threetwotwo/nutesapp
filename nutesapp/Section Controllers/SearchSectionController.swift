@@ -9,12 +9,7 @@
 import Foundation
 import IGListKit
 
-class SearchSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UserHeaderSectionControllerDelegate {
-    
-    func followButtonPressed(user: User) {
-        print("followButtonPressed")
-        didUpdate(to: user)
-    }
+class SearchSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource {
     
     override init() {
         super.init()
@@ -26,7 +21,7 @@ class SearchSectionController: ListBindingSectionController<User>, ListBindingSe
         guard let object = object as? User else { fatalError() }
         
         let results: [ListDiffable] = [
-            UserHeaderViewModel(username: object.username, fullname: object.fullname, posts: object.postCount, followers: object.followerCount, following: object.followingCount, isFollowing: object.isFollowing, url: object.url)
+            UserImageViewModel(username: object.username, fullname: object.fullname, url: object.url)
         ]
         
         return results
@@ -40,7 +35,7 @@ class SearchSectionController: ListBindingSectionController<User>, ListBindingSe
         
         switch viewModel {
             
-        case is UserHeaderViewModel:
+        case is UserImageViewModel:
             identifier = "searchCell"
         default:
             identifier = "searchCell"
@@ -66,14 +61,6 @@ class SearchSectionController: ListBindingSectionController<User>, ListBindingSe
         ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UserVC") as? UserViewController else { return }
         
         vc.user = user
-        vc.delegate = self
-//        print(vc.delegate.debugDescription)
-        
-        //pass section index from searchVC to userVC
-//        if let parentVC = (viewController as? SearchViewController),
-//            let sectionIndex = parentVC.collectionView.indexPathsForSelectedItems?.first?.section {
-//            vc.sectionIndex = sectionIndex
-//        }
         
         viewController?.navigationController?.pushViewController(vc, animated: true)
         

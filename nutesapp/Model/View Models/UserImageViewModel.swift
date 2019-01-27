@@ -1,5 +1,5 @@
 //
-//  UserHeaderViewModel.swift
+//  UserImageViewModel.swift
 //  nutesapp
 //
 //  Created by Gary Piong on 06/01/19.
@@ -9,22 +9,15 @@
 import Foundation
 import IGListKit
 
-final class UserHeaderViewModel: ListDiffable {
+final class UserImageViewModel: ListDiffable {
     let username: String
     let fullname: String
     let url: String
-    let postCount: Int
-    let followerCount: Int
-    let followingCount: Int
-    let isFollowing: Bool
+
     
-    init(username: String, fullname: String, posts: Int, followers: Int, following: Int, isFollowing: Bool, url: String) {
+    init(username: String, fullname: String, url: String) {
         self.username = username
         self.fullname = fullname
-        self.postCount = posts
-        self.followerCount = followers
-        self.followingCount = following
-        self.isFollowing = isFollowing
         self.url = url
     }
     
@@ -37,7 +30,7 @@ final class UserHeaderViewModel: ListDiffable {
     //It is important to write a good equality method for the view model
     //Because anything something changes, forcing the models to not be equal, the cell will be refresed
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
-        guard let object = object as? UserHeaderViewModel else {return false}
+        guard let object = object as? UserImageViewModel else {return false}
         return username == object.username
     }
 }

@@ -8,125 +8,90 @@
 
 import Foundation
 import IGListKit
+import YPImagePicker
 
-protocol UserHeaderSectionControllerDelegate: class {
-    func followButtonPressed(user: User)
-}
-
-class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UserHeaderCellDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UserHeaderDataCellDelegate {
     
     var user: User? = nil
     var firestore = FirestoreManager.shared
     var followerCount: Int? = nil
-    var delegate: UserHeaderSectionControllerDelegate? = nil
     weak var imageView: UIImageView!
+    var isFollowing: Bool?
     
     override init() {
         super.init()
         dataSource = self
     }
     
-    func openGallery()
-    {
-        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.photoLibrary){
-            let imagePicker = UIImagePickerController()
-            imagePicker.delegate = self
-            imagePicker.allowsEditing = true
-            imagePicker.sourceType = UIImagePickerController.SourceType.photoLibrary
-            viewController?.present(imagePicker, animated: true, completion: nil)
+    func presentPicker() {
+        var config = YPImagePickerConfiguration()
+        // [Edit configuration here ...]
+        config.isScrollToChangeModesEnabled = true
+        config.onlySquareImagesFromCamera = true
+        config.usesFrontCamera = true
+        config.showsFilters = true
+        config.shouldSaveNewPicturesToAlbum = true
+        config.albumName = "DefaultYPImagePickerAlbumName"
+        config.startOnScreen = YPPickerScreen.photo
+        config.screens = [.photo, .library]
+        config.showsCrop = .none
+        config.targetImageSize = YPImageSize.cappedTo(size: 600)
+        config.overlayView = UIView()
+        config.hidesStatusBar = true
+        config.hidesBottomBar = false
+        config.preferredStatusBarStyle = UIStatusBarStyle.default
+        
+        // Build a picker with your configuration
+        let picker = YPImagePicker(configuration: config)
+        
+        picker.didFinishPicking { [unowned picker] (items, _) in
+            if let photo = items.singlePhoto {
+                self.firestore.updateProfile(image: photo.image, completion: {
+                    self.imageView.image = photo.image
+                    UserDefaultsManager().updateUserPic(imageData: photo.image.pngData()!)
+                })
+            }
+            picker.dismiss(animated: true, completion: nil)
         }
-        else
-        {
-            let alert  = UIAlertController(title: "Warning", message: "You don't have perission to access gallery.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            viewController?.present(alert, animated: true, completion: nil)
-        }
+        viewController?.present(picker, animated: true, completion: nil)
     }
     
-    func openCamera()
-    {
-        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera) {
-            let imagePicker = UIImagePickerController()
-            imagePicker.delegate = self
-            imagePicker.sourceType = UIImagePickerController.SourceType.camera
-            imagePicker.allowsEditing = false
-            viewController?.present(imagePicker, animated: true, completion: nil)
-        }
-        else
-        {
-            let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            viewController?.present(alert, animated: true, completion: nil)
-        }
-    }
-    //MARK:-- ImagePicker delegate
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        guard let selectedImage = info[.originalImage] as? UIImage else {
-            fatalError("Expected a dictionary containing an image, but was provided the following: \(info)")
-        }
-        
-        picker.dismiss(animated: true) {
-            self.firestore.updateProfile(image: selectedImage, completion: {
-                self.imageView.image = selectedImage
-            })
-        }
-        
-    }
-    
-    func didTapFollowButton(cell: UserHeaderCell) {
+    func didTapFollowButton(cell: UserHeaderDataCell) {
         
         guard let user = object else {return}
         
-        self.user = User(user: self.user!, followerCount: followerCount!, isFollowing: (self.user?.isFollowing)!)
-        
-        delegate?.followButtonPressed(user: self.user!)
-        
         guard user.username != firestore.currentUser.username else {
-            print("current user")
-            let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
-                self.openCamera()
-            }))
-            
-            alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
-                self.openGallery()
-            }))
-            
-            alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
-            
-            viewController?.present(alert, animated: true, completion: nil)
+            presentPicker()
             return
         }
         
-        self.user?.isFollowing = !(self.user?.isFollowing)!
-
-        let buttonTitle = user.isFollowing ? "Unfollow" : "Follow"
-        self.followerCount = user.isFollowing ? self.followerCount ?? 0 + 1 : self.followerCount ?? 0 - 1
+        guard let isFollowing = isFollowing else { return }
         
-        if (self.user?.isFollowing)! {
-            followerCount = followerCount! + 1
-            firestore.followUser(withUsername: user.username) {
-                print("followed \(user.username)")
+        let buttonTitle = isFollowing ? "Follow" : "Unfollow"
+        let loadingTitle = isFollowing ? "Unfollowing" : "Following"
+        
+        cell.followButton.setTitle(loadingTitle, for: [])
+
+        if isFollowing {
+            firestore.unfollowUser(withUsername: user.username) {
+                cell.followButton.setTitle(buttonTitle, for: [])
+                self.isFollowing = !self.isFollowing!
             }
         } else {
-            followerCount = followerCount! - 1
-            firestore.unfollowUser(withUsername: user.username) {
-                print("unfollowed \(user.username)")
+            firestore.followUser(withUsername: user.username) {
+                cell.followButton.setTitle(buttonTitle, for: [])
+                self.isFollowing = !self.isFollowing!
             }
         }
-
-        cell.followButton.setTitle(buttonTitle, for: [])
-        cell.followersLabel.text = "\(followerCount!)"
-        
     }
     
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         guard let object = object as? User else { fatalError() }
         
         let results: [ListDiffable] = [
-            UserHeaderViewModel(username: object.username, fullname: object.fullname, posts: object.postCount, followers: object.followerCount, following: object.followingCount, isFollowing: object.isFollowing, url: object.url),
-            UserDetailViewModel(fullname: object.fullname, description: "")
+            UserImageViewModel(username: object.username, fullname: object.fullname, url: object.url),
+            UserDataViewModel(username: object.username, postCount: "", followerCount: "\(object.followerCount)", followingCount: "", isFollowing: false),
+            UserDetailViewModel(fullname: object.fullname, description: "ok boi")
         ]
         
         return results
@@ -140,22 +105,46 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         
         switch viewModel {
             
-        case is UserHeaderViewModel:
-            identifier = "userHeaderCell"
+        case is UserImageViewModel:
+            identifier = "userImage"
+        case is UserDataViewModel:
+            identifier = "userData"
         case is UserDetailViewModel:
-            identifier = "userDetailCell"
+            identifier = "userDetail"
+
         default:
-            identifier = "userHeaderCell"
+            identifier = "userImage"
         }
         
         let cell = context.dequeueReusableCellFromStoryboard(withIdentifier: identifier, for: self, at: index)
         
-        if let cell = cell as? UserHeaderCell,
-            let model = viewModel as? UserHeaderViewModel {
-            cell.delegate = self
+        if let cell = cell as? UserHeaderImageCell {
             self.imageView = cell.imageView
-            self.user = User(uid: "", fullname: model.fullname, email: "", username: model.username, postCount: model.postCount, followerCount: model.followerCount, followingCount: model.followingCount, isFollowing: model.isFollowing, url: "")
-            self.followerCount = self.user?.followerCount
+        }
+    
+        if let cell = cell as? UserHeaderDataCell {
+            
+            cell.delegate = self
+            
+            DatabaseManager().getPostCount(username: (object?.username)!) { (count) in
+                cell.postsLabel.text = "\(count)"
+            }
+            
+            DatabaseManager().getFollowerCount(username: (object?.username)!) { (count) in
+                cell.followersLabel.text = "\(count)"
+            }
+            
+            DatabaseManager().getFollowingCount(username: (object?.username)!) { (count) in
+                cell.followingLabel.text = "\(count)"
+            }
+
+            if firestore.currentUser.username != object?.username {
+                firestore.isFollowing(follower: firestore.currentUser.username, followed: (object?.username)!) { (isFollowing) in
+                    self.isFollowing = isFollowing
+                    cell.followButton.setTitle(isFollowing ? "Unfollow" : "Follow", for: [])
+                }
+                
+            }
         }
         
         return cell as! UICollectionViewCell & ListBindable
@@ -169,10 +158,15 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         let height: CGFloat
         
         switch viewModel {
-        case is UserHeaderViewModel:
+        case is UserImageViewModel:
             height = 128
+            return CGSize(width: 144, height: height)
+        case is UserDataViewModel:
+            height = 128
+            return CGSize(width: width - 144, height: height)
         case is UserDetailViewModel:
             height = 62
+
         default:
             height = 0
         }

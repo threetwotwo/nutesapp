@@ -39,7 +39,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         //[DEBUG] Load all users from db
         self.isLoading = true
         self.adapter.performUpdates(animated: true)
