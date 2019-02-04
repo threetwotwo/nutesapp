@@ -107,7 +107,6 @@ class FeedViewController: UIViewController {
     @objc func performUpdates() {
         print("notification for like button!")
         adapter.performUpdates(animated: true, completion: nil)
-        
     }
 }
 

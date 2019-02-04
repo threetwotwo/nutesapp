@@ -18,6 +18,8 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     var likeCount: Int?
     var didLike: Bool?
     
+    //MARK: - ActionCellDelegate
+
     func didTapHeart(cell: ActionCell) {
         
         self.didLike = !(self.didLike ?? object?.didLike ?? false)
@@ -45,18 +47,23 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         print("didTapComment")
         guard let post = object
             ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as? CommentViewController else { return }
-        vc.items = post.comments
+        vc.items = Comment.order(comments: post.comments)
         vc.post = post
+        vc.parentVC = self.viewController
+        vc.postIndex = self.section
+        print(section)
         viewController?.navigationController?.pushViewController(vc, animated: true)
     }
     
-    
+    //MARK: - init
+
     override init() {
         super.init()
         dataSource = self
     }
     
-    
+    //MARK: - ListBindingSectionControllerDataSource
+
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         guard let object = object as? Post else { fatalError() }
         
@@ -66,7 +73,13 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             ActionViewModel(likes: likeCount ?? object.likeCount, followedUsernames: object.followedUsernames, didLike: didLike ?? object.didLike)
             ]
         
-        return results + object.comments
+        var comments = [CommentViewModel]()
+        
+        for comment in object.comments {
+            comments.append(CommentViewModel(username: comment.username, text: comment.text, timestamp: comment.timestamp, didLike: comment.didLike))
+        }
+        
+        return results + comments
     }
     
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, cellForViewModel viewModel: Any, at index: Int) -> UICollectionViewCell & ListBindable {
@@ -83,7 +96,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             identifier = "postImage"
         case is ActionViewModel:
             identifier = "postAction"
-        case is Comment:
+        case is CommentViewModel:
             identifier = "postComment"
         default:
             identifier = "postComment"
@@ -112,8 +125,8 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             height = 250
         case is ActionViewModel:
             height = 110
-        case is Comment:
-            height = 55
+        case is CommentViewModel:
+            height = 35
         default:
             height = 55
         }
@@ -121,6 +134,8 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         return CGSize(width: width, height: height)
     }
     
+    //MARK: - didSelect
+
     override func didSelectItem(at index: Int) {
         print(index)
         switch index {
@@ -134,7 +149,10 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as? CommentViewController,
                 let post = object {
                 vc.post = post
-                vc.items = post.comments
+                vc.items = Comment.order(comments: post.comments)
+                vc.parentVC = self.viewController
+                vc.postIndex = self.section
+                print(section)
                 viewController?.navigationController?.pushViewController(vc, animated: true)
             }
         }

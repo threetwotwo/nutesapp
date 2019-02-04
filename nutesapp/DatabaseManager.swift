@@ -54,8 +54,31 @@ class DatabaseManager {
         }
     }
     
-    func getPostLikes(postID: String, completion: @escaping (Int)->()) {
+    //MARK: - Posts
+
+    func getPostLikes(postID: String, completion: @escaping (Int, [Comment])->()) {
         db.child("posts").child(postID).observeSingleEvent(of: .value) { (snap) in
+            guard let data = snap.value as? NSDictionary else {
+                completion(0,[])
+                return
+            }
+            
+            var comments = [Comment]()
+            
+            let likeCount = data["like_count"] as? Int ?? 0
+            let topComments = data["top_comments"] as? [NSDictionary]
+            
+            for topComment in topComments ?? [] {
+                let comment = Comment(username: topComment["username"] as? String ?? "", text: topComment["text"] as? String ?? "", likes: topComment["like_count"] as? Int ?? 0)
+                comments.append(comment)
+            }
+            
+            completion(likeCount, comments)
+        }
+    }
+    
+    func getLikes(commentID: String, postID: String, completion: @escaping (Int)->()) {
+        db.child("comments").child(postID).child(commentID).observeSingleEvent(of: .value) { (snap) in
             guard let data = snap.value as? NSDictionary else {
                 completion(0)
                 return
@@ -65,13 +88,15 @@ class DatabaseManager {
         }
     }
     
-    func getLikes(commentID: String, completion: @escaping (Int)->()) {
+    //MARK: - Comments
+
+    func getReplyCount(commentID: String, completion: @escaping (Int)->()) {
         db.child("comments").child(commentID).observeSingleEvent(of: .value) { (snap) in
             guard let data = snap.value as? NSDictionary else {
                 completion(0)
                 return
             }
-            let likeCount = data["like_count"] as? Int ?? 0
+            let likeCount = data["reply_count"] as? Int ?? 0
             completion(likeCount)
         }
     }

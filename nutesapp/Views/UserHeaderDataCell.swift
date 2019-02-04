@@ -33,7 +33,7 @@ class UserHeaderDataCell: UICollectionViewCell, ListBindable {
         followersLabel.text = "\(viewModel.followerCount)"
         followingLabel.text = "\(viewModel.followingCount)"
         
-        let buttonTitle = viewModel.username == FirestoreManager.shared.currentUser.username ? "Edit Profile" : (viewModel.isFollowing ? "Unfollow" : "Follow")
+        let buttonTitle = viewModel.username == FirestoreManager.shared.currentUser.username ? "Edit Profile" : "Loading"
         
         followButton.setTitle(buttonTitle, for: [])
     }

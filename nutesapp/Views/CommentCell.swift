@@ -9,24 +9,32 @@
 import UIKit
 import IGListKit
 
+protocol CommentCellDelegate: class {
+    func didTapHeart(cell: CommentCell)
+}
+
 class CommentCell: UICollectionViewCell, ListBindable {
+    
+    weak var delegate: CommentCellDelegate? = nil
     
     @IBOutlet weak var textLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView?
+    @IBOutlet weak var likeButton: UIButton!
     
     func bindViewModel(_ viewModel: Any) {
         
         var username: String = ""
         
-        if let viewModel = viewModel as? Comment  {
-            textLabel.attributedText = AttributedText.constructComment(username: viewModel.username, text: viewModel.text)
-            username = viewModel.username
-        }
+        guard let viewModel = viewModel as? CommentViewModel else { return }
         
-        else if let viewModel = viewModel as? CommentViewModel  {
+        //configure button
+        likeButton.addTarget(self, action: #selector(onHeart), for: .touchUpInside)
+        let imageTitle = viewModel.didLike ? "heart_filled" : "heart_bordered"
+        likeButton.setImage(UIImage(named: imageTitle), for: [])
+        
         textLabel.attributedText = AttributedText.constructComment(username: viewModel.username, text: viewModel.text)
         username = viewModel.username
-        }
+        
         
         if let imageView = imageView {
             imageView.layer.cornerRadius = imageView.frame.size.width/2
@@ -37,5 +45,9 @@ class CommentCell: UICollectionViewCell, ListBindable {
             }
         }
 
+    }
+    
+    @objc func onHeart() {
+        delegate?.didTapHeart(cell: self)
     }
 }

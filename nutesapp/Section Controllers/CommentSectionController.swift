@@ -9,16 +9,21 @@
 import Foundation
 import IGListKit
 
-class CommentSectionController: ListBindingSectionController<Comment>,
-    ListBindingSectionControllerDataSource,
-CommentActionCellDelegate {
+class CommentSectionController: ListBindingSectionController<Comment>,ListBindingSectionControllerDataSource, CommentCellDelegate, CommentActionCellDelegate {
+    
+    //MARK: - Variables
+
     var post: Post?
     let firestore = FirestoreManager.shared
     var comment: Comment!
     var localLikes: Int? = nil
     var didLike: Bool? = nil
     
-    func didTapHeart(cell: CommentActionCell) {
+    weak var commentActionCell: CommentActionCell?
+    
+    //MARK: - CommentActionCellDelegate
+
+    func didTapHeart(cell: CommentCell) {
         
         self.didLike = !self.didLike!
         
@@ -34,7 +39,7 @@ CommentActionCellDelegate {
             firestore.unlike(comment: comment)
         }
         
-        cell.likesLabel.text = "\(localLikes!)"
+        commentActionCell?.likesLabel.text = "\(localLikes!) likes"
         
     }
     
@@ -54,12 +59,12 @@ CommentActionCellDelegate {
             let indexPath = vc.collectionView.indexPath(for: cell)
             vc.commentTextField.text = "@\(comment.username) "
             vc.collectionView.scrollToItem(at: indexPath!, at: .bottom, animated: true)
-            
         }
         vc.replyingToLabel.text = "Replying to: \(comment.username)"
     }
     
-    
+    //MARK: - init
+
     override init() {
         super.init()
         dataSource = self
@@ -67,11 +72,13 @@ CommentActionCellDelegate {
         post = vc.post
     }
     
+    //MARK: - ListBindingSectionControllerDataSource
+
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         guard let object = object as? Comment else { fatalError() }
         comment = object
         let results: [ListDiffable] = [
-            CommentViewModel(username: object.username, text: object.text, timestamp: object.timestamp.dateValue()),
+            CommentViewModel(username: object.username, text: object.text, timestamp: object.timestamp, didLike: object.didLike),
             ActionViewModel(likes: object.likes, followedUsernames: [], didLike: object.didLike)
         ]
         return results
@@ -93,9 +100,14 @@ CommentActionCellDelegate {
             .dequeueReusableCellFromStoryboard(withIdentifier: identifier, for: self, at: index)
             else { fatalError() }
         
+        if let cell = cell as? CommentCell {
+            cell.delegate = self
+            self.didLike = (viewModel as! CommentViewModel).didLike
+        }
+        
         if let cell = cell as? CommentActionCell {
             cell.delegate = self
-            self.didLike = (viewModel as! ActionViewModel).didLike
+            self.commentActionCell = cell
         }
         
         return cell as! UICollectionViewCell & ListBindable
@@ -120,6 +132,8 @@ CommentActionCellDelegate {
     }
     
 }
+
+//MARK: - Text Height
 
 func textHeight(text: String?, width: CGFloat) -> CGFloat {
     let font = UIFont.systemFont(ofSize: 15)

@@ -20,8 +20,9 @@ final class Comment: ListDiffable {
     let timestamp: Timestamp
     let likes: Int
     let didLike: Bool
+    let replyCount: Int
     
-    init(parentID: String?, commentID: String, postID: String, username: String, text: String, likes: Int, timestamp: Timestamp, didLike: Bool) {
+    init(parentID: String?, commentID: String, postID: String, username: String, text: String, likes: Int, timestamp: Timestamp, didLike: Bool, replyCount: Int = 0) {
         self.parentID = parentID
         self.id = commentID
         self.postID = postID
@@ -30,6 +31,11 @@ final class Comment: ListDiffable {
         self.likes = likes
         self.timestamp = timestamp
         self.didLike = didLike
+        self.replyCount = replyCount
+    }
+    
+    convenience init(username: String, text: String, likes: Int) {
+        self.init(parentID: "", commentID: "", postID: "", username: username, text: text, likes: likes, timestamp: Timestamp(), didLike: false)
     }
     
     func diffIdentifier() -> NSObjectProtocol {
@@ -37,7 +43,28 @@ final class Comment: ListDiffable {
     }
     
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
-        return true
+        guard let object = object as? Comment else { return false }
+        return (self.identifier) == (object.identifier)
     }
     
+    static func order(comments: [Comment]) -> [ListDiffable] {
+        
+        var results = [ListDiffable]()
+        
+        let rootComments = comments.filter{ $0.parentID == nil }
+        
+        for comment in rootComments {
+            results.append(comment)
+            results.append(ViewMore(comment: comment, type: .root, count: comment.replyCount))
+//            let replies = comments.filter{ $0.parentID == comment.id }
+//            for reply in replies {
+//                results.append(reply)
+//                results.append(ViewMore(comment: comment, type: .reply, count: comment.replyCount))
+//                let subreplies = comments.filter{ $0.parentID == reply.id }
+//                results.append(contentsOf: subreplies)
+//            }
+        }
+        
+        return results
+    }
 }

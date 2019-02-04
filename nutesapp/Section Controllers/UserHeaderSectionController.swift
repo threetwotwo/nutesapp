@@ -14,9 +14,10 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
     
     var user: User? = nil
     var firestore = FirestoreManager.shared
-    var followerCount: Int? = nil
+
     weak var imageView: UIImageView!
     var isFollowing: Bool?
+    var userData: UserDataViewModel?
     
     override init() {
         super.init()
@@ -90,7 +91,7 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         
         let results: [ListDiffable] = [
             UserImageViewModel(username: object.username, fullname: object.fullname, url: object.url),
-            UserDataViewModel(username: object.username, postCount: "", followerCount: "\(object.followerCount)", followingCount: "", isFollowing: false),
+            UserDataViewModel(username: object.username, postCount: userData?.postCount ?? "0", followerCount: userData?.followerCount ?? "0", followingCount: userData?.followingCount ?? "0", isFollowing: false),
             UserDetailViewModel(fullname: object.fullname, description: "ok boi")
         ]
         
@@ -122,28 +123,52 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             self.imageView = cell.imageView
         }
     
-        if let cell = cell as? UserHeaderDataCell {
+        if let cell = cell as? UserHeaderDataCell,
+            let username = object?.username {
             
             cell.delegate = self
             
-            DatabaseManager().getPostCount(username: (object?.username)!) { (count) in
-                cell.postsLabel.text = "\(count)"
-            }
-            
-            DatabaseManager().getFollowerCount(username: (object?.username)!) { (count) in
-                cell.followersLabel.text = "\(count)"
-            }
-            
-            DatabaseManager().getFollowingCount(username: (object?.username)!) { (count) in
-                cell.followingLabel.text = "\(count)"
+            if userData == nil {
+                let dsg = DispatchGroup()
+                
+                var posts = 0
+                var followers = 0
+                var following = 0
+
+                dsg.enter()
+                DatabaseManager().getPostCount(username: username) { (count) in
+                    print("getPostCount")
+                    posts = count
+                    dsg.leave()
+                }
+                
+                dsg.enter()
+                DatabaseManager().getFollowerCount(username: username) { (count) in
+                    followers = count
+                    dsg.leave()
+                }
+                
+                dsg.enter()
+                DatabaseManager().getFollowingCount(username: username) { (count) in
+                    following = count
+                    dsg.leave()
+                }
+                
+                dsg.notify(queue: .main) {
+                    self.userData = UserDataViewModel(username: username, postCount: "\(posts)", followerCount: "\(followers)", followingCount: "\(following)", isFollowing: false)
+                    cell.postsLabel.text = "\(posts)"
+                    cell.followersLabel.text = "\(followers)"
+                    cell.followingLabel.text = "\(following)"
+                    //Tells the section controller to query for new view models, diff the changes, and update its cells.
+                    self.update(animated: true, completion: nil)
+                }
             }
 
             if firestore.currentUser.username != object?.username {
-                firestore.isFollowing(follower: firestore.currentUser.username, followed: (object?.username)!) { (isFollowing) in
+                firestore.isFollowing(follower: firestore.currentUser.username, followed: username) { (isFollowing) in
                     self.isFollowing = isFollowing
                     cell.followButton.setTitle(isFollowing ? "Unfollow" : "Follow", for: [])
                 }
-                
             }
         }
         
