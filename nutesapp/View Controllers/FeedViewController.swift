@@ -151,6 +151,7 @@ class FeedViewController: UIViewController {
         case .unfollow:
             //remove posts from unfollowed user
             self.items = self.items.filter{ ($0 as? Post)?.username != username }
+            performUpdates()
             //remove unfollowed user last snap
             self.lastSnapshots[username] = nil
         case .follow:
