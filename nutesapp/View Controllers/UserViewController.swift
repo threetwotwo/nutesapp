@@ -62,7 +62,7 @@ class UserViewController: UIViewController, ListAdapterDataSource {
         loadHeader()
 
         firestore.getPosts(username: user!.username, limit: 99) { (posts, lastSnapshot) in
-            guard let posts = posts else {return}
+//            guard let posts = posts else {return}
             
             self.items.append(contentsOf: posts)
             if let lastSnapshot = lastSnapshot {

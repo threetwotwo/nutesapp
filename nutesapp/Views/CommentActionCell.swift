@@ -25,12 +25,13 @@ class CommentActionCell: UICollectionViewCell, ListBindable {
     
     func bindViewModel(_ viewModel: Any) {
         guard let viewModel = viewModel as? ActionViewModel else { return }
-        likesLabel.text = "\(viewModel.likes)"
+        likesLabel.text = "\(viewModel.likes) likes"
         if viewModel.likes < 1 {
-            likesView.isHidden = true
+            likesView.width(0) 
         } else {
             likesView.isHidden = false
         }
+        timeststampLabel.text = viewModel.timestamp.timeAgoDisplay(comment: true)
     }
     
     override func awakeFromNib() {

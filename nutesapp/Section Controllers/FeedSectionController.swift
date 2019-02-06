@@ -70,14 +70,16 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         let results: [ListDiffable] = [
             PostHeaderViewModel(postId: object.id, username: object.username, timestamp: object.timestamp, url: object.userURL),
             ImageViewModel(url: object.postURL),
-            ActionViewModel(likes: likeCount ?? object.likeCount, followedUsernames: object.followedUsernames, didLike: didLike ?? object.didLike)
+            ActionViewModel(likes: likeCount ?? object.likeCount, followedUsernames: object.followedUsernames, didLike: didLike ?? object.didLike, timestamp: object.timestamp)
             ]
         
-        var comments = [CommentViewModel]()
+        var comments = [ListDiffable]()
         
         for comment in object.comments {
             comments.append(CommentViewModel(username: comment.username, text: comment.text, timestamp: comment.timestamp, didLike: comment.didLike))
         }
+        
+        comments.append(TimestampViewModel(date: object.timestamp))
         
         return results + comments
     }
@@ -98,6 +100,9 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             identifier = "postAction"
         case is CommentViewModel:
             identifier = "postComment"
+        case is TimestampViewModel:
+            identifier = "postTimestamp"
+
         default:
             identifier = "postComment"
         }
@@ -126,6 +131,8 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         case is ActionViewModel:
             height = 110
         case is CommentViewModel:
+            height = 35
+        case is TimestampViewModel:
             height = 35
         default:
             height = 55

@@ -51,13 +51,14 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
         //Toggle keyboard by hiding keyboard when the same reply button is pressed twice
         if commentTextField.isFirstResponder && vc.replyIndex == index {
             commentTextField.resignFirstResponder()
-            vc.replyingToView.isHidden = true
+            vc.resetCommentTextField()
         } else {
             vc.replyIndex = index
             commentTextField.becomeFirstResponder()
             vc.replyingToView.isHidden = false
             let indexPath = vc.collectionView.indexPath(for: cell)
             vc.commentTextField.text = "@\(comment.username) "
+            vc.replyingToConstraint.constant = 40
             vc.collectionView.scrollToItem(at: indexPath!, at: .bottom, animated: true)
         }
         vc.replyingToLabel.text = "Replying to: \(comment.username)"
@@ -79,7 +80,7 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
         comment = object
         let results: [ListDiffable] = [
             CommentViewModel(username: object.username, text: object.text, timestamp: object.timestamp, didLike: object.didLike),
-            ActionViewModel(likes: object.likes, followedUsernames: [], didLike: object.didLike)
+            ActionViewModel(likes: object.likes, followedUsernames: [], didLike: object.didLike, timestamp: object.timestamp.dateValue())
         ]
         return results
     }
@@ -119,14 +120,12 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
         let height: CGFloat
         
         switch viewModel {
+        case is CommentViewModel:
+            height = 46
         case is ActionViewModel:
-            height = 40
+            height = 20
         default:
-            let leadingConstraint: CGFloat = comment.parentID == nil ? 0 : 58
-            //width of label
-            let commentWidth = width - 100 - leadingConstraint
-            let commentHeight = textHeight(text: comment.text, width: commentWidth)
-            height = commentHeight < 50 ? 50 : commentHeight
+            height = 30
         }
         return CGSize(width: width, height: height)
     }

@@ -9,7 +9,7 @@
 import Foundation
 
 extension Date {
-    func timeAgoDisplay() -> String {
+    func timeAgoDisplay(comment: Bool = false) -> String {
         let secondsAgo = Int(Date().timeIntervalSince(self))
         
         let minute = 60
@@ -17,16 +17,18 @@ extension Date {
         let day = 24 * hour
         let week = 7 * day
         
+        
+        
         if secondsAgo < minute {
-            return "\(secondsAgo) seconds ago"
+            return "\(secondsAgo)" + (comment ? "s" : " seconds ago")
         } else if secondsAgo < hour {
-            return "\(secondsAgo / minute) minutes ago"
+            return "\(secondsAgo / minute)" + (comment ? "m" : " minutes ago")
         } else if secondsAgo < day {
-            return "\(secondsAgo / hour) hours ago"
+            return "\(secondsAgo / hour)" + (comment ? "h" : " hours ago")
         } else if secondsAgo < week {
-            return "\(secondsAgo / day) days ago"
+            return "\(secondsAgo / day)" + (comment ? "d" : " days ago")
         }
         
-        return "\(secondsAgo / week) weeks ago"
+        return "\(secondsAgo / week)" + (comment ? "w" : " weeks ago")
     }
 }

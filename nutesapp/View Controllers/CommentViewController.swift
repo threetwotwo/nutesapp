@@ -15,12 +15,14 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
     //MARK: - IBOutlets
     
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var commentTextFieldBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var commentTextField: UITextField!
     @IBOutlet weak var replyingToView: UIView!
     @IBOutlet weak var replyingToLabel: UILabel!
+    @IBOutlet weak var replyingToConstraint: NSLayoutConstraint!
     
-    fileprivate func resetCommentTextField() {
+    func resetCommentTextField() {
+        replyingToConstraint.constant = 0
         replyingToView.isHidden = true
         commentTextField.text = ""
         replyIndex = nil
@@ -61,8 +63,8 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
     //MARK: - Load Comments
     
     func loadComments(completion: ()->()) {
-//        loading = true
-//        self.adapter.performUpdates(animated: true)
+        loading = true
+        adapter.performUpdates(animated: true)
 
         firestore.getComments(postID: post?.id ?? "", limit: 10, after: lastSnapshot) { (comments, lastSnap)  in
             
@@ -72,7 +74,7 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
                 return
             }
             
-            self.items.append(contentsOf: comments)
+            self.items.append(contentsOf: Comment.order(comments: comments))
             self.lastSnapshot = lastSnap
             self.loading = false
             self.adapter.performUpdates(animated: true)
@@ -88,54 +90,7 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
         replyingToView.isHidden = true
         self.adapter.performUpdates(animated: true)
         commentTextField.delegate = self
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardNotification(_:)),
-                                               name: UIResponder.keyboardWillChangeFrameNotification,
-                                               object: nil)
-    }
-    
-    //MARK: - Keyboard
-    
-    @objc fileprivate func showKeyboard(_ notification: (Notification)) {
-        
-        UIView.animate(withDuration: 0.3) {
-            guard let userInfo = notification.userInfo,
-                let keyboardSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue) else {return}
-            let frame = keyboardSize.cgRectValue
-            self.commentTextFieldBottomConstraint.constant = frame.height
-            
-            self.view.layoutIfNeeded()
-        }
-    }
-    
-    @objc func keyboardNotification(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo {
-            let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-            let endFrameY = endFrame?.origin.y ?? 0
-            let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
-            let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
-            let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
-            let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
-            guard let barHeight = tabBarController?.tabBar.frame.height else {
-                return
-            }
-            if endFrameY >= UIScreen.main.bounds.size.height {
-                self.commentTextFieldBottomConstraint?.constant = 0.0
-            } else {
-                self.commentTextFieldBottomConstraint?.constant = (endFrame?.size.height ?? 0.0) - barHeight
-            }
-            if notification.name == UIResponder.keyboardWillHideNotification {
-                collectionView.contentInset = UIEdgeInsets.zero
-            } else {
-                collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: endFrame!.height, right: 0)
-            }
-            UIView.animate(withDuration: duration,
-                           delay: TimeInterval(0.10),
-                           options: animationCurve,
-                           animations: { self.view.layoutIfNeeded() },
-                           completion: nil)
-        }
-        
+        self.setupKeyboardNotifications()
     }
     
     //UITextFieldDelegate
@@ -226,9 +181,8 @@ extension CommentViewController: UIScrollViewDelegate {
         if !loading && distance < 200 {
             loading = true
             loadComments {
-                
+
             }
-            adapter.performUpdates(animated: true)
         }
     }
 }

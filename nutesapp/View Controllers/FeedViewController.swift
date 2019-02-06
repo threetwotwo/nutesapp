@@ -49,15 +49,26 @@ class FeedViewController: UIViewController {
     
     @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
         DispatchQueue.main.asyncAfter(deadline: .now()) {
-            self.viewDidLoad()
             refreshControl.endRefreshing()
         }
     }
     
+    //MARK: - Loading
+
+    func startLoading() {
+        loading = true
+        performUpdates()
+    }
+    
+    func endLoading() {
+        loading = false
+        performUpdates()
+    }
     
     //MARK: - Variables
     lazy var items = [ListDiffable]()
     
+    var observers: [Observer] = Observer.types([.unfollow,.follow])
     var firestore = FirestoreManager.shared
     let spinToken = "spinner"
     var lastSnapshots = [String:DocumentSnapshot]()
@@ -65,47 +76,89 @@ class FeedViewController: UIViewController {
     
     //MARK: - Life cycle
     
-    fileprivate func loadPosts() {
+    fileprivate func loadPosts(user: String? = nil, completion: (()->())? = nil) {
+        
+        self.startLoading()
+
+        guard user == nil else {
+            firestore.getPosts(username: user!, limit: 3) { (posts, lastSnap) in
+                self.items.insert(contentsOf: posts, at: 0)
+                self.lastSnapshots[user!] = lastSnap
+                self.endLoading()
+            }
+            return
+        }
         //get user's following
         firestore.getFollowedUsers(for: firestore.currentUser.username) { (relationships) in
+            
+            let dsg = DispatchGroup()
+
             for relationship in relationships {
-                print(relationship.documentID)
                 guard let username = relationship.data()["followed"] as? String else {return}
-                print(username)
-                self.firestore.getPosts(username: username, limit: 30, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+                
+                dsg.enter()
+                self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
                     
-                    self.loading = false
+//                    guard !posts.isEmpty else {
+//                        dsg.leave()
+//                        completion?()
+//                        return
+//                    }
                     
-                    guard let posts = posts else {
-                        return
-                    }
-                    
-                    for post in posts {
-                        self.items.append(post)
-                    }
+                    self.items.append(contentsOf: posts)
                     
                     if let lastSnapshot = lastSnapshot {
                         self.lastSnapshots[username] = lastSnapshot
                     }
                     
-                    self.adapter.performUpdates(animated: true)
+                    dsg.leave()
                 }
             }
+            
+            dsg.notify(queue: .main, execute: {
+                completion?()
+            })
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView.addSubview(self.refreshControl)
+        //top activity indicator
+        // Add Refresh Control to Table View
+        if #available(iOS 10.0, *) {
+            collectionView.refreshControl = refreshControl
+        } else {
+            collectionView.addSubview(refreshControl)
+        }
         //For tab bar delegate function in app delegate to work
         self.tabBarController?.delegate = UIApplication.shared.delegate as? UITabBarControllerDelegate
-        loading = true
-        adapter.performUpdates(animated: true)
-        loadPosts()
+        loadPosts{
+            self.endLoading()
+        }
+
+        self.addObservers(observers: self.observers, selector: #selector(onChange))
+    }
+    
+    @objc func onChange(notification: Notification) {
+        
+        guard let object = notification.object as? (Observer.ObserverType, Any),
+        
+        let username = object.1 as? String else {
+            return
+        }
+        
+        switch object.0 {
+        case .unfollow:
+            //remove posts from unfollowed user
+            self.items = self.items.filter{ ($0 as? Post)?.username != username }
+            //remove unfollowed user last snap
+            self.lastSnapshots[username] = nil
+        case .follow:
+            loadPosts(user: username)
+        }
     }
     
     @objc func performUpdates() {
-        print("notification for like button!")
         adapter.performUpdates(animated: true, completion: nil)
     }
 }
@@ -115,11 +168,11 @@ class FeedViewController: UIViewController {
 extension FeedViewController: ListAdapterDataSource {
     func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
         var objects = items as [ListDiffable]
-
-        if loading {
+        
+        if loading{
             objects.append(spinToken as ListDiffable)
         }
-
+        
         return objects
     }
 
@@ -140,10 +193,10 @@ extension FeedViewController: ListAdapterDataSource {
 extension FeedViewController: UIScrollViewDelegate {
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         let distance = scrollView.contentSize.height - (targetContentOffset.pointee.y + scrollView.bounds.height)
-        if !loading && distance < 200 {
-            loading = true
-            adapter.performUpdates(animated: true)
-            loadPosts()
+        if !loading && distance < 100 {
+            loadPosts{
+                self.endLoading()
+            }
         }
     }
 }

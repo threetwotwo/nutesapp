@@ -55,7 +55,11 @@ final class Comment: ListDiffable {
         
         for comment in rootComments {
             results.append(comment)
-            results.append(ViewMore(comment: comment, type: .root, count: comment.replyCount))
+            
+            //append view more if comment has replies
+            if comment.replyCount > 0 {
+                results.append(ViewMore(comment: comment, type: .root, count: comment.replyCount))
+            }
 //            let replies = comments.filter{ $0.parentID == comment.id }
 //            for reply in replies {
 //                results.append(reply)

@@ -14,11 +14,13 @@ class ActionViewModel: ListDiffable {
     let likes: Int
     let followedUsernames: [String]
     let didLike: Bool
+    let timestamp: Date
     
-    init(likes: Int, followedUsernames: [String], didLike: Bool) {
+    init(likes: Int, followedUsernames: [String], didLike: Bool, timestamp: Date) {
         self.likes = likes
         self.followedUsernames = followedUsernames
         self.didLike = didLike
+        self.timestamp = timestamp
     }
     
     func diffIdentifier() -> NSObjectProtocol {

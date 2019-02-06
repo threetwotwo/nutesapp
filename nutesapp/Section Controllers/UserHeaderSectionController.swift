@@ -10,7 +10,7 @@ import Foundation
 import IGListKit
 import YPImagePicker
 
-class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UserHeaderDataCellDelegate {
+class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UserHeaderDataCellDelegate, Observable {
     
     var user: User? = nil
     var firestore = FirestoreManager.shared
@@ -77,11 +77,14 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             firestore.unfollowUser(withUsername: user.username) {
                 cell.followButton.setTitle(buttonTitle, for: [])
                 self.isFollowing = !self.isFollowing!
+                //notify feedvc
+                self.didChange(type: .unfollow, object: user.username)
             }
         } else {
             firestore.followUser(withUsername: user.username) {
                 cell.followButton.setTitle(buttonTitle, for: [])
                 self.isFollowing = !self.isFollowing!
+                self.didChange(type: .follow, object: user.username)
             }
         }
     }
@@ -200,3 +203,4 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
     }
     
 }
+

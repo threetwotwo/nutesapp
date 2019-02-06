@@ -29,7 +29,7 @@ final class FirestoreManager {
     }
     
     //MARK: - Retrieve posts
-    func getPosts(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[ListDiffable]?, _ lastSnapshot: DocumentSnapshot?) -> ()) {
+    func getPosts(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[ListDiffable], _ lastSnapshot: DocumentSnapshot?) -> ()) {
         
         var query: Query
         
