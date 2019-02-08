@@ -17,7 +17,8 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     
     var likeCount: Int?
     var didLike: Bool?
-    
+    var lastSection = -1
+
     //MARK: - ActionCellDelegate
 
     func didTapHeart(cell: ActionCell) {
@@ -89,7 +90,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         let identifier: String
         
         guard let context = collectionContext else { fatalError() }
-        
+                
         switch viewModel {
             
         case is PostHeaderViewModel:

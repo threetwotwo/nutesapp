@@ -85,6 +85,8 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        items.removeAll()
+        adapter.performUpdates(animated: true)
         loadComments {
         }
         replyingToView.isHidden = true
@@ -186,3 +188,5 @@ extension CommentViewController: UIScrollViewDelegate {
         }
     }
 }
+
+

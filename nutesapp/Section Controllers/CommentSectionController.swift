@@ -154,3 +154,5 @@ func requiredHeight(text: String? , width: CGFloat) -> CGFloat {
     label.sizeToFit()
     return max(50,label.frame.height.rounded(.up))
 }
+
+

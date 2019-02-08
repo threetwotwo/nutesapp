@@ -77,14 +77,15 @@ class DatabaseManager {
         }
     }
     
-    func getLikes(commentID: String, postID: String, completion: @escaping (Int)->()) {
+    func getLikes(commentID: String, postID: String, completion: @escaping (Int, Int)->()) {
         db.child("comments").child(postID).child(commentID).observeSingleEvent(of: .value) { (snap) in
             guard let data = snap.value as? NSDictionary else {
-                completion(0)
+                completion(0,0)
                 return
             }
             let likeCount = data["like_count"] as? Int ?? 0
-            completion(likeCount)
+            let replyCount = data["reply_count"] as? Int ?? 0
+            completion(likeCount, replyCount)
         }
     }
     

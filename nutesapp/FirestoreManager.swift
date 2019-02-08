@@ -94,13 +94,6 @@ final class FirestoreManager {
                     dsg.leave()
                 })
                 
-//                dsg.enter()
-//                self.getComments(postID: id, limit: 20, completion: { (comments) in
-//                    topComments = comments
-//                    print(comments.count)
-//                    dsg.leave()
-//                })
-                
                 dsg.notify(queue: .main) {
                     let post = Post(
                         id: id,
@@ -243,7 +236,7 @@ final class FirestoreManager {
             
             let dsg = DispatchGroup()
             
-            for document in documents {
+            for document in documents.shuffled() {
                 dsg.enter()
                 
                 let username = document.get("followed") as! String
@@ -285,18 +278,7 @@ final class FirestoreManager {
         let commentRef = postRef.collection("comments").document(commentID)
         
         let parentID: Any = comment.parentID == nil ? NSNull() : comment.parentID ?? ""
-        
-        //Failable update not included in runTransaction method due to
-        //Bug in which getDocument method causes entire transaction to fail
-        postRef.getDocument { (snap, error) in
-            if let topComments = snap?.data()?["top_comments"] as? NSArray {
-                if topComments.count < 2 {
-                    let newComment = NSDictionary(dictionary: ["text" : text, "username" : username])
-                    postRef.updateData(["top_comments" : FieldValue.arrayUnion([newComment])])
-                }
-            }
-        }
-        
+
         db.runTransaction({ (transaction, errorPointer) -> Any? in
 
             transaction.setData([
@@ -424,8 +406,8 @@ final class FirestoreManager {
                         })
                         
                         dsg.enter()
-                        DatabaseManager().getLikes(commentID: document.documentID, postID: postID, completion: { (count) in
-                            commentLikes = count
+                        DatabaseManager().getLikes(commentID: document.documentID, postID: postID, completion: { (likes, replies) in
+                            commentLikes = likes
                             dsg.leave()
                         })
                         
@@ -476,14 +458,14 @@ final class FirestoreManager {
                     let text = data["text"] as! String
                     let timestamp = data["timestamp"] as? Timestamp
                     let commentID = document.documentID
-                    let replyCount = data["reply_count"] as? Int ?? 0
                     var commentDidLike = false
-                    var commentLikes = 0
+                    var likeCount = 0
+                    var replyCount = 0
                     
                     dsg.enter()
-                    DatabaseManager().getLikes(commentID: commentID, postID: postID, completion: { (likes) in
-                        print(commentID)
-                        commentLikes = likes
+                    DatabaseManager().getLikes(commentID: commentID, postID: postID, completion: { (likes, replies)  in
+                        likeCount = likes
+                        replyCount = replies
                         dsg.leave()
                     })
                     
@@ -494,7 +476,7 @@ final class FirestoreManager {
                     })
                     
                     dsg.notify(queue: .main, execute: {
-                        let comment = Comment(parentID: nil, commentID: commentID, postID: postID, username: username, text: text, likes: commentLikes, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike, replyCount: replyCount)
+                        let comment = Comment(parentID: nil, commentID: commentID, postID: postID, username: username, text: text, likes: likeCount, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike, replyCount: replyCount)
                         comments.append(comment)
                     })
                 }

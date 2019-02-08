@@ -9,7 +9,7 @@
 import Foundation
 import IGListKit
 
-class UserBodySectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource {
+class UserBodySectionController: ListBindingSectionController<Post>, ListBindingSectionControllerDataSource {
     
     override init() {
         super.init()
@@ -21,6 +21,8 @@ class UserBodySectionController: ListBindingSectionController<User>, ListBinding
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         
         guard let object = object as? Post else { fatalError() }
+        
+        print(object.comments.first?.text)
         
         let results: [ListDiffable] = [
             ImageViewModel(url: object.postURL)
@@ -57,6 +59,14 @@ class UserBodySectionController: ListBindingSectionController<User>, ListBinding
         let itemWidth = ((collectionViewWidth - 4) / 3)
         let heightRatio: CGFloat = 1
         return CGSize(width: itemWidth, height: itemWidth * heightRatio)
+    }
+    
+    override func didSelectItem(at index: Int) {
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "feedVC") as! FeedViewController
+        vc.shouldLoadMore = false
+        vc.items = [object] as! [ListDiffable]
+        print((vc.items.first as! Post).comments.first?.text)
+        viewController?.navigationController?.pushViewController(vc, animated: true)
     }
 }
 

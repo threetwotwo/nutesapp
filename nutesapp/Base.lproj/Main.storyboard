@@ -580,7 +580,7 @@
         <!--Feed View Controller-->
         <scene sceneID="zX4-Lm-9xp">
             <objects>
-                <viewController id="d1v-qC-jcZ" customClass="FeedViewController" customModule="nutesapp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="feedVC" id="d1v-qC-jcZ" customClass="FeedViewController" customModule="nutesapp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aHT-QD-luP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

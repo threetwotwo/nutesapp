@@ -42,14 +42,27 @@ class FeedViewController: UIViewController {
     //MARK: - Pull to refresh
     lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(handleRefresh(_:)), for: UIControl.Event.valueChanged)
+        refreshControl.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
         
         return refreshControl
     }()
     
     @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
-        DispatchQueue.main.asyncAfter(deadline: .now()) {
+//        loadPosts(user: nil, insertAtTop: true) {
+//            self.refreshControl.endRefreshing()
+//        }
+        
+        guard shouldLoadMore else {
             refreshControl.endRefreshing()
+            return
+        }
+        
+        lastSnapshots.removeAll()
+        items.removeAll()
+        
+        loadPosts(user: nil, insertAtTop: false) {
+            refreshControl.endRefreshing()
+            self.endLoading()
         }
     }
     
@@ -74,10 +87,14 @@ class FeedViewController: UIViewController {
     var lastSnapshots = [String:DocumentSnapshot]()
     var loading = false
     
+    //false if only need to load one post
+    var shouldLoadMore = true
+    
     //MARK: - Life cycle
     
-    fileprivate func loadPosts(user: String? = nil, completion: (()->())? = nil) {
-        
+    fileprivate func loadPosts(user: String? = nil, insertAtTop: Bool = false, completion: (()->())? = nil) {
+        guard shouldLoadMore else { return }
+
         self.startLoading()
 
         guard user == nil else {
@@ -92,20 +109,21 @@ class FeedViewController: UIViewController {
         firestore.getFollowedUsers(for: firestore.currentUser.username) { (relationships) in
             
             let dsg = DispatchGroup()
+            var results = [ListDiffable]()
 
-            for relationship in relationships {
-                guard let username = relationship.data()["followed"] as? String else {return}
+            
+            for relationship in relationships.shuffled() {
                 
+                guard let username = relationship.data()["followed"] as? String else {return}
+            
                 dsg.enter()
                 self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
                     
-//                    guard !posts.isEmpty else {
-//                        dsg.leave()
-//                        completion?()
-//                        return
-//                    }
-                    
-                    self.items.append(contentsOf: posts)
+                    if insertAtTop {
+                        results.insert(contentsOf: posts, at: 0)
+                    } else {
+                        results.append(contentsOf: posts)
+                    }
                     
                     if let lastSnapshot = lastSnapshot {
                         self.lastSnapshots[username] = lastSnapshot
@@ -116,6 +134,7 @@ class FeedViewController: UIViewController {
             }
             
             dsg.notify(queue: .main, execute: {
+                self.items.append(contentsOf: results.shuffled())
                 completion?()
             })
         }
@@ -132,9 +151,15 @@ class FeedViewController: UIViewController {
         }
         //For tab bar delegate function in app delegate to work
         self.tabBarController?.delegate = UIApplication.shared.delegate as? UITabBarControllerDelegate
-        loadPosts{
-            self.endLoading()
+        
+        if shouldLoadMore {
+            loadPosts{
+                self.endLoading()
+            }
+        } else {
+            performUpdates()
         }
+
 
         self.addObservers(observers: self.observers, selector: #selector(onChange))
     }
