@@ -22,7 +22,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     var firestore = FirestoreManager.shared
     
     let spinToken = "spinner"
-    //    var lastSnapshot: DocumentSnapshot?
+    //    var lastSnapshot: DocumentSnapshot?∂
     var isLoading = false
     
     //MARK: - Adapter
@@ -37,18 +37,12 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     
     //MARK: - Life Cycle
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //[DEBUG] Load all users from db
-        self.isLoading = true
-        self.adapter.performUpdates(animated: true)
-        
+    fileprivate func getAllUsers() {
         firestore.db.collection("users").getDocuments { (documents, error) in
             guard error == nil,
-            let documents = documents?.documents else {
-                print(error?.localizedDescription ?? "Error getting users")
-                return
+                let documents = documents?.documents else {
+                    print(error?.localizedDescription ?? "Error getting users")
+                    return
             }
             
             for document in documents {
@@ -61,6 +55,18 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
             }
             
         }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key(rawValue: NSAttributedString.Key.foregroundColor.rawValue): UIColor.black], for: .normal)
+
+        //[DEBUG] Load all users from db
+        self.isLoading = true
+        self.adapter.performUpdates(animated: true)
+        searchBar.delegate = self
+        
+        getAllUsers()
     }
 
     //MARK: - ListAdapterDataSource
@@ -87,4 +93,36 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
         return nil
     }
     
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        print("touches began")
+//        self.searchBar.endEditing(true)
+//    }
+    
+}
+
+extension SearchViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("searchBarSearchButtonClicked")
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        print("searchBarCancelButtonClicked")
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        print(searchText)
+        guard !searchText.isEmpty else {
+            items.removeAll()
+            getAllUsers()
+            return
+        }
+        firestore.getUser(username: searchText.lowercased()) { (user) in
+            self.items.removeAll()
+            self.items = [user]
+            self.adapter.performUpdates(animated: true, completion: nil)
+        }
+    }
 }

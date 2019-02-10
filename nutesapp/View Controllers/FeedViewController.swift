@@ -36,6 +36,7 @@ class FeedViewController: UIViewController {
         adapter.collectionView = collectionView
         adapter.dataSource = self
         adapter.scrollViewDelegate = self
+        adapter.collectionViewDelegate = self
         return adapter
     }()
     
@@ -87,6 +88,7 @@ class FeedViewController: UIViewController {
     var lastSnapshots = [String:DocumentSnapshot]()
     var loading = false
     
+    var cachedIDs = [String]()
     //false if only need to load one post
     var shouldLoadMore = true
     
@@ -97,6 +99,7 @@ class FeedViewController: UIViewController {
 
         self.startLoading()
 
+        //if user is not nil, load posts only for that user
         guard user == nil else {
             firestore.getPosts(username: user!, limit: 3) { (posts, lastSnap) in
                 self.items.insert(contentsOf: posts, at: 0)
@@ -105,39 +108,92 @@ class FeedViewController: UIViewController {
             }
             return
         }
-        //get user's following
-        firestore.getFollowedUsers(for: firestore.currentUser.username) { (relationships) in
+        
+        firestore.getUnseenPosts(username: firestore.currentUser.username, limit: 10) { (posts, lastSnaps) in
             
-            let dsg = DispatchGroup()
-            var results = [ListDiffable]()
-
-            
-            for relationship in relationships.shuffled() {
-                
-                guard let username = relationship.data()["followed"] as? String else {return}
-            
-                dsg.enter()
-                self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+            guard !posts.isEmpty else {
+                self.firestore.getFollowedUsers(for: self.firestore.currentUser.username) { (relationships) in
                     
-                    if insertAtTop {
-                        results.insert(contentsOf: posts, at: 0)
-                    } else {
-                        results.append(contentsOf: posts)
+                    let dsg = DispatchGroup()
+                    var results = [ListDiffable]()
+                    
+                    
+                    for relationship in relationships.shuffled() {
+                        
+                        guard let username = relationship.data()["followed"] as? String else {return}
+                        
+                        dsg.enter()
+                        self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+                            
+                            var filteredPosts = [Post]()
+                            
+                            for post in posts {
+                                if !self.items.contains{($0 as? Post)?.id == post.id} {
+                                    filteredPosts.append(post)
+                                }
+                     
+                            }
+                            
+                            if insertAtTop {
+                                results.insert(contentsOf: filteredPosts, at: 0)
+                            } else {
+                                results.append(contentsOf: filteredPosts)
+                            }
+                            
+                            if let lastSnapshot = lastSnapshot {
+                                self.lastSnapshots[username] = lastSnapshot
+                            }
+                            
+                            dsg.leave()
+                        }
                     }
                     
-                    if let lastSnapshot = lastSnapshot {
-                        self.lastSnapshots[username] = lastSnapshot
-                    }
-                    
-                    dsg.leave()
+                    dsg.notify(queue: .main, execute: {
+                        self.items.append(contentsOf: results.shuffled())
+                        completion?()
+                    })
                 }
+                return
             }
             
-            dsg.notify(queue: .main, execute: {
-                self.items.append(contentsOf: results.shuffled())
-                completion?()
-            })
+            self.items.append(contentsOf: posts)
+            self.lastSnapshots = lastSnaps!
+            print(self.lastSnapshots.keys, posts.map{$0.id})
+            completion?()
         }
+//        //get user's following
+//        firestore.getFollowedUsers(for: firestore.currentUser.username) { (relationships) in
+//
+//            let dsg = DispatchGroup()
+//            var results = [ListDiffable]()
+//
+//
+//            for relationship in relationships.shuffled() {
+//
+//                guard let username = relationship.data()["followed"] as? String else {return}
+//
+//                dsg.enter()
+//                self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+//
+//                    if insertAtTop {
+//                        results.insert(contentsOf: posts, at: 0)
+//                    } else {
+//                        results.append(contentsOf: posts)
+//                    }
+//
+//                    if let lastSnapshot = lastSnapshot {
+//                        self.lastSnapshots[username] = lastSnapshot
+//                    }
+//
+//                    dsg.leave()
+//                }
+//            }
+//
+//            dsg.notify(queue: .main, execute: {
+//                self.items.append(contentsOf: results.shuffled())
+//                completion?()
+//            })
+//        }
     }
     
     override func viewDidLoad() {
@@ -223,6 +279,18 @@ extension FeedViewController: UIScrollViewDelegate {
             loadPosts{
                 self.endLoading()
             }
+        }
+    }
+}
+
+extension FeedViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let _ = cell as? PostHeaderCell,
+        let post = items[indexPath.section] as? Post {
+            guard !cachedIDs.contains(post.id) else {return}
+            cachedIDs.append(post.id)
+            firestore.setPostAsSeen(postID: post.id)
+            print(post.id)
         }
     }
 }

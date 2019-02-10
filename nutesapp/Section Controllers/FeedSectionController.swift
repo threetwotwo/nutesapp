@@ -9,7 +9,7 @@
 import Foundation
 import IGListKit
 
-class FeedSectionController: ListBindingSectionController<Post>, ListBindingSectionControllerDataSource, ActionCellDelegate {
+class FeedSectionController: ListBindingSectionController<Post>, ListBindingSectionControllerDataSource, ActionCellDelegate, ImageCellDelegate {
     
     //MARK: - Variables
 
@@ -18,10 +18,19 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     var likeCount: Int?
     var didLike: Bool?
     var lastSection = -1
+    
+    //MARK: - ImageCellDelegate
+    func doubleTapped(cell: ImageCell) {
+        likeButtonTapped()
+    }
 
     //MARK: - ActionCellDelegate
-
+    
     func didTapHeart(cell: ActionCell) {
+        likeButtonTapped()
+    }
+
+    fileprivate func likeButtonTapped() {
         
         self.didLike = !(self.didLike ?? object?.didLike ?? false)
         
@@ -41,8 +50,8 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         
         self.likeCount = (self.likeCount ?? object?.likeCount ?? 0) + increment
         update(animated: true)
-
     }
+
     
     func didTapComment(cell: ActionCell) {
         print("didTapComment")
@@ -114,6 +123,10 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             cell.delegate = self
         }
         
+        if let cell = cell as? ImageCell {
+            cell.delegate = self
+        }
+        
         return cell as! UICollectionViewCell & ListBindable
     }
     
@@ -149,6 +162,11 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         switch index {
         case 0:
             print("header")
+            guard   let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UserVC") as? UserViewController else { return }
+            let user = User(uid: "", fullname: "", email: "", username: object?.username ?? "", url: object?.userURL ?? "", followerCount: 0)
+            vc.user = user
+            
+            viewController?.navigationController?.pushViewController(vc, animated: true)
         case 1:
             print("image")
         case 2:
