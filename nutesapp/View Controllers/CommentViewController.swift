@@ -111,7 +111,6 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
         } else {
             comment = Comment(parentID: nil, commentID: commentID, postID: post?.id ?? "", username: username, text: textField.text!, likes: 0, timestamp: timestamp, didLike: false)
         }
-        
         firestore.comment(comment: comment, post: post!, text: textField.text!)
 
         

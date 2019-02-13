@@ -36,9 +36,9 @@ class SearchSectionController: ListBindingSectionController<User>, ListBindingSe
         switch viewModel {
             
         case is UserImageViewModel:
-            identifier = "searchCell"
+            identifier = Identifier.cell.search
         default:
-            identifier = "searchCell"
+            identifier = Identifier.cell.search
         }
         
         let cell = context.dequeueReusableCellFromStoryboard(withIdentifier: identifier, for: self, at: index)
@@ -58,7 +58,7 @@ class SearchSectionController: ListBindingSectionController<User>, ListBindingSe
     override func didSelectItem(at index: Int) {
         
         guard let user = object
-        ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UserVC") as? UserViewController else { return }
+            ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController else { return }
         
         vc.user = user
         

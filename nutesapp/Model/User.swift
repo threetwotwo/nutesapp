@@ -27,6 +27,10 @@ class User: Codable {
         self.followerCount = followerCount
     }
     
+    convenience init(username: String) {
+        self.init(uid: "", fullname: "", email: "", username: username, url: "", followerCount: 0)
+    }
+    
 }
 
 extension User: ListDiffable {

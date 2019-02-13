@@ -210,7 +210,7 @@
         <!--User View Controller-->
         <scene sceneID="h4F-SB-d7B">
             <objects>
-                <viewController storyboardIdentifier="UserVC" id="DFW-FZ-Dqc" customClass="UserViewController" customModule="nutesapp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="userVC" id="DFW-FZ-Dqc" customClass="UserViewController" customModule="nutesapp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="M8I-Pb-Ioq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -490,16 +490,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <searchBar contentMode="redraw" searchBarStyle="minimal" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="INm-VY-GmX">
-                                <rect key="frame" x="0.0" y="64" width="375" height="56"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <scopeButtonTitles>
-                                    <string>Title</string>
-                                    <string>Title</string>
-                                </scopeButtonTitles>
-                            </searchBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="acb-ux-6eI">
-                                <rect key="frame" x="0.0" y="120" width="375" height="498"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="yOT-wB-O3U">
                                     <size key="itemSize" width="375" height="50"/>
@@ -562,19 +554,15 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="acb-ux-6eI" firstAttribute="leading" secondItem="815-LR-W16" secondAttribute="leading" id="3YS-Wq-0qB"/>
-                            <constraint firstItem="acb-ux-6eI" firstAttribute="top" secondItem="INm-VY-GmX" secondAttribute="bottom" id="7QU-TF-z8p"/>
-                            <constraint firstItem="INm-VY-GmX" firstAttribute="trailing" secondItem="815-LR-W16" secondAttribute="trailing" id="EfK-Nc-0XG"/>
-                            <constraint firstItem="INm-VY-GmX" firstAttribute="top" secondItem="815-LR-W16" secondAttribute="top" id="HtU-UG-c9t"/>
                             <constraint firstItem="815-LR-W16" firstAttribute="bottom" secondItem="acb-ux-6eI" secondAttribute="bottom" id="VaX-Wu-6YQ"/>
+                            <constraint firstItem="acb-ux-6eI" firstAttribute="top" secondItem="815-LR-W16" secondAttribute="top" id="WfE-t0-Fau"/>
                             <constraint firstItem="815-LR-W16" firstAttribute="trailing" secondItem="acb-ux-6eI" secondAttribute="trailing" id="ZQ9-Hc-Xf7"/>
-                            <constraint firstItem="INm-VY-GmX" firstAttribute="leading" secondItem="815-LR-W16" secondAttribute="leading" id="vna-QW-r57"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="815-LR-W16"/>
                     </view>
                     <navigationItem key="navigationItem" id="J0x-zP-lup"/>
                     <connections>
                         <outlet property="collectionView" destination="acb-ux-6eI" id="J5k-lE-ewG"/>
-                        <outlet property="searchBar" destination="INm-VY-GmX" id="tfi-VO-vJP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Aop-fb-MzN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -738,12 +726,6 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="35"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ar-Pu-av9">
-                                                    <rect key="frame" x="16" y="0.0" width="343" height="35"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tjK-Ui-pZh">
                                                     <rect key="frame" x="332" y="0.0" width="35" height="35"/>
                                                     <subviews>
@@ -763,21 +745,30 @@
                                                         <constraint firstItem="3bY-Uo-JOe" firstAttribute="centerX" secondItem="tjK-Ui-pZh" secondAttribute="centerX" id="qSb-dK-ZfG"/>
                                                     </constraints>
                                                 </view>
+                                                <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" editable="NO" text="@jim fuck" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ycV-L7-MXF">
+                                                    <rect key="frame" x="16" y="0.0" width="308" height="35"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="aHT-QD-luP" id="eGt-VL-ZZg"/>
+                                                    </connections>
+                                                </textView>
                                             </subviews>
                                         </view>
                                         <constraints>
+                                            <constraint firstItem="tjK-Ui-pZh" firstAttribute="leading" secondItem="ycV-L7-MXF" secondAttribute="trailing" constant="8" id="2Dg-0v-qEE"/>
+                                            <constraint firstAttribute="bottom" secondItem="ycV-L7-MXF" secondAttribute="bottom" id="GcN-90-VfW"/>
                                             <constraint firstAttribute="bottom" secondItem="tjK-Ui-pZh" secondAttribute="bottom" id="Qqu-Em-cuQ"/>
                                             <constraint firstItem="tjK-Ui-pZh" firstAttribute="top" secondItem="AbP-6M-q3v" secondAttribute="top" id="R2u-ss-ptw"/>
-                                            <constraint firstItem="5Ar-Pu-av9" firstAttribute="top" secondItem="AbP-6M-q3v" secondAttribute="top" id="Tnc-jW-RMA"/>
-                                            <constraint firstItem="5Ar-Pu-av9" firstAttribute="leading" secondItem="AbP-6M-q3v" secondAttribute="leading" constant="16" id="e1B-jq-6qe"/>
-                                            <constraint firstAttribute="trailing" secondItem="5Ar-Pu-av9" secondAttribute="trailing" constant="16" id="jMC-8f-TL4"/>
+                                            <constraint firstItem="ycV-L7-MXF" firstAttribute="leading" secondItem="AbP-6M-q3v" secondAttribute="leading" constant="16" id="ofJ-DF-91M"/>
                                             <constraint firstAttribute="trailing" secondItem="tjK-Ui-pZh" secondAttribute="trailing" constant="8" id="puo-do-eQ4"/>
-                                            <constraint firstAttribute="bottom" secondItem="5Ar-Pu-av9" secondAttribute="bottom" id="uGk-B4-3ex"/>
+                                            <constraint firstItem="ycV-L7-MXF" firstAttribute="top" secondItem="AbP-6M-q3v" secondAttribute="top" id="yiq-Sw-jQ2"/>
                                         </constraints>
                                         <size key="customSize" width="375" height="35"/>
                                         <connections>
+                                            <outlet property="commentTextView" destination="ycV-L7-MXF" id="6yI-Qm-l8m"/>
                                             <outlet property="likeButton" destination="3bY-Uo-JOe" id="edh-0L-Vxz"/>
-                                            <outlet property="textLabel" destination="5Ar-Pu-av9" id="tIU-Gf-2eU"/>
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="postTimestamp" id="sz3-AL-2eu" customClass="TimestampCell" customModule="nutesapp" customModuleProvider="target">
@@ -885,6 +876,12 @@
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="DBe-2l-VzH"/>
                                                     </constraints>
                                                 </view>
+                                                <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="@jim fuck" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YQQ-fm-nYQ">
+                                                    <rect key="frame" x="58" y="0.0" width="259" height="50"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                </textView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mm4-wv-MUA">
                                                     <rect key="frame" x="337.5" y="12.5" width="25" height="25"/>
                                                     <constraints>
@@ -893,32 +890,26 @@
                                                     </constraints>
                                                     <state key="normal" image="heart_bordered"/>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lky-4U-rZ2">
-                                                    <rect key="frame" x="58" y="4" width="259" height="42"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                             </subviews>
                                         </view>
                                         <constraints>
                                             <constraint firstAttribute="bottom" secondItem="kQV-Y0-tBT" secondAttribute="bottom" id="0rD-Aa-Uoh"/>
+                                            <constraint firstItem="YQQ-fm-nYQ" firstAttribute="leading" secondItem="qPe-R4-cPo" secondAttribute="trailing" constant="8" id="5yQ-Yw-wTe"/>
                                             <constraint firstAttribute="bottom" secondItem="qPe-R4-cPo" secondAttribute="bottom" id="Bbm-QC-E7j"/>
                                             <constraint firstItem="mm4-wv-MUA" firstAttribute="centerY" secondItem="kQV-Y0-tBT" secondAttribute="centerY" id="Fhv-z0-7aV"/>
-                                            <constraint firstItem="lky-4U-rZ2" firstAttribute="top" secondItem="4kS-Q8-TwO" secondAttribute="top" constant="4" id="G49-DK-iAX"/>
                                             <constraint firstAttribute="trailing" secondItem="kQV-Y0-tBT" secondAttribute="trailing" id="GFM-Qg-Z5h"/>
-                                            <constraint firstAttribute="bottom" secondItem="lky-4U-rZ2" secondAttribute="bottom" constant="4" id="GMT-ew-CcY"/>
                                             <constraint firstItem="qPe-R4-cPo" firstAttribute="top" secondItem="4kS-Q8-TwO" secondAttribute="top" id="Ld8-w5-mWk"/>
-                                            <constraint firstItem="kQV-Y0-tBT" firstAttribute="leading" secondItem="lky-4U-rZ2" secondAttribute="trailing" constant="8" id="NKE-7E-Syp"/>
                                             <constraint firstItem="kQV-Y0-tBT" firstAttribute="top" secondItem="4kS-Q8-TwO" secondAttribute="top" id="OLM-R4-fcm"/>
                                             <constraint firstItem="qPe-R4-cPo" firstAttribute="leading" secondItem="4kS-Q8-TwO" secondAttribute="leading" id="YEo-rT-rDO"/>
-                                            <constraint firstItem="lky-4U-rZ2" firstAttribute="leading" secondItem="qPe-R4-cPo" secondAttribute="trailing" constant="8" id="paY-Yb-xDR"/>
+                                            <constraint firstItem="kQV-Y0-tBT" firstAttribute="leading" secondItem="YQQ-fm-nYQ" secondAttribute="trailing" constant="8" id="faI-Ti-2ok"/>
+                                            <constraint firstAttribute="bottom" secondItem="YQQ-fm-nYQ" secondAttribute="bottom" id="yH0-vY-GeU"/>
+                                            <constraint firstItem="YQQ-fm-nYQ" firstAttribute="top" secondItem="4kS-Q8-TwO" secondAttribute="top" id="zYj-Ao-MOC"/>
                                             <constraint firstItem="mm4-wv-MUA" firstAttribute="centerX" secondItem="kQV-Y0-tBT" secondAttribute="centerX" id="zpo-ab-Xek"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="commentTextView" destination="YQQ-fm-nYQ" id="85P-yi-auo"/>
                                             <outlet property="imageView" destination="ngO-lA-KJc" id="19k-8C-UF5"/>
                                             <outlet property="likeButton" destination="mm4-wv-MUA" id="vku-Gz-GQs"/>
-                                            <outlet property="textLabel" destination="lky-4U-rZ2" id="jmR-yf-tO8"/>
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="commentreply" id="6Tc-Em-B2n" customClass="CommentCell" customModule="nutesapp">
@@ -955,6 +946,12 @@
                                                         <constraint firstAttribute="width" constant="50" id="EHq-V6-kLV"/>
                                                     </constraints>
                                                 </view>
+                                                <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="@jim fuck" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dSS-Du-fFa">
+                                                    <rect key="frame" x="108" y="0.0" width="209" height="50"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                </textView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MlE-GY-haq">
                                                     <rect key="frame" x="337.5" y="12.5" width="25" height="25"/>
                                                     <constraints>
@@ -963,32 +960,26 @@
                                                     </constraints>
                                                     <state key="normal" image="heart_bordered"/>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uRv-h9-eY2">
-                                                    <rect key="frame" x="108" y="4" width="209" height="42"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                             </subviews>
                                         </view>
                                         <constraints>
-                                            <constraint firstItem="uRv-h9-eY2" firstAttribute="top" secondItem="6Tc-Em-B2n" secondAttribute="top" constant="4" id="971-FF-ZZ0"/>
+                                            <constraint firstItem="8wN-Ip-Alv" firstAttribute="leading" secondItem="dSS-Du-fFa" secondAttribute="trailing" constant="8" id="7PH-bT-oO3"/>
                                             <constraint firstItem="MlE-GY-haq" firstAttribute="centerY" secondItem="8wN-Ip-Alv" secondAttribute="centerY" id="DTO-4g-uQr"/>
-                                            <constraint firstItem="8wN-Ip-Alv" firstAttribute="leading" secondItem="uRv-h9-eY2" secondAttribute="trailing" constant="8" id="GLI-xv-Lmp"/>
-                                            <constraint firstAttribute="bottom" secondItem="uRv-h9-eY2" secondAttribute="bottom" constant="4" id="H5f-76-2lm"/>
                                             <constraint firstAttribute="trailing" secondItem="8wN-Ip-Alv" secondAttribute="trailing" id="Jfp-J1-0l4"/>
                                             <constraint firstAttribute="bottom" secondItem="8wN-Ip-Alv" secondAttribute="bottom" id="KIz-js-cjH"/>
+                                            <constraint firstAttribute="bottom" secondItem="dSS-Du-fFa" secondAttribute="bottom" id="NuX-6k-Lsp"/>
                                             <constraint firstItem="udC-au-rZr" firstAttribute="top" secondItem="6Tc-Em-B2n" secondAttribute="top" id="UPS-8T-LX7"/>
                                             <constraint firstItem="MlE-GY-haq" firstAttribute="centerX" secondItem="8wN-Ip-Alv" secondAttribute="centerX" id="cW2-dp-BUG"/>
                                             <constraint firstItem="8wN-Ip-Alv" firstAttribute="top" secondItem="6Tc-Em-B2n" secondAttribute="top" id="fEB-5K-JwV"/>
                                             <constraint firstAttribute="bottom" secondItem="udC-au-rZr" secondAttribute="bottom" id="l29-XJ-JMN"/>
+                                            <constraint firstItem="dSS-Du-fFa" firstAttribute="top" secondItem="6Tc-Em-B2n" secondAttribute="top" id="mmI-qp-RgR"/>
+                                            <constraint firstItem="dSS-Du-fFa" firstAttribute="leading" secondItem="udC-au-rZr" secondAttribute="trailing" constant="8" id="o0E-lH-Th9"/>
                                             <constraint firstItem="udC-au-rZr" firstAttribute="leading" secondItem="6Tc-Em-B2n" secondAttribute="leading" constant="50" id="vP4-74-zhf"/>
-                                            <constraint firstItem="uRv-h9-eY2" firstAttribute="leading" secondItem="udC-au-rZr" secondAttribute="trailing" constant="8" id="xDF-mi-QqM"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="commentTextView" destination="dSS-Du-fFa" id="MIG-T0-VIM"/>
                                             <outlet property="imageView" destination="eLL-Qx-cmf" id="rhw-Nq-QLs"/>
                                             <outlet property="likeButton" destination="MlE-GY-haq" id="4nK-MO-uE2"/>
-                                            <outlet property="textLabel" destination="uRv-h9-eY2" id="5sh-ow-icQ"/>
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="commentaction" id="D5J-8R-rrc" customClass="CommentActionCell" customModule="nutesapp">

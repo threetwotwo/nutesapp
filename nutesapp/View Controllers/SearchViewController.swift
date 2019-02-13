@@ -14,7 +14,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     //MARK: - IBOutlets
 
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var searchBar: UISearchBar!
+    var searchBar: UISearchBar!
     
     //MARK: - Variables
     
@@ -24,6 +24,8 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     let spinToken = "spinner"
     //    var lastSnapshot: DocumentSnapshot?∂
     var isLoading = false
+    
+    var postID: String?
     
     //MARK: - Adapter
     lazy var adapter: ListAdapter = {
@@ -37,28 +39,45 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     
     //MARK: - Life Cycle
 
-    fileprivate func getAllUsers() {
-        firestore.db.collection("users").getDocuments { (documents, error) in
-            guard error == nil,
-                let documents = documents?.documents else {
-                    print(error?.localizedDescription ?? "Error getting users")
-                    return
+    fileprivate func getAllUsers(postID: String? = nil) {
+        if postID == nil {
+            firestore.db.collection("users").getDocuments { (documents, error) in
+                guard error == nil,
+                    let documents = documents?.documents else {
+                        print(error?.localizedDescription ?? "Error getting users")
+                        return
+                }
+        
+                for document in documents {
+                    let username = document.documentID
+                    self.firestore.getUser(username: username, completion: { (user) in
+                        self.items.append(user)
+                        self.adapter.performUpdates(animated: true)
+                    })
+                    self.isLoading = false
+                }
             }
-            
-            for document in documents {
-                let username = document.documentID
-                self.firestore.getUser(username: username, completion: { (user) in
-                    self.items.append(user)
-                    self.adapter.performUpdates(animated: true)
-                })
+        } else {
+            firestore.getLikes(postID: postID!, limit: 10) { (users) in
+                self.items.append(contentsOf: users)
                 self.isLoading = false
+                self.adapter.performUpdates(animated: true)
             }
-            
         }
+        
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //place search bar in nav bar
+        searchBar = UISearchBar()
+        searchBar.sizeToFit()
+        searchBar.showsCancelButton = true
+        searchBar.tintColor = UIColor.black
+        searchBar.placeholder = "Search"
+        navigationItem.titleView = searchBar
+        
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key(rawValue: NSAttributedString.Key.foregroundColor.rawValue): UIColor.black], for: .normal)
 
         //[DEBUG] Load all users from db
@@ -66,7 +85,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
         self.adapter.performUpdates(animated: true)
         searchBar.delegate = self
         
-        getAllUsers()
+        getAllUsers(postID: self.postID)
     }
 
     //MARK: - ListAdapterDataSource

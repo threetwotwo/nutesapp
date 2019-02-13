@@ -342,6 +342,46 @@ final class FirestoreManager {
    
     //MARK: - Likes
     
+    func getLikes(postID: String, limit: Int, lastSnap: DocumentSnapshot? = nil, completion: @escaping(([User])->())) {
+        
+        let query: Query
+        
+        if lastSnap == nil {
+            query = db.collection("posts")
+            .document(postID)
+            .collection("likes")
+            .limit(to: limit)
+        } else {
+            query = db.collection("posts")
+            .document(postID)
+            .collection("likes")
+            .limit(to: limit)
+            .start(afterDocument: lastSnap!)
+        }
+
+        let dsg = DispatchGroup()
+        var results = [User]()
+        
+        query.getDocuments { (snap, error) in
+            
+            for document in snap?.documents ?? [QueryDocumentSnapshot]() {
+                
+                let username = document.documentID
+        
+                dsg.enter()
+                self.getUser(username: username, completion: { (user) in
+                    results.append(user)
+                    dsg.leave()
+                })
+            }
+            
+            dsg.notify(queue: .main, execute: {
+                completion(results)
+            })
+        }
+        
+    }
+    
     func getFollowedLikes(postID: String, limit: Int, completion: @escaping (Int, [String]) -> ()) {
         getFollowedUsers(for: currentUser.username) { (documents) in
             
@@ -616,6 +656,16 @@ final class FirestoreManager {
             }
         }
     }
+    
+    //MARK: - Get profile pic for username
+
+    func getProfileURL(username: String, completion: @escaping (URL?)->()) {
+        self.getUserInfo(username: username) { (data) in
+            let url = data["url"] as? URL
+            completion(url)
+        }
+    }
+    
     //MARK: - update profile pic
     
     func updateProfile(image: UIImage, completion: @escaping ()->()) {
@@ -654,7 +704,7 @@ final class FirestoreManager {
             let fullname = data["fullname"] as? String
             let email = data["email"] as? String
             var followers = 0
-            var userUrl = ""
+            var userUrl = data["url"] as? String ?? ""
             var isFollowingUser: Bool = false
             
             let dsg = DispatchGroup()

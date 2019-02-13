@@ -23,11 +23,31 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     func doubleTapped(cell: ImageCell) {
         likeButtonTapped()
     }
-
+    
     //MARK: - ActionCellDelegate
+    
+    func didTapLikesLabel(cell: ActionCell) {
+        print("didTapLikesLabel")
+        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "searchVC") as? SearchViewController {
+            vc.postID = object?.id
+            viewController?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
     
     func didTapHeart(cell: ActionCell) {
         likeButtonTapped()
+    }
+    
+    func didTapComment(cell: ActionCell) {
+        print("didTapComment")
+        guard let post = object
+            ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as? CommentViewController else { return }
+        vc.items = Comment.order(comments: post.comments)
+        vc.post = post
+        vc.parentVC = self.viewController
+        vc.postIndex = self.section
+        print(section)
+        viewController?.navigationController?.pushViewController(vc, animated: true)
     }
 
     fileprivate func likeButtonTapped() {
@@ -53,24 +73,13 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     }
 
     
-    func didTapComment(cell: ActionCell) {
-        print("didTapComment")
-        guard let post = object
-            ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as? CommentViewController else { return }
-        vc.items = Comment.order(comments: post.comments)
-        vc.post = post
-        vc.parentVC = self.viewController
-        vc.postIndex = self.section
-        print(section)
-        viewController?.navigationController?.pushViewController(vc, animated: true)
-    }
-    
     //MARK: - init
 
     override init() {
         super.init()
         dataSource = self
     }
+    
     
     //MARK: - ListBindingSectionControllerDataSource
 
@@ -123,8 +132,12 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
             cell.delegate = self
         }
         
-        if let cell = cell as? ImageCell {
+        if let cell = cell as? ImageCell  {
             cell.delegate = self
+        }
+        
+        if let cell = cell as? CommentCell  {
+            cell.commentTextView.delegate = self
         }
         
         return cell as! UICollectionViewCell & ListBindable
@@ -162,7 +175,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         switch index {
         case 0:
             print("header")
-            guard   let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UserVC") as? UserViewController else { return }
+            guard   let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController else { return }
             let user = User(uid: "", fullname: "", email: "", username: object?.username ?? "", url: object?.userURL ?? "", followerCount: 0)
             vc.user = user
             
@@ -172,15 +185,29 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         case 2:
             print("action")
         default:
+            print("default")
             if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentVC") as? CommentViewController,
                 let post = object {
                 vc.post = post
                 vc.items = Comment.order(comments: post.comments)
                 vc.parentVC = self.viewController
                 vc.postIndex = self.section
-                print(section)
                 viewController?.navigationController?.pushViewController(vc, animated: true)
             }
         }
+    }
+}
+
+//UITextViewDelegate
+extension FeedSectionController: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        print("shouldInteractWith \(URL)")
+        if URL.absoluteString.hasPrefix("@") {
+            if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "userVC") as? UserViewController {
+                vc.user = User(username: String(URL.absoluteString.dropFirst()))
+                viewController?.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+        return true
     }
 }

@@ -10,7 +10,11 @@ import Foundation
 import IGListKit
 
 class CommentSectionController: ListBindingSectionController<Comment>,ListBindingSectionControllerDataSource, CommentCellDelegate, CommentActionCellDelegate {
+    func didTapURL(cell: CommentCell, url: URL) {
+        print("didTapURL")
+    }
     
+
     //MARK: - Variables
 
     var post: Post?
@@ -57,6 +61,7 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
             commentTextField.becomeFirstResponder()
             vc.replyingToView.isHidden = false
             let indexPath = vc.collectionView.indexPath(for: cell)
+            
             vc.commentTextField.text = "@\(comment.username) "
             vc.replyingToConstraint.constant = 40
             vc.collectionView.scrollToItem(at: indexPath!, at: .bottom, animated: true)

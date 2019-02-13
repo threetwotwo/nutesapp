@@ -18,6 +18,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
     
     //Present VC modally
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        let index = tabBarController.viewControllers?.index(of: viewController)
+        
+        if viewController is UINavigationController,
+            let vc = viewController.children.first as? UserViewController {
+           vc.user = FirestoreManager.shared.currentUser
+
+        }
+        
         if viewController is createPostViewController {
             if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "CreatePostVC") {
                 tabBarController.present(newVC, animated: true)

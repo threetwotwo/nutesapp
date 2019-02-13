@@ -18,5 +18,10 @@ class TimestampCell: UICollectionViewCell, ListBindable {
             timestampLabel.text = timestamp.date.timeAgoDisplay().uppercased()
         }
     }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        isUserInteractionEnabled = false
+    }
 
 }

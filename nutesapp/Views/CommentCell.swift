@@ -13,11 +13,12 @@ protocol CommentCellDelegate: class {
     func didTapHeart(cell: CommentCell)
 }
 
+
 class CommentCell: UICollectionViewCell, ListBindable {
     
     weak var delegate: CommentCellDelegate? = nil
     
-    @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak var commentTextView: UITextView!
     @IBOutlet weak var imageView: UIImageView?
     @IBOutlet weak var likeButton: UIButton!
     
@@ -32,7 +33,10 @@ class CommentCell: UICollectionViewCell, ListBindable {
         let imageTitle = viewModel.didLike ? "heart_filled" : "heart_bordered"
         likeButton.setImage(UIImage(named: imageTitle), for: [])
         
-        textLabel.attributedText = AttributedText.constructComment(username: viewModel.username, text: viewModel.text)
+        commentTextView.attributedText = AttributedText.constructComment(username: viewModel.username, text: viewModel.text)
+        commentTextView.resolveHashTags()
+        commentTextView.font = UIFont.systemFont(ofSize: 15)
+        
         username = viewModel.username
         
         

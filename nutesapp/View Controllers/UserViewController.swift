@@ -44,9 +44,6 @@ class UserViewController: UIViewController, ListAdapterDataSource {
         
         if let user = user {
             items.insert(user, at: 0)
-        } else {
-            items.insert(firestore.currentUser, at: 0)
-            self.user = firestore.currentUser
         }
         
         title = user?.username
@@ -60,6 +57,8 @@ class UserViewController: UIViewController, ListAdapterDataSource {
         self.adapter.performUpdates(animated: true)
         
         loadHeader()
+        
+        guard user != nil else { return }
 
         firestore.getPosts(username: user!.username, limit: 99) { (posts, lastSnapshot) in
             

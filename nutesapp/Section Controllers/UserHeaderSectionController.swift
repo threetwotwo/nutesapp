@@ -16,6 +16,8 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
     var firestore = FirestoreManager.shared
 
     weak var imageView: UIImageView!
+    weak var fullnameLabel: UILabel!
+    
     var isFollowing: Bool?
     var userData: UserDataViewModel?
     
@@ -122,6 +124,10 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         
         let cell = context.dequeueReusableCellFromStoryboard(withIdentifier: identifier, for: self, at: index)
         
+        if let cell = cell as? UserHeaderDetailCell {
+            fullnameLabel = cell.fullnameLabel
+        }
+        
         if let cell = cell as? UserHeaderImageCell {
             self.imageView = cell.imageView
         }
@@ -132,6 +138,14 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             cell.delegate = self
             
             if userData == nil {
+                
+                if user?.url == "" || user?.url == nil {
+                    firestore.getUser(username: username) { (user) in
+                        self.imageView.sd_setImage(with: URL(string: user.url))
+                        self.fullnameLabel.text = user.fullname
+                    }
+                }
+                
                 let dsg = DispatchGroup()
                 
                 var posts = 0

@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		430197A7221182F2009EAC41 /* UITextView + hashtags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430197A6221182F2009EAC41 /* UITextView + hashtags.swift */; };
 		4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4301BF3121EF758F00CB377C /* DatabaseManager.swift */; };
 		430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430FB34321E3877B003C83D1 /* SearchCell.swift */; };
+		4312A9F02213E481006D6FE9 /* Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4312A9EF2213E481006D6FE9 /* Identifier.swift */; };
 		431BCDAF21F9B72600B8C8A5 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431BCDAE21F9B72600B8C8A5 /* Router.swift */; };
 		431BCDB121F9E8E000B8C8A5 /* UserDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431BCDB021F9E8E000B8C8A5 /* UserDataViewModel.swift */; };
 		431BCDB321F9F77F00B8C8A5 /* UserHeaderDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431BCDB221F9F77F00B8C8A5 /* UserHeaderDataCell.swift */; };
@@ -89,8 +91,10 @@
 
 /* Begin PBXFileReference section */
 		0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.release.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.release.xcconfig"; sourceTree = "<group>"; };
+		430197A6221182F2009EAC41 /* UITextView + hashtags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + hashtags.swift"; sourceTree = "<group>"; };
 		4301BF3121EF758F00CB377C /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		430FB34321E3877B003C83D1 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
+		4312A9EF2213E481006D6FE9 /* Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifier.swift; sourceTree = "<group>"; };
 		431BCDAE21F9B72600B8C8A5 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		431BCDB021F9E8E000B8C8A5 /* UserDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataViewModel.swift; sourceTree = "<group>"; };
 		431BCDB221F9F77F00B8C8A5 /* UserHeaderDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderDataCell.swift; sourceTree = "<group>"; };
@@ -200,6 +204,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		4312A9F12213E4BE006D6FE9 /* Identifiers */ = {
+			isa = PBXGroup;
+			children = (
+				4312A9EF2213E481006D6FE9 /* Identifier.swift */,
+			);
+			path = Identifiers;
+			sourceTree = "<group>";
+		};
 		435883C621E2216D000DA3EE /* Section Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -268,6 +280,7 @@
 				431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */,
 				431BCDAE21F9B72600B8C8A5 /* Router.swift */,
 				43B7CF6521DD2C4A00F08EDC /* Main.storyboard */,
+				4312A9F12213E4BE006D6FE9 /* Identifiers */,
 				43C1D11421DE4F1F002D720D /* Extensions */,
 				435CBBF621DDD4CE00646A35 /* Model */,
 				43C1D10B21DE4DFA002D720D /* Views */,
@@ -338,6 +351,7 @@
 			isa = PBXGroup;
 			children = (
 				43C1D11221DE4F17002D720D /* AttributedText.swift */,
+				430197A6221182F2009EAC41 /* UITextView + hashtags.swift */,
 				43C1D11521DE4F8A002D720D /* NSMutableAttributedString + bold.swift */,
 				43C1D11721DE5004002D720D /* Formatter + separator.swift */,
 				43C1D11921DE506D002D720D /* ActionTimer.swift */,
@@ -563,9 +577,11 @@
 				43C1D11821DE5004002D720D /* Formatter + separator.swift in Sources */,
 				43644331220AD3B7003D54D0 /* Loader.swift in Sources */,
 				43C58F5D220820550002CF5B /* TimestampCell.swift in Sources */,
+				4312A9F02213E481006D6FE9 /* Identifier.swift in Sources */,
 				43C1D10621DE4543002D720D /* CommentViewModel.swift in Sources */,
 				438E895521E0A7E9006D20D0 /* SearchViewController.swift in Sources */,
 				435CBBF521DDD4C300646A35 /* User.swift in Sources */,
+				430197A7221182F2009EAC41 /* UITextView + hashtags.swift in Sources */,
 				43C1D11A21DE506D002D720D /* ActionTimer.swift in Sources */,
 				43C1D11321DE4F17002D720D /* AttributedText.swift in Sources */,
 				43C1D0FB21DE2C04002D720D /* FirestoreManager.swift in Sources */,

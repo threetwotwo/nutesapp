@@ -12,6 +12,7 @@ import IGListKit
 protocol ActionCellDelegate: class {
     func didTapHeart(cell: ActionCell)
     func didTapComment(cell: ActionCell)
+    func didTapLikesLabel(cell: ActionCell)
 }
 
 class ActionCell: UICollectionViewCell, ListBindable {
@@ -35,6 +36,11 @@ class ActionCell: UICollectionViewCell, ListBindable {
         super.awakeFromNib()
         likeButton.addTarget(self, action: #selector(onHeart), for: .touchUpInside)
         commentButton.addTarget(self, action: #selector(onComment), for: .touchUpInside)
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onLikes))
+        tap.numberOfTapsRequired = 1
+        likesLabel.isUserInteractionEnabled = true
+        likesLabel.addGestureRecognizer(tap)
     }
     
     
@@ -44,5 +50,9 @@ class ActionCell: UICollectionViewCell, ListBindable {
     
     @objc func onComment() {
         delegate?.didTapComment(cell: self)
+    }
+    
+    @objc func onLikes() {
+        delegate?.didTapLikesLabel(cell: self)
     }
 }
