@@ -59,8 +59,19 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         viewController?.present(picker, animated: true, completion: nil)
     }
     
+    func didTapUnfollowButton(cell: UserHeaderDataCell) {
+        guard let user = object else {return}
+
+        cell.unfollowButton.isHidden = true
+        firestore.unfollowUser(withUsername: user.username) {
+            cell.followButton.setTitle("Follow", for: [])
+            self.isFollowing = false
+            //notify feedvc
+            self.didChange(type: .unfollow, object: user.username)
+        }
+    }
+    
     func didTapFollowButton(cell: UserHeaderDataCell) {
-        
         guard let user = object else {return}
         
         guard user.username != firestore.currentUser.username else {
@@ -68,27 +79,26 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             return
         }
         
-        guard let isFollowing = isFollowing else { return }
-        
-        let buttonTitle = isFollowing ? "Follow" : "Unfollow"
-        let loadingTitle = isFollowing ? "Unfollowing" : "Following"
-        
-        cell.followButton.setTitle(loadingTitle, for: [])
-
-        if isFollowing {
-            firestore.unfollowUser(withUsername: user.username) {
-                cell.followButton.setTitle(buttonTitle, for: [])
-                self.isFollowing = !self.isFollowing!
-                //notify feedvc
-                self.didChange(type: .unfollow, object: user.username)
-            }
+        if self.isFollowing ?? false {
+            
+            //Message
+            
+            let vc = ChatViewController()
+            vc.user = object
+            viewController?.navigationController?.pushViewController(vc, animated: true)
         } else {
+            
+            //Follow
+            
             firestore.followUser(withUsername: user.username) {
-                cell.followButton.setTitle(buttonTitle, for: [])
-                self.isFollowing = !self.isFollowing!
+                cell.unfollowButton.isHidden = false
+                cell.followButton.setTitle("Message", for: [])
+                self.isFollowing = true
+                //notify feedvc
                 self.didChange(type: .follow, object: user.username)
             }
         }
+    
     }
     
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
@@ -137,6 +147,12 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             
             cell.delegate = self
             
+            if self.isFollowing == nil {
+                let buttonTitle = username == firestore.currentUser.username ? "Edit Profile" : "Loading"
+                cell.followButton.setTitle(buttonTitle, for: [])
+            }
+
+            
             if userData == nil {
                 
                 if user?.url == "" || user?.url == nil {
@@ -180,11 +196,14 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
                     self.update(animated: true, completion: nil)
                 }
             }
-
-            if firestore.currentUser.username != object?.username {
+    
+            
+            if firestore.currentUser.username != object?.username && self.isFollowing == nil {
+                print("getting isfollowing data from firestore")
                 firestore.isFollowing(follower: firestore.currentUser.username, followed: username) { (isFollowing) in
                     self.isFollowing = isFollowing
-                    cell.followButton.setTitle(isFollowing ? "Unfollow" : "Follow", for: [])
+                    cell.followButton.setTitle(isFollowing ? "Message" : "Follow", for: [])
+                    cell.unfollowButton.isHidden = !isFollowing
                 }
             }
         }

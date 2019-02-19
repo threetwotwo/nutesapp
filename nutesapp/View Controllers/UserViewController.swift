@@ -50,8 +50,18 @@ class UserViewController: UIViewController, ListAdapterDataSource {
         self.adapter.reloadData(completion: nil)
     }
     
+    @objc func pushChatVC() {
+        let vc = ChatViewController()
+        vc.user = user
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        self.becomeFirstResponder()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(pushChatVC))
         
         self.isLoading = true
         self.adapter.performUpdates(animated: true)

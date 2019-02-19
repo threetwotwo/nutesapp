@@ -340,27 +340,40 @@
                                                                         <constraint firstAttribute="height" constant="66" id="CSd-uj-jbx"/>
                                                                     </constraints>
                                                                 </stackView>
-                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P3Y-F8-ebh">
+                                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="V7e-1g-9tm">
                                                                     <rect key="frame" x="0.0" y="66" width="215" height="30"/>
-                                                                    <state key="normal" title="Button"/>
-                                                                    <userDefinedRuntimeAttributes>
-                                                                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                                            <color key="value" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        </userDefinedRuntimeAttribute>
-                                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                                            <real key="value" value="1"/>
-                                                                        </userDefinedRuntimeAttribute>
-                                                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                                            <real key="value" value="4"/>
-                                                                        </userDefinedRuntimeAttribute>
-                                                                    </userDefinedRuntimeAttributes>
-                                                                </button>
+                                                                    <subviews>
+                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P3Y-F8-ebh">
+                                                                            <rect key="frame" x="0.0" y="0.0" width="177" height="30"/>
+                                                                            <color key="tintColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                                            <state key="normal" title="Button"/>
+                                                                            <userDefinedRuntimeAttributes>
+                                                                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                                                    <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                </userDefinedRuntimeAttribute>
+                                                                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                                    <real key="value" value="1"/>
+                                                                                </userDefinedRuntimeAttribute>
+                                                                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                                                    <real key="value" value="4"/>
+                                                                                </userDefinedRuntimeAttribute>
+                                                                            </userDefinedRuntimeAttributes>
+                                                                        </button>
+                                                                        <button opaque="NO" alpha="0.80000000000000004" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Srg-5Q-DZW">
+                                                                            <rect key="frame" x="185" y="0.0" width="30" height="30"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="width" constant="30" id="gLy-Od-wD9"/>
+                                                                            </constraints>
+                                                                            <state key="normal" image="unfollow"/>
+                                                                        </button>
+                                                                    </subviews>
+                                                                </stackView>
                                                             </subviews>
                                                             <constraints>
-                                                                <constraint firstAttribute="trailing" secondItem="P3Y-F8-ebh" secondAttribute="trailing" id="5gO-WV-zYc"/>
                                                                 <constraint firstItem="bdX-1w-LN4" firstAttribute="leading" secondItem="L8r-LV-2HC" secondAttribute="leading" constant="16" id="Hp4-Eh-9xR"/>
                                                                 <constraint firstAttribute="trailing" secondItem="bdX-1w-LN4" secondAttribute="trailing" constant="16" id="NcD-W3-fyq"/>
-                                                                <constraint firstItem="P3Y-F8-ebh" firstAttribute="leading" secondItem="L8r-LV-2HC" secondAttribute="leading" id="gUa-aN-Z9r"/>
+                                                                <constraint firstItem="V7e-1g-9tm" firstAttribute="leading" secondItem="L8r-LV-2HC" secondAttribute="leading" id="SIs-xw-nFC"/>
+                                                                <constraint firstAttribute="trailing" secondItem="V7e-1g-9tm" secondAttribute="trailing" id="xJJ-n1-9Io"/>
                                                             </constraints>
                                                         </stackView>
                                                     </subviews>
@@ -386,6 +399,7 @@
                                             <outlet property="followersLabel" destination="5Jl-wB-DMC" id="y3f-Lb-ULZ"/>
                                             <outlet property="followingLabel" destination="YEM-mT-fA6" id="oyi-NU-9Iy"/>
                                             <outlet property="postsLabel" destination="68g-6N-aVS" id="Czh-Ho-7je"/>
+                                            <outlet property="unfollowButton" destination="Srg-5Q-DZW" id="JGg-Js-Y18"/>
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="userDetail" id="4zI-xa-m2H" customClass="UserHeaderDetailCell" customModule="nutesapp" customModuleProvider="target">
@@ -482,16 +496,32 @@
             </objects>
             <point key="canvasLocation" x="2624.8000000000002" y="738.98050974512751"/>
         </scene>
-        <!--Search View Controller-->
+        <!--Messages View Controller-->
+        <scene sceneID="gkN-m8-9Zn">
+            <objects>
+                <viewController storyboardIdentifier="chatVC" id="PmF-sM-fLC" customClass="MessagesViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wuF-Ty-rL7">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="qRf-af-CWS"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="gaR-iH-Ra6"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xHd-02-hmY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3470" y="739"/>
+        </scene>
+        <!--Search Results View Controller-->
         <scene sceneID="9tz-b0-qj8">
             <objects>
-                <viewController storyboardIdentifier="searchVC" id="8fx-fl-d6a" customClass="SearchViewController" customModule="nutesapp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="searchresultsVC" id="8fx-fl-d6a" customClass="SearchResultsViewController" customModule="nutesapp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="LGO-Sd-Tbo">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="acb-ux-6eI">
-                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="yOT-wB-O3U">
                                     <size key="itemSize" width="375" height="50"/>
@@ -566,6 +596,84 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Aop-fb-MzN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3337" y="-645"/>
+        </scene>
+        <!--Search Feed View Controller-->
+        <scene sceneID="val-fd-HNY">
+            <objects>
+                <viewController storyboardIdentifier="searchFeedVC" id="w9Q-1O-CDb" customClass="SearchFeedViewController" customModule="nutesapp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="co4-hT-vug">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="xfg-bb-i9U">
+                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Mnc-d5-jLN">
+                                    <size key="itemSize" width="150" height="150"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="searchFeedCell" id="dwC-zH-veI" customClass="ImageCell" customModule="nutesapp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                            <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="t4D-09-Wue">
+                                                    <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
+                                                    <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                            <real key="value" value="2"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                            <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FnJ-yx-LC1">
+                                                    <rect key="frame" x="63.5" y="34.5" width="23" height="60"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="50"/>
+                                                    <color key="textColor" red="1" green="0.84705882349999995" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="t4D-09-Wue" secondAttribute="trailing" id="0gq-Qj-ORV"/>
+                                            <constraint firstItem="FnJ-yx-LC1" firstAttribute="centerX" secondItem="t4D-09-Wue" secondAttribute="centerX" id="8wl-wr-9RZ"/>
+                                            <constraint firstItem="FnJ-yx-LC1" firstAttribute="centerY" secondItem="t4D-09-Wue" secondAttribute="centerY" constant="-10.5" id="aV7-Tt-WmG"/>
+                                            <constraint firstItem="t4D-09-Wue" firstAttribute="top" secondItem="dwC-zH-veI" secondAttribute="top" id="equ-LL-cNh"/>
+                                            <constraint firstItem="t4D-09-Wue" firstAttribute="leading" secondItem="dwC-zH-veI" secondAttribute="leading" id="mP3-1B-hNe"/>
+                                            <constraint firstAttribute="bottom" secondItem="t4D-09-Wue" secondAttribute="bottom" id="una-d4-TwU"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="numberLabel" destination="FnJ-yx-LC1" id="sDs-J3-8I7"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="xfg-bb-i9U" firstAttribute="leading" secondItem="X6N-lT-ipr" secondAttribute="leading" id="EUW-Qm-M9H"/>
+                            <constraint firstItem="X6N-lT-ipr" firstAttribute="bottom" secondItem="xfg-bb-i9U" secondAttribute="bottom" id="MaY-Cx-LdE"/>
+                            <constraint firstItem="X6N-lT-ipr" firstAttribute="trailing" secondItem="xfg-bb-i9U" secondAttribute="trailing" id="S9O-nE-i68"/>
+                            <constraint firstItem="xfg-bb-i9U" firstAttribute="top" secondItem="X6N-lT-ipr" secondAttribute="top" id="vJs-vZ-cCZ"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="X6N-lT-ipr"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="oKy-rP-vnZ"/>
+                    <connections>
+                        <outlet property="collectionView" destination="xfg-bb-i9U" id="oUa-eT-7cg"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dI5-bm-DAS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2624.8000000000002" y="-645.42728635682158"/>
         </scene>
@@ -745,7 +853,7 @@
                                                         <constraint firstItem="3bY-Uo-JOe" firstAttribute="centerX" secondItem="tjK-Ui-pZh" secondAttribute="centerX" id="qSb-dK-ZfG"/>
                                                     </constraints>
                                                 </view>
-                                                <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" editable="NO" text="@jim fuck" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ycV-L7-MXF">
+                                                <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" editable="NO" text="@jim fuck" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ycV-L7-MXF" customClass="CommentTextView" customModule="nutesapp" customModuleProvider="target">
                                                     <rect key="frame" x="16" y="0.0" width="308" height="35"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -1321,7 +1429,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="8fx-fl-d6a" kind="relationship" relationship="rootViewController" id="4go-WC-bhy"/>
+                        <segue destination="w9Q-1O-CDb" kind="relationship" relationship="rootViewController" id="KJB-a0-RzH"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q3P-2j-bt8" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1354,5 +1462,6 @@
         <image name="comment" width="50" height="50"/>
         <image name="heart_bordered" width="50" height="50"/>
         <image name="hide-keyboard-button" width="256" height="256"/>
+        <image name="unfollow" width="256" height="256"/>
     </resources>
 </document>

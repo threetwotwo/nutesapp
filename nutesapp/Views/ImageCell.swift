@@ -17,6 +17,7 @@ protocol ImageCellDelegate: class {
 class ImageCell: UICollectionViewCell, ListBindable {
     
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var numberLabel: UILabel!
     
     weak var delegate: ImageCellDelegate? = nil
     

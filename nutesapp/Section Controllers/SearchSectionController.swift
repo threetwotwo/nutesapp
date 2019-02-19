@@ -58,11 +58,12 @@ class SearchSectionController: ListBindingSectionController<User>, ListBindingSe
     override func didSelectItem(at index: Int) {
         
         guard let user = object
-            ,let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController else { return }
+            ,let userVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController else { return }
+
+        userVC.user = user
         
-        vc.user = user
-        
-        viewController?.navigationController?.pushViewController(vc, animated: true)
-        
+        if let parentVC = viewController as? SearchResultsViewController {
+            parentVC.navController?.pushViewController(userVC, animated: true)
+        }
     }
 }

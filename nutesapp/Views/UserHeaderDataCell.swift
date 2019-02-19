@@ -11,6 +11,7 @@ import IGListKit
 
 protocol UserHeaderDataCellDelegate: class {
     func didTapFollowButton(cell: UserHeaderDataCell)
+    func didTapUnfollowButton(cell: UserHeaderDataCell)
 }
 
 class UserHeaderDataCell: UICollectionViewCell, ListBindable {
@@ -18,12 +19,15 @@ class UserHeaderDataCell: UICollectionViewCell, ListBindable {
     @IBOutlet weak var followersLabel: UILabel!
     @IBOutlet weak var followingLabel: UILabel!
     @IBOutlet weak var followButton: UIButton!
+    @IBOutlet weak var unfollowButton: UIButton!
     
     weak var delegate: UserHeaderDataCellDelegate? = nil
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        unfollowButton.isHidden = true
         followButton.addTarget(self, action: #selector(onFollow), for: .touchUpInside)
+        unfollowButton.addTarget(self, action: #selector(onUnfollow), for: .touchUpInside)
     }
     
     func bindViewModel(_ viewModel: Any) {
@@ -33,14 +37,16 @@ class UserHeaderDataCell: UICollectionViewCell, ListBindable {
         followersLabel.text = "\(viewModel.followerCount)"
         followingLabel.text = "\(viewModel.followingCount)"
         
-        let buttonTitle = viewModel.username == FirestoreManager.shared.currentUser.username ? "Edit Profile" : "Loading"
-        
-        followButton.setTitle(buttonTitle, for: [])
+
     }
     
     
     @objc func onFollow() {
         delegate?.didTapFollowButton(cell: self)
+    }
+    
+    @objc func onUnfollow() {
+        delegate?.didTapUnfollowButton(cell: self)
     }
     
 }

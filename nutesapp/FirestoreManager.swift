@@ -28,6 +28,19 @@ final class FirestoreManager {
         db.settings = settings
     }
     
+    func getChatID(with username: String, completion: @escaping (String)->()) {
+        let current = currentUser?.username ?? ""
+        let id = current < username ? "\(current)_\(username)" : "\(username)_\(current)"
+        let query = db.collection("chats").document(id)
+        query.getDocument(completion: { (snap, error) in
+            if let chatID = snap?.documentID {
+                completion(chatID)
+            } else {
+                print("chat not found")
+            }
+        })
+    }
+    
     //MARK: - Presence
     
     func setPostAsSeen(postID: String) {
@@ -255,7 +268,7 @@ final class FirestoreManager {
                     return
                 }
                 
-                let postRef = self.db.collection("posts").document(postID)
+                let postRef = self.db.collection("posts").document()
                 
                 //create and update documents
                 self.db.runTransaction({ (transaction, errorPointer) -> Any? in
@@ -692,13 +705,14 @@ final class FirestoreManager {
 
     //MARK: - Get a user
     func getUser(username: String, completion: @escaping (User)->()) {
-        db.collection("users").document(username).getDocument { (document, error) in
+        db.collection("users").whereField("username", isEqualTo: username).getDocuments { (snap, error) in
             
-            guard let document = document,
-            let data = document.data() else {
+            guard let document = snap?.documents.first else {
                 print("document does not exist")
                 return
             }
+            
+            let data = document.data()
             
             let uid = data["uid"] as? String
             let fullname = data["fullname"] as? String
@@ -745,14 +759,13 @@ final class FirestoreManager {
     
     //MARK: - Get a user's info
     func getUserInfo(username: String, completion: @escaping (_ data: [String:Any]) -> ()) {
-        db.collection("users").document(username).getDocument { (document, error) in
-            guard let document = document else {
+        db.collection("users").whereField("username", isEqualTo: username).getDocuments  { (snap, error) in
+            guard let document = snap?.documents.first else {
                 print("Document does not exist")
                 return
             }
-            if let data = document.data() {
-                completion(data)
-            }
+           
+            completion(document.data())
         }
     }
     

@@ -53,7 +53,7 @@ class FeedViewController: UIViewController {
 //            self.refreshControl.endRefreshing()
 //        }
         
-        guard shouldLoadMore else {
+        guard !shouldLoadOnlyOnePost else {
             refreshControl.endRefreshing()
             return
         }
@@ -70,13 +70,17 @@ class FeedViewController: UIViewController {
     //MARK: - Loading
 
     func startLoading() {
-        loading = true
+        isLoading = true
         performUpdates()
     }
     
     func endLoading() {
-        loading = false
+        isLoading = false
         performUpdates()
+    }
+    
+    @objc func performUpdates() {
+        adapter.performUpdates(animated: true, completion: nil)
     }
     
     //MARK: - Variables
@@ -86,16 +90,16 @@ class FeedViewController: UIViewController {
     var firestore = FirestoreManager.shared
     let spinToken = "spinner"
     var lastSnapshots = [String:DocumentSnapshot]()
-    var loading = false
+    var isLoading = false
     
     var cachedIDs = [String]()
     //false if only need to load one post
-    var shouldLoadMore = true
+    var shouldLoadOnlyOnePost = false
     
     //MARK: - Life cycle
     
     fileprivate func loadPosts(user: String? = nil, insertAtTop: Bool = false, completion: (()->())? = nil) {
-        guard shouldLoadMore else { return }
+        guard !shouldLoadOnlyOnePost else { return }
 
         self.startLoading()
 
@@ -200,6 +204,7 @@ class FeedViewController: UIViewController {
         super.viewDidLoad()
         //top activity indicator
         // Add Refresh Control to Table View
+
         if #available(iOS 10.0, *) {
             collectionView.refreshControl = refreshControl
         } else {
@@ -208,7 +213,7 @@ class FeedViewController: UIViewController {
         //For tab bar delegate function in app delegate to work
         self.tabBarController?.delegate = UIApplication.shared.delegate as? UITabBarControllerDelegate
         
-        if shouldLoadMore {
+        if !shouldLoadOnlyOnePost {
             loadPosts{
                 self.endLoading()
             }
@@ -240,9 +245,6 @@ class FeedViewController: UIViewController {
         }
     }
     
-    @objc func performUpdates() {
-        adapter.performUpdates(animated: true, completion: nil)
-    }
 }
 
 //MARK: - List adapter data source
@@ -251,7 +253,7 @@ extension FeedViewController: ListAdapterDataSource {
     func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
         var objects = items as [ListDiffable]
         
-        if loading{
+        if isLoading{
             objects.append(spinToken as ListDiffable)
         }
         
@@ -275,7 +277,7 @@ extension FeedViewController: ListAdapterDataSource {
 extension FeedViewController: UIScrollViewDelegate {
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         let distance = scrollView.contentSize.height - (targetContentOffset.pointee.y + scrollView.bounds.height)
-        if !loading && distance < 100 {
+        if !isLoading && distance < 100 {
             loadPosts{
                 self.endLoading()
             }

@@ -12,6 +12,7 @@ struct Identifier {
 
     struct storyboard {
         static let userVC = "userVC"
+        static let searchresultsVC = "searchresultsVC"
     }
     
     struct cell {

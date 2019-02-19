@@ -1,16 +1,16 @@
 //
-//  UITextView + hashtags.swift
+//  CommentTextView.swift
 //  nutesapp
 //
-//  Created by Gary Piong on 11/02/19.
+//  Created by Gary Piong on 16/02/19.
 //  Copyright © 2019 Gary Piong. All rights reserved.
 //
 
 import UIKit
 
-extension UITextView {
+final class CommentTextView: UITextView {
     
-    override open func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         // location of the tap
         var location = point
         location.x -= self.textContainerInset.left
@@ -41,13 +41,14 @@ extension UITextView {
         let attrString = NSMutableAttributedString()
         attrString.setAttributedString(self.attributedText)
         // tag each word if it has a hashtag
-        for word in words {
+        for (index, word) in words.enumerated() {
             if word.count < 3 {
                 continue
             }
             
             // a range is the character position, followed by how many characters are in the word.
             // we need this because we staple the "href" to this range.
+
             let matchRange:NSRange = nsText.range(of: word as String)
             
             // found a word that is prepended by a hashtag!
@@ -64,10 +65,11 @@ extension UITextView {
                     // it's not enough to use the word "hash", but you need the url scheme syntax "hash://"
                     // note:  since it's a URL now, the color is set to the project's tint color
                     attrString.addAttribute(NSAttributedString.Key.link, value: word, range: matchRange)
-
+                    
                 }
                 
             }
+            
         }
         
         // we're used to textView.text
@@ -77,3 +79,6 @@ extension UITextView {
         self.attributedText = attrString
     }
 }
+
+
+

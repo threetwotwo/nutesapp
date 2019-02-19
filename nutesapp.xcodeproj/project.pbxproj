@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		430197A7221182F2009EAC41 /* UITextView + hashtags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430197A6221182F2009EAC41 /* UITextView + hashtags.swift */; };
 		4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4301BF3121EF758F00CB377C /* DatabaseManager.swift */; };
 		430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430FB34321E3877B003C83D1 /* SearchCell.swift */; };
 		4312A9F02213E481006D6FE9 /* Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4312A9EF2213E481006D6FE9 /* Identifier.swift */; };
@@ -18,6 +17,8 @@
 		43295CED2209F20000F6C74B /* UIViewController + listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43295CEC2209F20000F6C74B /* UIViewController + listeners.swift */; };
 		433C58CF21E4DC2300BCD083 /* SearchSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */; };
 		4355B29721EC9299000093EF /* FeedSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4355B29621EC9299000093EF /* FeedSectionController.swift */; };
+		4358027F221BCF6A004B1E83 /* UINavigationController + push completion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4358027E221BCF6A004B1E83 /* UINavigationController + push completion.swift */; };
+		43580281221BDAC2004B1E83 /* UnicodeScalar + Emoji detectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43580280221BDAC2004B1E83 /* UnicodeScalar + Emoji detectors.swift */; };
 		435883C521E21B57000DA3EE /* UserHeaderSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */; };
 		435883C821E2223E000DA3EE /* UserImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435883C721E2223E000DA3EE /* UserImageViewModel.swift */; };
 		435CBBEC21DDCEDC00646A35 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */; };
@@ -28,8 +29,9 @@
 		435CBBFA21DDD51F00646A35 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBF921DDD51F00646A35 /* Comment.swift */; };
 		4364432F220ABEA6003D54D0 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4364432E220ABEA6003D54D0 /* Observer.swift */; };
 		43644331220AD3B7003D54D0 /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43644330220AD3B7003D54D0 /* Loader.swift */; };
+		4365ABC5221A85E6003C1F7E /* SearchFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4365ABC4221A85E6003C1F7E /* SearchFeedViewController.swift */; };
 		438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438E895221E0A7D9006D20D0 /* UserViewController.swift */; };
-		438E895521E0A7E9006D20D0 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438E895421E0A7E9006D20D0 /* SearchViewController.swift */; };
+		438E895521E0A7E9006D20D0 /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438E895421E0A7E9006D20D0 /* SearchResultsViewController.swift */; };
 		439204D421DF2BE10031CFCB /* UITextView + centerVertically.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439204D321DF2BE10031CFCB /* UITextView + centerVertically.swift */; };
 		439FC52F21E31B6B00EB7954 /* UserHeaderImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439FC52E21E31B6B00EB7954 /* UserHeaderImageCell.swift */; };
 		439FC53121E31CE100EB7954 /* UserHeaderDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439FC53021E31CE100EB7954 /* UserHeaderDetailCell.swift */; };
@@ -69,6 +71,10 @@
 		43CBFBBC21ECCCE600192ADA /* CommentActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBFBBB21ECCCE600192ADA /* CommentActionCell.swift */; };
 		43CBFBBE21ECCF4D00192ADA /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBFBBD21ECCF4D00192ADA /* CommentViewController.swift */; };
 		43CBFBC021ECCF8600192ADA /* CommentSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBFBBF21ECCF8600192ADA /* CommentSectionController.swift */; };
+		43D5AC6E2217D4000061AD8A /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D5AC6D2217D4000061AD8A /* ChatManager.swift */; };
+		43EA666222172F510010631F /* CommentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EA666122172F510010631F /* CommentTextView.swift */; };
+		43EC6A682216A15400991929 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EC6A672216A15400991929 /* ChatViewController.swift */; };
+		43EC6A6A2216A31A00991929 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EC6A692216A31A00991929 /* Message.swift */; };
 		FE97F2583C761A5D2EBBBE1C /* Pods_nutesapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63C2C5452072E7E0CCC7D170 /* Pods_nutesapp.framework */; };
 /* End PBXBuildFile section */
 
@@ -91,7 +97,6 @@
 
 /* Begin PBXFileReference section */
 		0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.release.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.release.xcconfig"; sourceTree = "<group>"; };
-		430197A6221182F2009EAC41 /* UITextView + hashtags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + hashtags.swift"; sourceTree = "<group>"; };
 		4301BF3121EF758F00CB377C /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		430FB34321E3877B003C83D1 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		4312A9EF2213E481006D6FE9 /* Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifier.swift; sourceTree = "<group>"; };
@@ -102,6 +107,8 @@
 		43295CEC2209F20000F6C74B /* UIViewController + listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController + listeners.swift"; sourceTree = "<group>"; };
 		433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSectionController.swift; sourceTree = "<group>"; };
 		4355B29621EC9299000093EF /* FeedSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSectionController.swift; sourceTree = "<group>"; };
+		4358027E221BCF6A004B1E83 /* UINavigationController + push completion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController + push completion.swift"; sourceTree = "<group>"; };
+		43580280221BDAC2004B1E83 /* UnicodeScalar + Emoji detectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UnicodeScalar + Emoji detectors.swift"; sourceTree = "<group>"; };
 		435883C421E21B57000DA3EE /* UserHeaderSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderSectionController.swift; sourceTree = "<group>"; };
 		435883C721E2223E000DA3EE /* UserImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserImageViewModel.swift; sourceTree = "<group>"; };
 		435CBBEB21DDCEDB00646A35 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -110,8 +117,9 @@
 		435CBBF921DDD51F00646A35 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		4364432E220ABEA6003D54D0 /* Observer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
 		43644330220AD3B7003D54D0 /* Loader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
+		4365ABC4221A85E6003C1F7E /* SearchFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFeedViewController.swift; sourceTree = "<group>"; };
 		438E895221E0A7D9006D20D0 /* UserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
-		438E895421E0A7E9006D20D0 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		438E895421E0A7E9006D20D0 /* SearchResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewController.swift; sourceTree = "<group>"; };
 		439204D321DF2BE10031CFCB /* UITextView + centerVertically.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView + centerVertically.swift"; sourceTree = "<group>"; };
 		439FC52E21E31B6B00EB7954 /* UserHeaderImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderImageCell.swift; sourceTree = "<group>"; };
 		439FC53021E31CE100EB7954 /* UserHeaderDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderDetailCell.swift; sourceTree = "<group>"; };
@@ -157,6 +165,10 @@
 		43CBFBBB21ECCCE600192ADA /* CommentActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentActionCell.swift; sourceTree = "<group>"; };
 		43CBFBBD21ECCF4D00192ADA /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		43CBFBBF21ECCF8600192ADA /* CommentSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentSectionController.swift; sourceTree = "<group>"; };
+		43D5AC6D2217D4000061AD8A /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
+		43EA666122172F510010631F /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
+		43EC6A672216A15400991929 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		43EC6A692216A31A00991929 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		5C5FB4C67B21E2162CA727F8 /* Pods-nutesapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.debug.xcconfig"; sourceTree = "<group>"; };
 		63C2C5452072E7E0CCC7D170 /* Pods_nutesapp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_nutesapp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -228,10 +240,12 @@
 		435CBBEF21DDD1AD00646A35 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				43EC6A672216A15400991929 /* ChatViewController.swift */,
 				43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */,
 				43CBFBBD21ECCF4D00192ADA /* CommentViewController.swift */,
 				43C1D0FC21DE394A002D720D /* FeedViewController.swift */,
-				438E895421E0A7E9006D20D0 /* SearchViewController.swift */,
+				4365ABC4221A85E6003C1F7E /* SearchFeedViewController.swift */,
+				438E895421E0A7E9006D20D0 /* SearchResultsViewController.swift */,
 				43B0693621DE5A1C005387C3 /* createPostViewController.swift */,
 				438E895221E0A7D9006D20D0 /* UserViewController.swift */,
 			);
@@ -244,6 +258,7 @@
 				435CBBF421DDD4C300646A35 /* User.swift */,
 				435CBBF721DDD51000646A35 /* Post.swift */,
 				435CBBF921DDD51F00646A35 /* Comment.swift */,
+				43EC6A692216A31A00991929 /* Message.swift */,
 				43C1D10021DE44BC002D720D /* View Models */,
 			);
 			path = Model;
@@ -276,6 +291,7 @@
 			children = (
 				43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */,
 				43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */,
+				43D5AC6D2217D4000061AD8A /* ChatManager.swift */,
 				4301BF3121EF758F00CB377C /* DatabaseManager.swift */,
 				431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */,
 				431BCDAE21F9B72600B8C8A5 /* Router.swift */,
@@ -351,7 +367,7 @@
 			isa = PBXGroup;
 			children = (
 				43C1D11221DE4F17002D720D /* AttributedText.swift */,
-				430197A6221182F2009EAC41 /* UITextView + hashtags.swift */,
+				43EA666122172F510010631F /* CommentTextView.swift */,
 				43C1D11521DE4F8A002D720D /* NSMutableAttributedString + bold.swift */,
 				43C1D11721DE5004002D720D /* Formatter + separator.swift */,
 				43C1D11921DE506D002D720D /* ActionTimer.swift */,
@@ -361,7 +377,9 @@
 				43C58F5A2208160B0002CF5B /* UIViewController + keyboardNotifs.swift */,
 				43295CEC2209F20000F6C74B /* UIViewController + listeners.swift */,
 				4364432E220ABEA6003D54D0 /* Observer.swift */,
+				4358027E221BCF6A004B1E83 /* UINavigationController + push completion.swift */,
 				43644330220AD3B7003D54D0 /* Loader.swift */,
+				43580280221BDAC2004B1E83 /* UnicodeScalar + Emoji detectors.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -511,11 +529,14 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/IGListKit/IGListKit.framework",
+				"${BUILT_PRODUCTS_DIR}/MessageInputBar/MessageInputBar.framework",
+				"${BUILT_PRODUCTS_DIR}/MessageKit/MessageKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/PryntTrimmerView/PryntTrimmerView.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SteviaLayout/Stevia.framework",
 				"${BUILT_PRODUCTS_DIR}/YPImagePicker/YPImagePicker.framework",
+				"${BUILT_PRODUCTS_DIR}/collection-view-layouts/collection_view_layouts.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -529,11 +550,14 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IGListKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageInputBar.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PryntTrimmerView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Stevia.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YPImagePicker.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/collection_view_layouts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
@@ -579,15 +603,18 @@
 				43C58F5D220820550002CF5B /* TimestampCell.swift in Sources */,
 				4312A9F02213E481006D6FE9 /* Identifier.swift in Sources */,
 				43C1D10621DE4543002D720D /* CommentViewModel.swift in Sources */,
-				438E895521E0A7E9006D20D0 /* SearchViewController.swift in Sources */,
+				438E895521E0A7E9006D20D0 /* SearchResultsViewController.swift in Sources */,
 				435CBBF521DDD4C300646A35 /* User.swift in Sources */,
-				430197A7221182F2009EAC41 /* UITextView + hashtags.swift in Sources */,
 				43C1D11A21DE506D002D720D /* ActionTimer.swift in Sources */,
 				43C1D11321DE4F17002D720D /* AttributedText.swift in Sources */,
 				43C1D0FB21DE2C04002D720D /* FirestoreManager.swift in Sources */,
 				435CBBFA21DDD51F00646A35 /* Comment.swift in Sources */,
+				43EC6A6A2216A31A00991929 /* Message.swift in Sources */,
+				43EC6A682216A15400991929 /* ChatViewController.swift in Sources */,
+				4365ABC5221A85E6003C1F7E /* SearchFeedViewController.swift in Sources */,
 				43B0693721DE5A1C005387C3 /* createPostViewController.swift in Sources */,
 				43AD430521FEF70A003AA749 /* ViewMore.swift in Sources */,
+				43580281221BDAC2004B1E83 /* UnicodeScalar + Emoji detectors.swift in Sources */,
 				431BCDAF21F9B72600B8C8A5 /* Router.swift in Sources */,
 				43C1D11E21DE50FC002D720D /* UIView + IBInspectables.swift in Sources */,
 				439FC52F21E31B6B00EB7954 /* UserHeaderImageCell.swift in Sources */,
@@ -605,13 +632,16 @@
 				43CBFBBC21ECCCE600192ADA /* CommentActionCell.swift in Sources */,
 				4355B29721EC9299000093EF /* FeedSectionController.swift in Sources */,
 				43CBFBC021ECCF8600192ADA /* CommentSectionController.swift in Sources */,
+				43D5AC6E2217D4000061AD8A /* ChatManager.swift in Sources */,
 				438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */,
 				431BCDB321F9F77F00B8C8A5 /* UserHeaderDataCell.swift in Sources */,
 				439FC53321E31DF900EB7954 /* UserDetailViewModel.swift in Sources */,
+				43EA666222172F510010631F /* CommentTextView.swift in Sources */,
 				4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */,
 				43C1D10D21DE4E9D002D720D /* PostHeaderCell.swift in Sources */,
 				435CBBF821DDD51000646A35 /* Post.swift in Sources */,
 				439FC53521E342FD00EB7954 /* UserBodySectionController.swift in Sources */,
+				4358027F221BCF6A004B1E83 /* UINavigationController + push completion.swift in Sources */,
 				43CBFBBE21ECCF4D00192ADA /* CommentViewController.swift in Sources */,
 				43C1D10221DE450D002D720D /* ImageViewModel.swift in Sources */,
 				43C1D0FD21DE394A002D720D /* FeedViewController.swift in Sources */,
@@ -805,7 +835,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y86S53Q2FU;
 				INFOPLIST_FILE = nutesapp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -825,7 +855,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y86S53Q2FU;
 				INFOPLIST_FILE = nutesapp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

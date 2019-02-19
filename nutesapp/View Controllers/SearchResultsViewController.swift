@@ -1,5 +1,5 @@
 //
-//  SearchViewController.swift
+//  SearchResultsViewController.swift
 //  nutesapp
 //
 //  Created by Gary Piong on 05/01/19.
@@ -9,14 +9,16 @@
 import UIKit
 import IGListKit
 
-class SearchViewController: UIViewController, ListAdapterDataSource {
+class SearchResultsViewController: UIViewController, ListAdapterDataSource {
     
     //MARK: - IBOutlets
 
     @IBOutlet weak var collectionView: UICollectionView!
-    var searchBar: UISearchBar!
     
     //MARK: - Variables
+    
+    //navigation controller of searchFeedVC, used to push to userVC
+    var navController: UINavigationController?
     
     var items: [ListDiffable] = []
     var firestore = FirestoreManager.shared
@@ -39,7 +41,7 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     
     //MARK: - Life Cycle
 
-    fileprivate func getAllUsers(postID: String? = nil) {
+    func getAllUsers(postID: String? = nil) {
         if postID == nil {
             firestore.db.collection("users").getDocuments { (documents, error) in
                 guard error == nil,
@@ -70,22 +72,18 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //place search bar in nav bar
-        searchBar = UISearchBar()
-        searchBar.sizeToFit()
-        searchBar.showsCancelButton = true
-        searchBar.tintColor = UIColor.black
-        searchBar.placeholder = "Search"
-        navigationItem.titleView = searchBar
-        
+    
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key(rawValue: NSAttributedString.Key.foregroundColor.rawValue): UIColor.black], for: .normal)
 
         //[DEBUG] Load all users from db
         self.isLoading = true
         self.adapter.performUpdates(animated: true)
-        searchBar.delegate = self
         
         getAllUsers(postID: self.postID)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+
     }
 
     //MARK: - ListAdapterDataSource
@@ -119,29 +117,38 @@ class SearchViewController: UIViewController, ListAdapterDataSource {
     
 }
 
-extension SearchViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("searchBarSearchButtonClicked")
-        searchBar.resignFirstResponder()
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        print("searchBarCancelButtonClicked")
-        searchBar.text = ""
-        searchBar.resignFirstResponder()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print(searchText)
-        guard !searchText.isEmpty else {
-            items.removeAll()
-            getAllUsers()
-            return
-        }
-        firestore.getUser(username: searchText.lowercased()) { (user) in
-            self.items.removeAll()
-            self.items = [user]
-            self.adapter.performUpdates(animated: true, completion: nil)
-        }
+//extension SearchResultsViewController: UISearchControllerDelegate {
+//    
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        print("searchBarSearchButtonClicked")
+//        searchBar.resignFirstResponder()
+//    }
+//    
+//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        print("searchBarCancelButtonClicked")
+//        searchBar.text = ""
+//        searchBar.resignFirstResponder()
+//    }
+//    
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        print(searchText)
+//        guard !searchText.isEmpty else {
+//            items.removeAll()
+//            getAllUsers()
+//            return
+//        }
+//        firestore.getUser(username: searchText.lowercased()) { (user) in
+//            self.items.removeAll()
+//            self.items = [user]
+//            self.adapter.performUpdates(animated: true, completion: nil)
+//        }
+//    }
+//}
+
+
+extension SearchResultsViewController: UISearchResultsUpdating {
+    // MARK: - UISearchResultsUpdating Delegate
+    func updateSearchResults(for searchController: UISearchController) {
+        // TODO
     }
 }

@@ -17,7 +17,6 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     
     var likeCount: Int?
     var didLike: Bool?
-    var lastSection = -1
     
     //MARK: - ImageCellDelegate
     func doubleTapped(cell: ImageCell) {
@@ -28,7 +27,10 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
     
     func didTapLikesLabel(cell: ActionCell) {
         print("didTapLikesLabel")
-        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "searchVC") as? SearchViewController {
+        
+        guard object?.likeCount ?? 0 > 0 else { return }
+        
+        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "searchVC") as? SearchResultsViewController {
             vc.postID = object?.id
             viewController?.navigationController?.pushViewController(vc, animated: true)
         }

@@ -21,9 +21,7 @@ class UserBodySectionController: ListBindingSectionController<Post>, ListBinding
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         
         guard let object = object as? Post else { fatalError() }
-        
-        print(object.comments.first?.text)
-        
+                
         let results: [ListDiffable] = [
             ImageViewModel(url: object.postURL)
         ]
@@ -63,9 +61,8 @@ class UserBodySectionController: ListBindingSectionController<Post>, ListBinding
     
     override func didSelectItem(at index: Int) {
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "feedVC") as! FeedViewController
-        vc.shouldLoadMore = false
+        vc.shouldLoadOnlyOnePost = true
         vc.items = [object] as! [ListDiffable]
-        print((vc.items.first as! Post).comments.first?.text)
         viewController?.navigationController?.pushViewController(vc, animated: true)
     }
 }

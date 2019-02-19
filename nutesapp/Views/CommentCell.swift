@@ -18,7 +18,7 @@ class CommentCell: UICollectionViewCell, ListBindable {
     
     weak var delegate: CommentCellDelegate? = nil
     
-    @IBOutlet weak var commentTextView: UITextView!
+    @IBOutlet weak var commentTextView: CommentTextView!
     @IBOutlet weak var imageView: UIImageView?
     @IBOutlet weak var likeButton: UIButton!
     
