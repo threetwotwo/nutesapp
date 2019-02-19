@@ -64,7 +64,14 @@ final class ChatManager {
                 let text = data["text"] as? String ?? ""
                 let timestamp = data["timestamp"] as? Timestamp ?? Timestamp()
                 
-                let message = Message(sender: Sender(id: username, displayName: username), messageID: doc.documentID, timestamp: timestamp.dateValue(), kind: .text(text))
+                let message: Message
+                
+                if text.isSingleEmoji {
+                    message = Message(sender: Sender(id: username, displayName: username), messageID: doc.documentID, timestamp: timestamp.dateValue(), kind: .emoji(text))
+                } else {
+                    message = Message(sender: Sender(id: username, displayName: username), messageID: doc.documentID, timestamp: timestamp.dateValue(), kind: .text(text))
+                }
+
                 
                 messages.append(message)
             }
