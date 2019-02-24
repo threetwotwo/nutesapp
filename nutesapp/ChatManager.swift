@@ -80,13 +80,24 @@ final class ChatManager {
         })
     }
     
-    func send(chatID: String, text: String) {
+    func send(chatID: String, message: Message) {
         let messageRef = db.collection("chats").document(chatID).collection("messages").document()
+        
+        let text: String
+        
+        switch message.kind {
+        case .text(let str):
+            text = str
+        default:
+            text = ""
+        }
+        
         let payload: [String:Any] = [
             "timestamp" : Timestamp(),
             "username" : currentUser?.username ?? "",
             "text" : text
         ]
+        
         messageRef.setData(payload)
     }
 }

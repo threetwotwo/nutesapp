@@ -51,8 +51,8 @@ class UserViewController: UIViewController, ListAdapterDataSource {
     }
     
     @objc func pushChatVC() {
-        let vc = ChatViewController()
-        vc.user = user
+        let vc = DirectMessageViewController()
+        vc.user = self.user
         navigationController?.pushViewController(vc, animated: true)
     }
     

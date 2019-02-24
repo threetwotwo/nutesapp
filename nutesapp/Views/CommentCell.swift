@@ -8,9 +8,12 @@
 
 import UIKit
 import IGListKit
+import ActiveLabel
 
 protocol CommentCellDelegate: class {
     func didTapHeart(cell: CommentCell)
+    func didTapMention(cell: CommentCell, mention: String)
+    func didTapHashtag(cell: CommentCell, hashtag: String)
 }
 
 
@@ -18,9 +21,23 @@ class CommentCell: UICollectionViewCell, ListBindable {
     
     weak var delegate: CommentCellDelegate? = nil
     
-    @IBOutlet weak var commentTextView: CommentTextView!
+    @IBOutlet weak var commentLabel: ActiveLabel!
     @IBOutlet weak var imageView: UIImageView?
     @IBOutlet weak var likeButton: UIButton!
+    
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        commentLabel.customize { label in
+            label.hashtagColor = UIColor(red: 85.0/255, green: 172.0/255, blue: 238.0/255, alpha: 1)
+            label.mentionColor = UIColor(red: 85.0/255, green: 172.0/255, blue: 238.0/255, alpha: 1)
+//            label.URLColor = UIColor(red: 85.0/255, green: 238.0/255, blue: 151.0/255, alpha: 1)
+            label.handleMentionTap { self.delegate?.didTapMention(cell: self, mention: $0) }
+            label.handleHashtagTap {  self.delegate?.didTapHashtag(cell: self, hashtag: $0) }
+            label.handleURLTap {  print($0) }
+        }
+    }
     
     func bindViewModel(_ viewModel: Any) {
         
@@ -33,9 +50,9 @@ class CommentCell: UICollectionViewCell, ListBindable {
         let imageTitle = viewModel.didLike ? "heart_filled" : "heart_bordered"
         likeButton.setImage(UIImage(named: imageTitle), for: [])
         
-        commentTextView.attributedText = AttributedText.constructComment(username: viewModel.username, text: viewModel.text)
-        commentTextView.resolveHashTags()
-        commentTextView.font = UIFont.systemFont(ofSize: 15)
+        commentLabel.attributedText = AttributedText.constructComment(username: viewModel.username, text: viewModel.text)
+//        commentTextView.resolveHashTags()
+        commentLabel.font = UIFont.systemFont(ofSize: 15)
         
         username = viewModel.username
         
@@ -54,4 +71,14 @@ class CommentCell: UICollectionViewCell, ListBindable {
     @objc func onHeart() {
         delegate?.didTapHeart(cell: self)
     }
+}
+
+extension CommentCellDelegate {
+    
+    func didTapHeart(cell: CommentCell) {}
+    
+    func didTapMention(cell: CommentCell, mention: String) {}
+    
+    func didTapHashtag(cell: CommentCell, hashtag: String) {}
+    
 }

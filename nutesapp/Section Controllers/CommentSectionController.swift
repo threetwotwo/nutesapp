@@ -10,11 +10,7 @@ import Foundation
 import IGListKit
 
 class CommentSectionController: ListBindingSectionController<Comment>,ListBindingSectionControllerDataSource, CommentCellDelegate, CommentActionCellDelegate {
-    func didTapURL(cell: CommentCell, url: URL) {
-        print("didTapURL")
-    }
     
-
     //MARK: - Variables
 
     var post: Post?
@@ -25,7 +21,7 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
     
     weak var commentActionCell: CommentActionCell?
     
-    //MARK: - CommentActionCellDelegate
+    //MARK: - CommentCellDelegate
 
     func didTapHeart(cell: CommentCell) {
         
@@ -46,6 +42,20 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
         commentActionCell?.likesLabel.text = "\(localLikes!) likes"
         
     }
+    
+    func didTapMention(cell: CommentCell, mention: String) {
+        print("didTapMention")
+        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController {
+            vc.user = User(username: mention)
+            self.viewController?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    func didTapHashtag(cell: CommentCell, hashtag: String) {
+        print(hashtag)
+    }
+    
+    //MARK: - CommentActionCellDelegate
     
     func didTapReply(cell: CommentActionCell) {
         guard let vc = viewController as? CommentViewController,

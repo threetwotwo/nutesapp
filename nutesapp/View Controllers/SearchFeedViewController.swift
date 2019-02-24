@@ -10,13 +10,15 @@ import UIKit
 import IGListKit
 import FirebaseFirestore
 import collection_view_layouts
+import Hue
 
 class SearchFeedViewController: UIViewController {
     
     //MARK: - IBOutlets
 
     @IBOutlet weak var collectionView: UICollectionView!
-
+    @IBOutlet weak var gradientView: UIView!
+    
     //MARK: - Variables
 
     var searchController: UISearchController!
@@ -27,11 +29,30 @@ class SearchFeedViewController: UIViewController {
     var lastSnapshots = [String:DocumentSnapshot]()
     var loading = false
     
+    lazy var gradient: CAGradientLayer = [
+        UIColor(hex: "#FD4340"),
+        UIColor(hex: "#CE2BAE")
+        ].gradient { gradient in
+            gradient.speed = 0
+            gradient.timeOffset = 0
+            
+            return gradient
+    }
+    
+    lazy var animation: CABasicAnimation = { [unowned self] in
+        let animation = CABasicAnimation(keyPath: "colors")
+        animation.duration = 1.0
+        animation.isRemovedOnCompletion = false
+        
+        return animation
+        }()
+    
     var cachedIDs = [String]()
     //false if only need to load one post
     var shouldLoadMore = true
     
     var items = [ListDiffable]()
+    var posts = [Post]()
     
     //MARK: - Adapter
     lazy var adapter: ListAdapter = {
@@ -87,14 +108,51 @@ class SearchFeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        firestore.getTopPosts(limit: 99) { (posts, lastSnap) in
+            
+            print("got top posts")
+            
+            self.posts.append(contentsOf: posts)
+            self.collectionView.reloadData()
+        }
+        
         setUpSearchController()
         
         let layout = InstagramStyleFlowLayout()
         layout.delegate = self
+        layout.cellsPadding = ItemsPadding(horizontal: 10, vertical: 10)
         collectionView.setCollectionViewLayout(layout, animated: true)
-
+        
         collectionView.dataSource = self
 
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+        guard let navigationController = navigationController else { return }
+
+        gradientView.layer.addSublayer(gradient)
+        collectionView.backgroundView = gradientView
+        gradient.timeOffset = 0
+        gradient.bounds = navigationController.view.bounds
+        gradient.frame = navigationController.view.bounds
+        gradient.add(animation, forKey: "Change Colors")
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if let someView: UIView = object as! UIView? {
+            
+            if (someView == self.searchController.searchResultsController?.view &&
+                (keyPath == "hidden") &&
+                (searchController.searchResultsController?.view.isHidden)! &&
+                searchController.searchBar.isFirstResponder) {
+                
+                searchController.searchResultsController?.view.isHidden = false
+            }
+            
+        }
     }
     
     //MARK: - Set up search controller
@@ -114,8 +172,9 @@ class SearchFeedViewController: UIViewController {
 
         navigationItem.searchController = searchController
         definesPresentationContext = true
+        
+        searchController.searchResultsController?.view.addObserver(self, forKeyPath: "hidden", options: [], context: nil)
     }
-
 
 }
 
@@ -140,23 +199,48 @@ extension SearchFeedViewController: UISearchResultsUpdating {
         }
             
     }
+    
+    
 }
 
 extension SearchFeedViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 99
+        return posts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "searchFeedCell", for: indexPath) as! ImageCell
-        cell.numberLabel.text = String(indexPath.row)
+        
+        let post = posts[indexPath.row]
+        
+        cell.imageView.sd_setImage(with: URL(string: post.postURL))
+    
         return cell
     }
     
 
 }
 
+extension SearchFeedViewController: UISearchControllerDelegate {
+    func willPresentSearchController(_ searchController: UISearchController) {
+        searchController.searchResultsController?.view.isHidden = false
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if (searchText.count == 0) {
+            searchController.searchResultsController?.view.isHidden = false
+        }
+    }
+    
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchController.searchResultsController?.view.isHidden = true
+    }
+}
+
 extension SearchFeedViewController: ContentDynamicLayoutDelegate {
+
     func cellSize(indexPath: IndexPath) -> CGSize {
         return CGSize.init()
     }

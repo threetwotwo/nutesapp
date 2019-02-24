@@ -139,7 +139,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         }
         
         if let cell = cell as? CommentCell  {
-            cell.commentTextView.delegate = self
+            cell.delegate = self
         }
         
         return cell as! UICollectionViewCell & ListBindable
@@ -211,5 +211,21 @@ extension FeedSectionController: UITextViewDelegate {
             }
         }
         return true
+    }
+}
+
+//MARK: - CommentCellDelegate
+
+extension FeedSectionController: CommentCellDelegate {
+    
+    func didTapMention(cell: CommentCell, mention: String) {
+        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController {
+            vc.user = User(username: mention)
+            self.viewController?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    func didTapHashtag(cell: CommentCell, hashtag: String) {
+        print(hashtag)
     }
 }

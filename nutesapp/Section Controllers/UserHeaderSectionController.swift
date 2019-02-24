@@ -83,7 +83,7 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             
             //Message
             
-            let vc = ChatViewController()
+            let vc = DirectMessageViewController()
             vc.user = object
             viewController?.navigationController?.pushViewController(vc, animated: true)
         } else {

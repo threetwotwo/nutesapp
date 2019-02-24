@@ -9,7 +9,11 @@
 /* Begin PBXBuildFile section */
 		4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4301BF3121EF758F00CB377C /* DatabaseManager.swift */; };
 		430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430FB34321E3877B003C83D1 /* SearchCell.swift */; };
+		431236FC221EADF600C52D9A /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431236FB221EADF600C52D9A /* CustomCell.swift */; };
+		431236FE221ECEE000C52D9A /* CustomMessagesFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431236FD221ECEE000C52D9A /* CustomMessagesFlowLayout.swift */; };
 		4312A9F02213E481006D6FE9 /* Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4312A9EF2213E481006D6FE9 /* Identifier.swift */; };
+		4312AE25222292280042B2DF /* DirectMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4312AE24222292280042B2DF /* DirectMessageViewController.swift */; };
+		4312AE272222A9AC0042B2DF /* UIColor + Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4312AE262222A9AC0042B2DF /* UIColor + Extensions.swift */; };
 		431BCDAF21F9B72600B8C8A5 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431BCDAE21F9B72600B8C8A5 /* Router.swift */; };
 		431BCDB121F9E8E000B8C8A5 /* UserDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431BCDB021F9E8E000B8C8A5 /* UserDataViewModel.swift */; };
 		431BCDB321F9F77F00B8C8A5 /* UserHeaderDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431BCDB221F9F77F00B8C8A5 /* UserHeaderDataCell.swift */; };
@@ -99,7 +103,11 @@
 		0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.release.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.release.xcconfig"; sourceTree = "<group>"; };
 		4301BF3121EF758F00CB377C /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		430FB34321E3877B003C83D1 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
+		431236FB221EADF600C52D9A /* CustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
+		431236FD221ECEE000C52D9A /* CustomMessagesFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMessagesFlowLayout.swift; sourceTree = "<group>"; };
 		4312A9EF2213E481006D6FE9 /* Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifier.swift; sourceTree = "<group>"; };
+		4312AE24222292280042B2DF /* DirectMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectMessageViewController.swift; sourceTree = "<group>"; };
+		4312AE262222A9AC0042B2DF /* UIColor + Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor + Extensions.swift"; sourceTree = "<group>"; };
 		431BCDAE21F9B72600B8C8A5 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		431BCDB021F9E8E000B8C8A5 /* UserDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataViewModel.swift; sourceTree = "<group>"; };
 		431BCDB221F9F77F00B8C8A5 /* UserHeaderDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderDataCell.swift; sourceTree = "<group>"; };
@@ -241,6 +249,7 @@
 			isa = PBXGroup;
 			children = (
 				43EC6A672216A15400991929 /* ChatViewController.swift */,
+				4312AE24222292280042B2DF /* DirectMessageViewController.swift */,
 				43B7CF6321DD2C4A00F08EDC /* SignUpViewController.swift */,
 				43CBFBBD21ECCF4D00192ADA /* CommentViewController.swift */,
 				43C1D0FC21DE394A002D720D /* FeedViewController.swift */,
@@ -359,6 +368,8 @@
 				431BCDB221F9F77F00B8C8A5 /* UserHeaderDataCell.swift */,
 				439FC53021E31CE100EB7954 /* UserHeaderDetailCell.swift */,
 				43B0693421DE5902005387C3 /* SpinnerCell.swift */,
+				431236FB221EADF600C52D9A /* CustomCell.swift */,
+				431236FD221ECEE000C52D9A /* CustomMessagesFlowLayout.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -380,6 +391,7 @@
 				4358027E221BCF6A004B1E83 /* UINavigationController + push completion.swift */,
 				43644330220AD3B7003D54D0 /* Loader.swift */,
 				43580280221BDAC2004B1E83 /* UnicodeScalar + Emoji detectors.swift */,
+				4312AE262222A9AC0042B2DF /* UIColor + Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -524,10 +536,12 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-nutesapp/Pods-nutesapp-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/ActiveLabel/ActiveLabel.framework",
 				"${BUILT_PRODUCTS_DIR}/BoringSSL-GRPC/openssl_grpc.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/Hue/Hue.framework",
 				"${BUILT_PRODUCTS_DIR}/IGListKit/IGListKit.framework",
 				"${BUILT_PRODUCTS_DIR}/MessageInputBar/MessageInputBar.framework",
 				"${BUILT_PRODUCTS_DIR}/MessageKit/MessageKit.framework",
@@ -546,9 +560,11 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ActiveLabel.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl_grpc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Hue.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IGListKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageInputBar.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageKit.framework",
@@ -565,7 +581,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-nutesapp/Pods-nutesapp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E89CCF2C5F7E9C9E8E8EF4D6 /* [CP] Check Pods Manifest.lock */ = {
@@ -602,6 +618,7 @@
 				43644331220AD3B7003D54D0 /* Loader.swift in Sources */,
 				43C58F5D220820550002CF5B /* TimestampCell.swift in Sources */,
 				4312A9F02213E481006D6FE9 /* Identifier.swift in Sources */,
+				431236FE221ECEE000C52D9A /* CustomMessagesFlowLayout.swift in Sources */,
 				43C1D10621DE4543002D720D /* CommentViewModel.swift in Sources */,
 				438E895521E0A7E9006D20D0 /* SearchResultsViewController.swift in Sources */,
 				435CBBF521DDD4C300646A35 /* User.swift in Sources */,
@@ -628,9 +645,11 @@
 				43295CED2209F20000F6C74B /* UIViewController + listeners.swift in Sources */,
 				43C1D10F21DE4EAB002D720D /* ActionCell.swift in Sources */,
 				431BCDB121F9E8E000B8C8A5 /* UserDataViewModel.swift in Sources */,
+				4312AE25222292280042B2DF /* DirectMessageViewController.swift in Sources */,
 				439204D421DF2BE10031CFCB /* UITextView + centerVertically.swift in Sources */,
 				43CBFBBC21ECCCE600192ADA /* CommentActionCell.swift in Sources */,
 				4355B29721EC9299000093EF /* FeedSectionController.swift in Sources */,
+				431236FC221EADF600C52D9A /* CustomCell.swift in Sources */,
 				43CBFBC021ECCF8600192ADA /* CommentSectionController.swift in Sources */,
 				43D5AC6E2217D4000061AD8A /* ChatManager.swift in Sources */,
 				438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */,
@@ -639,6 +658,7 @@
 				43EA666222172F510010631F /* CommentTextView.swift in Sources */,
 				4301BF3221EF758F00CB377C /* DatabaseManager.swift in Sources */,
 				43C1D10D21DE4E9D002D720D /* PostHeaderCell.swift in Sources */,
+				4312AE272222A9AC0042B2DF /* UIColor + Extensions.swift in Sources */,
 				435CBBF821DDD51000646A35 /* Post.swift in Sources */,
 				439FC53521E342FD00EB7954 /* UserBodySectionController.swift in Sources */,
 				4358027F221BCF6A004B1E83 /* UINavigationController + push completion.swift in Sources */,

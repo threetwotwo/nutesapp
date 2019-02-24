@@ -10,18 +10,15 @@ import UIKit
 import MessageKit
 import MessageInputBar
 
-
+/// A base class for the example controllers
 class ChatViewController: MessagesViewController, MessagesDataSource {
     
-    let firestore = FirestoreManager.shared
-    let chat = ChatManager()
-    var chatID: String?
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     
-    var user: User?
-    
-    var sender: Sender!
-    var messages: [Message] = [
-        
+    var messageList: [Message] = [
+        Message(sender: Sender(id: "john", displayName: "john"), messageID: "id", timestamp: Date(), kind: .custom("This is a custom message"))
     ]
     
     let refreshControl = UIRefreshControl()
@@ -32,51 +29,26 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         return formatter
     }()
     
-    //MARK: - Life Cycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.sender = Sender(id: firestore.currentUser.username, displayName: firestore.currentUser.username)
         
-        //remove space between avatar and bubble for sender
-        if let layout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout {
-            layout.setMessageOutgoingAvatarSize(.zero)
-            layout.emojiMessageSizeCalculator.messageLabelFont = UIFont.systemFont(ofSize: 44.0)
-        }
-        
-        
-        title = user?.username ?? ""
-        
-        //get chat id
-        chat.getChatID(with: user?.username ?? "") { (id) in
-            self.chatID = id
-            self.loadFirstMessages()
-            print(id)
-        }
         configureMessageCollectionView()
         configureMessageInputBar()
+        loadFirstMessages()
+        title = "MessageKit"
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
- 
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
     
-    //MARK: - Load Messages
-
     func loadFirstMessages() {
-        guard let id = chatID else { return }
-        chat.getMessages(chatID: id) { (messages) in
-            self.messages = messages
-            print(messages.count)
-            self.messagesCollectionView.reloadData()
-            self.messagesCollectionView.scrollToBottom()
-        }
+
     }
     
     @objc
@@ -88,8 +60,6 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messageCellDelegate = self
-        messagesCollectionView.messagesDisplayDelegate = self
-        messagesCollectionView.messagesLayoutDelegate = self
         
         scrollsToBottomOnKeyboardBeginsEditing = true // default false
         maintainPositionOnKeyboardFrameChanged = true // default false
@@ -100,24 +70,19 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     
     func configureMessageInputBar() {
         messageInputBar.delegate = self
-        messageInputBar.separatorLine.isHidden = true
-        messageInputBar.backgroundColor = UIColor.white
-        messageInputBar.inputTextView.backgroundColor = UIColor.white
-        messageInputBar.inputTextView.borderColor = UIColor.black
-
-        messageInputBar.inputTextView.tintColor = UIColor.black
-        messageInputBar.sendButton.tintColor = UIColor.blue
+//        messageInputBar.inputTextView.tintColor = .primaryColor
+//        messageInputBar.sendButton.tintColor = .primaryColor
     }
     
     // MARK: - Helpers
     
     func insertMessage(_ message: Message) {
-        messages.append(message)
+        messageList.append(message)
         // Reload last section to update header/footer labels and insert a new one
         messagesCollectionView.performBatchUpdates({
-            messagesCollectionView.insertSections([messages.count - 1])
-            if messages.count >= 2 {
-                messagesCollectionView.reloadSections([messages.count - 2])
+            messagesCollectionView.insertSections([messageList.count - 1])
+            if messageList.count >= 2 {
+                messagesCollectionView.reloadSections([messageList.count - 2])
             }
         }, completion: { [weak self] _ in
             if self?.isLastSectionVisible() == true {
@@ -128,9 +93,9 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     
     func isLastSectionVisible() -> Bool {
         
-        guard !messages.isEmpty else { return false }
+        guard !messageList.isEmpty else { return false }
         
-        let lastIndexPath = IndexPath(item: 0, section: messages.count - 1)
+        let lastIndexPath = IndexPath(item: 0, section: messageList.count - 1)
         
         return messagesCollectionView.indexPathsForVisibleItems.contains(lastIndexPath)
     }
@@ -138,15 +103,16 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     // MARK: - MessagesDataSource
     
     func currentSender() -> Sender {
-        return self.sender
+        let name = FirestoreManager.shared.currentUser.username ?? ""
+        return Sender(id: name, displayName: name)
     }
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return messages.count
+        return messageList.count
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
-        return messages[indexPath.section]
+        return messageList[indexPath.section]
     }
     
     func cellTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
@@ -230,25 +196,13 @@ extension ChatViewController: MessageInputBarDelegate {
         
         for component in inputBar.inputTextView.components {
             
-            
             if let str = component as? String {
-                
-                let message: Message
-                
-                if str.isSingleEmoji {
-                     message = Message(sender: sender, messageID: "asdsad", timestamp: Date(), kind: .emoji(str))
-                } else {
-                     message = Message(sender: sender, messageID: "asdsad", timestamp: Date(), kind: .text(str))
-                }
-                
+                let message = Message(sender: currentSender(), messageID: UUID().uuidString, timestamp: Date(), kind: .text(str))
                 insertMessage(message)
-                if let id = chatID {
-                    chat.send(chatID: id, text: str)
-                }
+            } else if let img = component as? UIImage {
+                let message = Message(sender: currentSender(), messageID: UUID().uuidString, timestamp: Date(), kind: .photo(img as! MediaItem))
+                insertMessage(message)
             }
-//            else if let img = component as? UIImage {
-//                continue
-//            }
             
         }
         inputBar.inputTextView.text = String()
@@ -256,17 +210,3 @@ extension ChatViewController: MessageInputBarDelegate {
     }
     
 }
-
-extension ChatViewController: MessagesDisplayDelegate, MessagesLayoutDelegate {
-    
-    
-    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
-        if message.sender.id == firestore.currentUser.username {
-            avatarView.isHidden = true
-        } else {
-            avatarView.sd_setImage(with: URL(string: user?.url ?? ""))
-        }
-    }
-    
-}
-

@@ -156,6 +156,57 @@ final class FirestoreManager {
         }
     }
     
+    func getPost(postID: String, data: [String:Any]) -> Post {
+        let id = postID
+        let username = data["username"] as? String ?? ""
+        let likeCount = data["like_count"] as? Int ?? 0
+        let timestamp = (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
+        let postUrl = data["post_url"] as? String ?? ""
+        let userURL = ""
+        
+        let post = Post(id: id, username: username, timestamp: timestamp, userURL: userURL, postURL: postUrl, likeCount: likeCount, followedUsernames: [], didLike: false, comments: [])
+        
+        return post
+    }
+    
+    func getTopPosts(limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[Post], _ lastSnapshot: DocumentSnapshot?) -> ()) {
+        var query: Query
+        
+        //Pagination
+        if lastSnapshot == nil {
+            query = db
+                .collection("posts")
+                .order(by: "like_count", descending: true)
+                .order(by: "timestamp", descending: true)
+                .limit(to: limit)
+        } else {
+            query = db
+                .collection("posts")
+                .order(by: "like_count", descending: true)
+                .order(by: "timestamp", descending: true)
+                .limit(to: limit)
+                .start(afterDocument: lastSnapshot!)
+        }
+        
+        query.getDocuments { (snap, error) in
+            
+            guard error == nil,
+                let docs = snap?.documents else {
+                    print(error?.localizedDescription ?? "Error fetching posts!")
+                    return
+            }
+            
+            var posts = [Post]()
+            
+            for doc in docs {
+                let postData = doc.data()
+                posts.append(self.getPost(postID: doc.documentID, data: postData))
+            }
+            
+            completion(posts, docs.last)
+        }
+    }
+    
     func getPosts(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[Post], _ lastSnapshot: DocumentSnapshot?) -> ()) {
         
         var query: Query
