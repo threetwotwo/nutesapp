@@ -58,19 +58,15 @@ class UserViewController: UIViewController, ListAdapterDataSource {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        self.becomeFirstResponder()
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(pushChatVC))
-        
+                
         self.isLoading = true
         self.adapter.performUpdates(animated: true)
         
         loadHeader()
         
         guard user != nil else { return }
-
-        firestore.getPosts(username: user!.username, limit: 99) { (posts, lastSnapshot) in
+        print("user!", user!.uid)
+        firestore.getPosts(uid: user!.uid, limit: 99) { (posts, lastSnapshot) in
             
             self.items.append(contentsOf: posts)
             if let lastSnapshot = lastSnapshot {

@@ -18,11 +18,20 @@ final class DirectMessageViewController: ChatViewController {
     var user: User?
     var chatID: String?
     
+    var recipientIsTyping = false {
+        didSet {
+            guard !messageList.isEmpty else { return }
+            updateTypingIndicator()
+        }
+    }
+    var senderIsTyping = false
+    
+    //MARK: - Life Cycle
+
     override func viewDidLoad() {
         messagesCollectionView = MessagesCollectionView(frame: .zero, collectionViewLayout: CustomMessagesFlowLayout())
         messagesCollectionView.register(CustomCell.self)
         super.viewDidLoad()
-        
         
         // Customize the typing bubble! These are the default values
         //        typingBubbleBackgroundColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
@@ -30,17 +39,27 @@ final class DirectMessageViewController: ChatViewController {
         
         guard let username = user?.username else { return }
         
+        title = username
+        
         chatManager.getChatID(with: username) { (id) in
             self.chatID = id
             self.loadFirstMessages()
+//            self.chatManager.listenToNewMessages(chatID: self.chatID!, completion: { (messages) in
+//                
+//                //only get new recipient messages
+//                //prevent duplication of messages when new messages are inserted
+//                
+//                let recipientMessages = messages.filter{$0.sender != self.currentSender()}
+//                self.messageList.append(contentsOf: recipientMessages)
+//                self.messagesCollectionView.reloadData()
+//                self.messagesCollectionView.scrollToBottom(animated: true)
+//            })
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-
-    }
+    
+    //MARK: - Load Messages
+    
     
     override func loadFirstMessages() {
         
@@ -50,7 +69,10 @@ final class DirectMessageViewController: ChatViewController {
             print(messages.count)
             self.messageList.append(contentsOf: messages)
             self.messagesCollectionView.reloadData()
-            self.messagesCollectionView.scrollToBottom()
+            self.messagesCollectionView.scrollToBottom(animated: true)
+//            self.chatManager.observeIfUserIsTyping(chatID: self.chatID!, username: (self.user?.username)!, completion: { (isTyping) in
+//                self.recipientIsTyping = isTyping
+//            })
         }
     }
     
@@ -59,12 +81,35 @@ final class DirectMessageViewController: ChatViewController {
     }
     
     override func insertMessage(_ message: Message) {
+
         super.insertMessage(message)
         if let id = chatID {
             chatManager.send(chatID: id, message: message)
+            chatManager.userIsTyping(chatID: id, username: currentSender().displayName, isTyping: false)
         }
+
+        updateTypingIndicator()
+
     }
     
+    //MARK: - UI updates
+
+    func updateTypingIndicator() {
+
+        guard let username = user?.username else { return }
+
+        messageList = messageList.filter{$0.messageId != "typingIndicator"}
+
+        if recipientIsTyping {
+            let recipentTypingIndicator = Message(sender: Sender(id: username, displayName: username), messageID: "typingIndicator", timestamp: Date(), kind: .custom("\(username) is typing..."))
+            messageList.append(recipentTypingIndicator)
+            self.messagesCollectionView.reloadData()
+        }
+
+    }
+    
+    //MARK: - UI Configurations
+
     override func configureMessageCollectionView() {
         super.configureMessageCollectionView()
         
@@ -88,6 +133,7 @@ final class DirectMessageViewController: ChatViewController {
         
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
+        messageInputBar.inputTextView.delegate = self
     }
     
     override func configureMessageInputBar() {
@@ -224,17 +270,18 @@ final class DirectMessageViewController: ChatViewController {
     }
     
     override func messageTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
-        if !isPreviousMessageSameSender(at: indexPath) {
-            let name = message.sender.displayName
-            return NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1)])
-        }
+
         return nil
     }
     
     override func messageBottomLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
         
         if !isNextMessageSameSender(at: indexPath) && isFromCurrentSender(message: message) {
-            return NSAttributedString(string: "Delivered", attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1)])
+            let attributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.lightGray,
+                NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2)
+            ]
+            return NSAttributedString(string: "Delivered", attributes: attributes)
         }
         return nil
     }
@@ -360,4 +407,27 @@ extension DirectMessageViewController: MessagesLayoutDelegate {
         return (!isNextMessageSameSender(at: indexPath) && isFromCurrentSender(message: message)) ? 16 : 0
     }
     
+}
+
+
+extension DirectMessageViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        print("textViewDidBeginEditing")
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        print("textViewDidEndEditing")
+        chatManager.userIsTyping(chatID: chatID!, username: currentSender().displayName, isTyping: false)
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            print("end typing")
+            chatManager.userIsTyping(chatID: chatID!, username: currentSender().displayName, isTyping: false)
+        } else {
+            print("is typing...")
+            chatManager.userIsTyping(chatID: chatID!, username: currentSender().displayName, isTyping: true)
+
+        }
+    }
 }

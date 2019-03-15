@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class SignUpViewController: UIViewController {
     
@@ -51,6 +52,10 @@ class SignUpViewController: UIViewController {
                 self.present(tabBarController, animated: true) 
             }
         }
+        
+       
+
+        
     }
     
     @IBAction func changeSignupModeButtonPressed(_ sender: Any) {

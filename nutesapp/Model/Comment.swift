@@ -10,23 +10,22 @@ import Foundation
 import IGListKit
 
 final class Comment: ListDiffable {
-    private var identifier: String = UUID().uuidString
     
     let id: String
     let parentID: String?
     let postID: String
-    let username: String
+    let uid: String
     let text: String
     let timestamp: Timestamp
     let likes: Int
     let didLike: Bool
     let replyCount: Int
     
-    init(parentID: String?, commentID: String, postID: String, username: String, text: String, likes: Int, timestamp: Timestamp, didLike: Bool, replyCount: Int = 0) {
+    init(parentID: String?, commentID: String, postID: String, uid: String, text: String, likes: Int, timestamp: Timestamp, didLike: Bool, replyCount: Int = 0) {
         self.parentID = parentID
         self.id = commentID
         self.postID = postID
-        self.username = username
+        self.uid = uid
         self.text = text
         self.likes = likes
         self.timestamp = timestamp
@@ -34,17 +33,17 @@ final class Comment: ListDiffable {
         self.replyCount = replyCount
     }
     
-    convenience init(username: String, text: String, likes: Int) {
-        self.init(parentID: "", commentID: "", postID: "", username: username, text: text, likes: likes, timestamp: Timestamp(), didLike: false)
+    convenience init(uid: String, text: String, likes: Int) {
+        self.init(parentID: "", commentID: "", postID: "", uid: uid, text: text, likes: likes, timestamp: Timestamp(), didLike: false)
     }
     
     func diffIdentifier() -> NSObjectProtocol {
-        return (identifier) as NSObjectProtocol
+        return (id) as NSObjectProtocol
     }
     
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
         guard let object = object as? Comment else { return false }
-        return (self.identifier) == (object.identifier)
+        return (self.id) == (object.id)
     }
     
     static func order(comments: [Comment]) -> [ListDiffable] {

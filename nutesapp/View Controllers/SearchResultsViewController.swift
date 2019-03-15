@@ -51,8 +51,9 @@ class SearchResultsViewController: UIViewController, ListAdapterDataSource {
                 }
         
                 for document in documents {
-                    let username = document.documentID
-                    self.firestore.getUser(username: username, completion: { (user) in
+                    let data = document.data()
+                    let username = data["username"] ?? ""
+                    self.firestore.getUser(username: username as! String, completion: { (user) in
                         self.items.append(user)
                         self.adapter.performUpdates(animated: true)
                     })

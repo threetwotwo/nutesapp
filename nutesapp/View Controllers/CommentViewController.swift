@@ -100,16 +100,16 @@ class CommentViewController: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         let comment: Comment
         
-        let username = firestore.currentUser.username
+        let uid = firestore.currentUser.uid
         let timestamp = Timestamp()
-        let commentID = "\(username)_\(timestamp.seconds)"
+        let commentID = UUID().uuidString
         
         if replyingTo != nil {
             //if replying to a reply, set its parentID to the reply's root comment
             let parentID = replyingTo?.parentID == nil ? replyingTo?.id : replyingTo?.parentID
-            comment = Comment(parentID: parentID, commentID: commentID, postID: post?.id ?? "", username: username, text: textField.text!, likes: 0, timestamp: timestamp, didLike: false)            
+            comment = Comment(parentID: parentID, commentID: commentID, postID: post?.id ?? "", uid: uid, text: textField.text!, likes: 0, timestamp: timestamp, didLike: false)
         } else {
-            comment = Comment(parentID: nil, commentID: commentID, postID: post?.id ?? "", username: username, text: textField.text!, likes: 0, timestamp: timestamp, didLike: false)
+            comment = Comment(parentID: nil, commentID: commentID, postID: post?.id ?? "", uid: uid, text: textField.text!, likes: 0, timestamp: timestamp, didLike: false)
         }
         firestore.comment(comment: comment, post: post!, text: textField.text!)
 

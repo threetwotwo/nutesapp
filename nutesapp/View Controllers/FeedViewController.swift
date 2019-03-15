@@ -17,15 +17,11 @@ class FeedViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
     //MARK: - IBActions
-    @IBAction func logout(_ sender: Any) {
-        do {
-            try Auth.auth().signOut()
-            print("\(firestore.currentUser.username) logged out!")
+    @IBAction func signOut(_ sender: Any) {
+        firestore.signOut {
+            //present sign up screen modally upon a successful sign out
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SignUpVC") as! SignUpViewController
             self.present(vc, animated: true, completion: nil)
-            
-        } catch {
-            print("Unable to logout")
         }
     }
     
@@ -105,7 +101,7 @@ class FeedViewController: UIViewController {
 
         //if user is not nil, load posts only for that user
         guard user == nil else {
-            firestore.getPosts(username: user!, limit: 3) { (posts, lastSnap) in
+            firestore.getPosts(uid: user!, limit: 3) { (posts, lastSnap) in
                 self.items.insert(contentsOf: posts, at: 0)
                 self.lastSnapshots[user!] = lastSnap
                 self.endLoading()
@@ -116,7 +112,8 @@ class FeedViewController: UIViewController {
         firestore.getUnseenPosts(username: firestore.currentUser.username, limit: 10) { (posts, lastSnaps) in
             
             guard !posts.isEmpty else {
-                self.firestore.getFollowedUsers(for: self.firestore.currentUser.username) { (relationships) in
+                print("unseen posts empty")
+                self.firestore.getFollowedUsers(for: self.firestore.currentUser.uid) { (relationships) in
                     
                     let dsg = DispatchGroup()
                     var results = [ListDiffable]()
@@ -124,10 +121,10 @@ class FeedViewController: UIViewController {
                     
                     for relationship in relationships.shuffled() {
                         
-                        guard let username = relationship.data()["followed"] as? String else {return}
+                        guard let uid = relationship.data()["followed"] as? String else {return}
                         
                         dsg.enter()
-                        self.firestore.getPosts(username: username, limit: 3, lastSnapshot: self.lastSnapshots[username]) { posts, lastSnapshot in
+                        self.firestore.getPosts(uid: uid, limit: 3, lastSnapshot: self.lastSnapshots[uid]) { posts, lastSnapshot in
                             
                             var filteredPosts = [Post]()
                             
@@ -145,7 +142,7 @@ class FeedViewController: UIViewController {
                             }
                             
                             if let lastSnapshot = lastSnapshot {
-                                self.lastSnapshots[username] = lastSnapshot
+                                self.lastSnapshots[uid] = lastSnapshot
                             }
                             
                             dsg.leave()
@@ -291,7 +288,7 @@ extension FeedViewController: UICollectionViewDelegate {
         let post = items[indexPath.section] as? Post {
             guard !cachedIDs.contains(post.id) else {return}
             cachedIDs.append(post.id)
-            firestore.setPostAsSeen(postID: post.id)
+//            firestore.setPostAsSeen(postID: post.id)
             print(post.id)
         }
     }

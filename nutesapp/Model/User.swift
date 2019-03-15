@@ -27,8 +27,12 @@ class User: Codable {
         self.followerCount = followerCount
     }
     
-    convenience init(username: String) {
-        self.init(uid: "", fullname: "", email: "", username: username, url: "", followerCount: 0)
+    convenience init(uid: String) {
+        self.init(uid: uid, fullname: "", email: "", username: "", url: "", followerCount: 0)
+    }
+    
+    convenience init(uid: String, username: String) {
+        self.init(uid: uid, fullname: "", email: "", username: username, url: "", followerCount: 0)
     }
     
 }

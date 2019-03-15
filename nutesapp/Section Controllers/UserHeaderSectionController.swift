@@ -10,7 +10,7 @@ import Foundation
 import IGListKit
 import YPImagePicker
 
-class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UserHeaderDataCellDelegate, Observable {
+class UserHeaderSectionController: ListBindingSectionController<User>, ListBindingSectionControllerDataSource, UINavigationControllerDelegate, UserHeaderDataCellDelegate, Observable {
     
     var user: User? = nil
     var firestore = FirestoreManager.shared
@@ -26,44 +26,11 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         dataSource = self
     }
     
-    func presentPicker() {
-        var config = YPImagePickerConfiguration()
-        // [Edit configuration here ...]
-        config.isScrollToChangeModesEnabled = true
-        config.onlySquareImagesFromCamera = true
-        config.usesFrontCamera = true
-        config.showsFilters = true
-        config.shouldSaveNewPicturesToAlbum = true
-        config.albumName = "DefaultYPImagePickerAlbumName"
-        config.startOnScreen = YPPickerScreen.photo
-        config.screens = [.photo, .library]
-        config.showsCrop = .none
-        config.targetImageSize = YPImageSize.cappedTo(size: 600)
-        config.overlayView = UIView()
-        config.hidesStatusBar = true
-        config.hidesBottomBar = false
-        config.preferredStatusBarStyle = UIStatusBarStyle.default
-        
-        // Build a picker with your configuration
-        let picker = YPImagePicker(configuration: config)
-        
-        picker.didFinishPicking { [unowned picker] (items, _) in
-            if let photo = items.singlePhoto {
-                self.firestore.updateProfile(image: photo.image, completion: {
-                    self.imageView.image = photo.image
-                    UserDefaultsManager().updateUserPic(imageData: photo.image.pngData()!)
-                })
-            }
-            picker.dismiss(animated: true, completion: nil)
-        }
-        viewController?.present(picker, animated: true, completion: nil)
-    }
-    
     func didTapUnfollowButton(cell: UserHeaderDataCell) {
         guard let user = object else {return}
 
         cell.unfollowButton.isHidden = true
-        firestore.unfollowUser(withUsername: user.username) {
+        firestore.unfollow(uid: user.uid) {
             cell.followButton.setTitle("Follow", for: [])
             self.isFollowing = false
             //notify feedvc
@@ -90,11 +57,11 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             
             //Follow
             
-            firestore.followUser(withUsername: user.username) {
+            firestore.follow(uid: user.uid) {
                 cell.unfollowButton.isHidden = false
                 cell.followButton.setTitle("Message", for: [])
                 self.isFollowing = true
-                //notify feedvc
+                //Observable - notify feedvc
                 self.didChange(type: .follow, object: user.username)
             }
         }
@@ -143,12 +110,12 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
         }
     
         if let cell = cell as? UserHeaderDataCell,
-            let username = object?.username {
+            let uid = object?.uid {
             
             cell.delegate = self
             
             if self.isFollowing == nil {
-                let buttonTitle = username == firestore.currentUser.username ? "Edit Profile" : "Loading"
+                let buttonTitle = uid == firestore.currentUser.uid ? "Edit Profile" : "Loading"
                 cell.followButton.setTitle(buttonTitle, for: [])
             }
 
@@ -156,7 +123,7 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             if userData == nil {
                 
                 if user?.url == "" || user?.url == nil {
-                    firestore.getUser(username: username) { (user) in
+                    firestore.getUser(username: user?.username ?? "") { (user) in
                         self.imageView.sd_setImage(with: URL(string: user.url))
                         self.fullnameLabel.text = user.fullname
                     }
@@ -169,26 +136,26 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
                 var following = 0
 
                 dsg.enter()
-                DatabaseManager().getPostCount(username: username) { (count) in
+                DatabaseManager().getPostCount(uid: uid) { (count) in
                     print("getPostCount")
                     posts = count
                     dsg.leave()
                 }
                 
                 dsg.enter()
-                DatabaseManager().getFollowerCount(username: username) { (count) in
+                DatabaseManager().getFollowerCount(uid: uid) { (count) in
                     followers = count
                     dsg.leave()
                 }
                 
                 dsg.enter()
-                DatabaseManager().getFollowingCount(username: username) { (count) in
+                DatabaseManager().getFollowingCount(uid: uid) { (count) in
                     following = count
                     dsg.leave()
                 }
                 
                 dsg.notify(queue: .main) {
-                    self.userData = UserDataViewModel(username: username, postCount: "\(posts)", followerCount: "\(followers)", followingCount: "\(following)", isFollowing: false)
+                    self.userData = UserDataViewModel(username: uid, postCount: "\(posts)", followerCount: "\(followers)", followingCount: "\(following)", isFollowing: false)
                     cell.postsLabel.text = "\(posts)"
                     cell.followersLabel.text = "\(followers)"
                     cell.followingLabel.text = "\(following)"
@@ -200,7 +167,7 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
             
             if firestore.currentUser.username != object?.username && self.isFollowing == nil {
                 print("getting isfollowing data from firestore")
-                firestore.isFollowing(follower: firestore.currentUser.username, followed: username) { (isFollowing) in
+                firestore.isFollowing(follower: firestore.currentUser.uid, followed: uid) { (isFollowing) in
                     self.isFollowing = isFollowing
                     cell.followButton.setTitle(isFollowing ? "Message" : "Follow", for: [])
                     cell.unfollowButton.isHidden = !isFollowing
@@ -237,3 +204,39 @@ class UserHeaderSectionController: ListBindingSectionController<User>, ListBindi
     
 }
 
+extension UserHeaderSectionController {
+    func presentPicker() {
+        var config = YPImagePickerConfiguration()
+        // [Edit configuration here ...]
+        config.isScrollToChangeModesEnabled = true
+        config.onlySquareImagesFromCamera = true
+        config.usesFrontCamera = true
+        config.showsFilters = true
+        config.shouldSaveNewPicturesToAlbum = true
+        config.albumName = "DefaultYPImagePickerAlbumName"
+        config.startOnScreen = YPPickerScreen.photo
+        config.screens = [.photo, .library]
+        config.showsCrop = .none
+        config.targetImageSize = YPImageSize.cappedTo(size: 600)
+        config.overlayView = UIView()
+        config.hidesStatusBar = true
+        config.hidesBottomBar = false
+        config.preferredStatusBarStyle = UIStatusBarStyle.default
+        
+        // Build a picker with your configuration
+        let picker = YPImagePicker(configuration: config)
+        
+        picker.didFinishPicking { [unowned picker] (items, _) in
+            if let photo = items.singlePhoto {
+                self.firestore.updateProfile(image: photo.image, completion: { url in
+                    if let url = url {
+                        self.imageView.sd_setImage(with: url)
+                    }
+                    UserDefaultsManager().updateUserPic(imageData: photo.image.pngData()!)
+                })
+            }
+            picker.dismiss(animated: true, completion: nil)
+        }
+        viewController?.present(picker, animated: true, completion: nil)
+    }
+}

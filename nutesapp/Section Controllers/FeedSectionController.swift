@@ -30,7 +30,7 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         
         guard object?.likeCount ?? 0 > 0 else { return }
         
-        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "searchVC") as? SearchResultsViewController {
+        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.searchresultsVC) as? SearchResultsViewController {
             vc.postID = object?.id
             viewController?.navigationController?.pushViewController(vc, animated: true)
         }
@@ -97,7 +97,13 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         var comments = [ListDiffable]()
         
         for comment in object.comments {
-            comments.append(CommentViewModel(username: comment.username, text: comment.text, timestamp: comment.timestamp, didLike: comment.didLike))
+            print("uid", comment.uid)
+            if !comment.uid.isEmpty {
+               
+                comments.append(CommentViewModel(username: comment.uid, text: comment.text, timestamp: comment.timestamp, didLike: comment.didLike))
+      
+            }
+           
         }
         
         comments.append(TimestampViewModel(date: object.timestamp))
@@ -177,8 +183,10 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
         switch index {
         case 0:
             print("header")
-            guard   let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController else { return }
-            let user = User(uid: "", fullname: "", email: "", username: object?.username ?? "", url: object?.userURL ?? "", followerCount: 0)
+            guard   let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController,
+            let uid = object?.uid,
+            let username = object?.username else { return }
+            let user = User(uid: uid, fullname: "", email: "", username: username, url: object?.userURL ?? "", followerCount: 0)
             vc.user = user
             
             viewController?.navigationController?.pushViewController(vc, animated: true)
@@ -201,18 +209,18 @@ class FeedSectionController: ListBindingSectionController<Post>, ListBindingSect
 }
 
 //UITextViewDelegate
-extension FeedSectionController: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        print("shouldInteractWith \(URL)")
-        if URL.absoluteString.hasPrefix("@") {
-            if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "userVC") as? UserViewController {
-                vc.user = User(username: String(URL.absoluteString.dropFirst()))
-                viewController?.navigationController?.pushViewController(vc, animated: true)
-            }
-        }
-        return true
-    }
-}
+//extension FeedSectionController: UITextViewDelegate {
+//    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+//        print("shouldInteractWith \(URL)")
+//        if URL.absoluteString.hasPrefix("@") {
+//            if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "userVC") as? UserViewController {
+//                vc.user = User(username: String(URL.absoluteString.dropFirst()))
+//                viewController?.navigationController?.pushViewController(vc, animated: true)
+//            }
+//        }
+//        return true
+//    }
+//}
 
 //MARK: - CommentCellDelegate
 
@@ -220,8 +228,11 @@ extension FeedSectionController: CommentCellDelegate {
     
     func didTapMention(cell: CommentCell, mention: String) {
         if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController {
-            vc.user = User(username: mention)
-            self.viewController?.navigationController?.pushViewController(vc, animated: true)
+            firestore.getUID(username: mention) { (uid) in
+                print("mention uid", uid)
+                vc.user = User(uid: uid, username: mention)
+                self.viewController?.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
     

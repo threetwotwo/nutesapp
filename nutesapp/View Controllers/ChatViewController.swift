@@ -13,13 +13,11 @@ import MessageInputBar
 /// A base class for the example controllers
 class ChatViewController: MessagesViewController, MessagesDataSource {
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        return .lightContent
+//    }
     
-    var messageList: [Message] = [
-        Message(sender: Sender(id: "john", displayName: "john"), messageID: "id", timestamp: Date(), kind: .custom("This is a custom message"))
-    ]
+    var messageList: [Message] = []
     
     let refreshControl = UIRefreshControl()
     
@@ -35,7 +33,6 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         configureMessageCollectionView()
         configureMessageInputBar()
         loadFirstMessages()
-        title = "MessageKit"
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -57,7 +54,8 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     }
     
     func configureMessageCollectionView() {
-        
+        //messagesDataSource and messageCellDelegate
+        //messageCellDelegate informs the view controller about taps(avatar, message taps etc)
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messageCellDelegate = self
         
@@ -77,18 +75,36 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     // MARK: - Helpers
     
     func insertMessage(_ message: Message) {
+        
+        //remove typing indicator
+        messageList = messageList.filter{$0.messageId != "typingIndicator"}
+        
         messageList.append(message)
-        // Reload last section to update header/footer labels and insert a new one
-        messagesCollectionView.performBatchUpdates({
-            messagesCollectionView.insertSections([messageList.count - 1])
-            if messageList.count >= 2 {
-                messagesCollectionView.reloadSections([messageList.count - 2])
-            }
-        }, completion: { [weak self] _ in
-            if self?.isLastSectionVisible() == true {
-                self?.messagesCollectionView.scrollToBottom(animated: true)
-            }
-        })
+//        // Reload last section to update header/footer labels and insert a new one
+//        messagesCollectionView.performBatchUpdates({
+//            messagesCollectionView.insertSections([messageList.count - 1])
+//            if messageList.count >= 2 {
+//                messagesCollectionView.reloadSections([messageList.count - 2])
+//            }
+//        }, completion: { [weak self] _ in
+//            if self?.isLastSectionVisible() == true {
+//                self?.messagesCollectionView.scrollToBottom(animated: true)
+//            }
+//        })
+        
+//        guard !messageList.contains(where: message) else {
+//            return
+//        }
+        
+//        messageList.append(message)
+//
+////        let isLatestMessage = messageList.index(of: message) == (messageList.count - 1)
+////        let shouldScrollToBottom = messagesCollectionView.isAtBottom && isLatestMessage
+//
+        messagesCollectionView.reloadData()
+        self.messagesCollectionView.scrollToBottom(animated: true)
+
+ 
     }
     
     func isLastSectionVisible() -> Bool {

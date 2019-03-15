@@ -19,6 +19,7 @@
 		431BCDB321F9F77F00B8C8A5 /* UserHeaderDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431BCDB221F9F77F00B8C8A5 /* UserHeaderDataCell.swift */; };
 		431D054721E4D13900C20BC3 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */; };
 		43295CED2209F20000F6C74B /* UIViewController + listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43295CEC2209F20000F6C74B /* UIViewController + listeners.swift */; };
+		432AB4A5223AA22500EB70A3 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432AB4A4223AA22500EB70A3 /* Avatar.swift */; };
 		433C58CF21E4DC2300BCD083 /* SearchSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */; };
 		4355B29721EC9299000093EF /* FeedSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4355B29621EC9299000093EF /* FeedSectionController.swift */; };
 		4358027F221BCF6A004B1E83 /* UINavigationController + push completion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4358027E221BCF6A004B1E83 /* UINavigationController + push completion.swift */; };
@@ -32,7 +33,6 @@
 		435CBBF821DDD51000646A35 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBF721DDD51000646A35 /* Post.swift */; };
 		435CBBFA21DDD51F00646A35 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435CBBF921DDD51F00646A35 /* Comment.swift */; };
 		4364432F220ABEA6003D54D0 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4364432E220ABEA6003D54D0 /* Observer.swift */; };
-		43644331220AD3B7003D54D0 /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43644330220AD3B7003D54D0 /* Loader.swift */; };
 		4365ABC5221A85E6003C1F7E /* SearchFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4365ABC4221A85E6003C1F7E /* SearchFeedViewController.swift */; };
 		438E895321E0A7D9006D20D0 /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438E895221E0A7D9006D20D0 /* UserViewController.swift */; };
 		438E895521E0A7E9006D20D0 /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438E895421E0A7E9006D20D0 /* SearchResultsViewController.swift */; };
@@ -53,6 +53,8 @@
 		43B7CF6C21DD2C4B00F08EDC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43B7CF6A21DD2C4B00F08EDC /* LaunchScreen.storyboard */; };
 		43B7CF7721DD2C4B00F08EDC /* nutesappTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B7CF7621DD2C4B00F08EDC /* nutesappTests.swift */; };
 		43B7CF8221DD2C4B00F08EDC /* nutesappUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B7CF8121DD2C4B00F08EDC /* nutesappUITests.swift */; };
+		43BBDFCD22369713003AFED2 /* IGViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BBDFCC22369713003AFED2 /* IGViewController.swift */; };
+		43BBDFCF2236B39C003AFED2 /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BBDFCE2236B39C003AFED2 /* TimelineViewController.swift */; };
 		43C1D0FB21DE2C04002D720D /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */; };
 		43C1D0FD21DE394A002D720D /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D0FC21DE394A002D720D /* FeedViewController.swift */; };
 		43C1D0FF21DE44B2002D720D /* PostHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C1D0FE21DE44B2002D720D /* PostHeaderViewModel.swift */; };
@@ -102,6 +104,7 @@
 /* Begin PBXFileReference section */
 		0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nutesapp.release.xcconfig"; path = "Pods/Target Support Files/Pods-nutesapp/Pods-nutesapp.release.xcconfig"; sourceTree = "<group>"; };
 		4301BF3121EF758F00CB377C /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		430C4748222D0ADD00A4650A /* nutesapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = nutesapp.entitlements; sourceTree = "<group>"; };
 		430FB34321E3877B003C83D1 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		431236FB221EADF600C52D9A /* CustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		431236FD221ECEE000C52D9A /* CustomMessagesFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMessagesFlowLayout.swift; sourceTree = "<group>"; };
@@ -113,6 +116,7 @@
 		431BCDB221F9F77F00B8C8A5 /* UserHeaderDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHeaderDataCell.swift; sourceTree = "<group>"; };
 		431D054621E4D13900C20BC3 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		43295CEC2209F20000F6C74B /* UIViewController + listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController + listeners.swift"; sourceTree = "<group>"; };
+		432AB4A4223AA22500EB70A3 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 		433C58CE21E4DC2300BCD083 /* SearchSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSectionController.swift; sourceTree = "<group>"; };
 		4355B29621EC9299000093EF /* FeedSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSectionController.swift; sourceTree = "<group>"; };
 		4358027E221BCF6A004B1E83 /* UINavigationController + push completion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController + push completion.swift"; sourceTree = "<group>"; };
@@ -124,7 +128,6 @@
 		435CBBF721DDD51000646A35 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		435CBBF921DDD51F00646A35 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		4364432E220ABEA6003D54D0 /* Observer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
-		43644330220AD3B7003D54D0 /* Loader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
 		4365ABC4221A85E6003C1F7E /* SearchFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFeedViewController.swift; sourceTree = "<group>"; };
 		438E895221E0A7D9006D20D0 /* UserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
 		438E895421E0A7E9006D20D0 /* SearchResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewController.swift; sourceTree = "<group>"; };
@@ -151,6 +154,8 @@
 		43B7CF7D21DD2C4B00F08EDC /* nutesappUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = nutesappUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		43B7CF8121DD2C4B00F08EDC /* nutesappUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nutesappUITests.swift; sourceTree = "<group>"; };
 		43B7CF8321DD2C4B00F08EDC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		43BBDFCC22369713003AFED2 /* IGViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IGViewController.swift; sourceTree = "<group>"; };
+		43BBDFCE2236B39C003AFED2 /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
 		43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
 		43C1D0FC21DE394A002D720D /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		43C1D0FE21DE44B2002D720D /* PostHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderViewModel.swift; sourceTree = "<group>"; };
@@ -257,6 +262,8 @@
 				438E895421E0A7E9006D20D0 /* SearchResultsViewController.swift */,
 				43B0693621DE5A1C005387C3 /* createPostViewController.swift */,
 				438E895221E0A7D9006D20D0 /* UserViewController.swift */,
+				43BBDFCE2236B39C003AFED2 /* TimelineViewController.swift */,
+				43BBDFCC22369713003AFED2 /* IGViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -265,6 +272,7 @@
 			isa = PBXGroup;
 			children = (
 				435CBBF421DDD4C300646A35 /* User.swift */,
+				432AB4A4223AA22500EB70A3 /* Avatar.swift */,
 				435CBBF721DDD51000646A35 /* Post.swift */,
 				435CBBF921DDD51F00646A35 /* Comment.swift */,
 				43EC6A692216A31A00991929 /* Message.swift */,
@@ -298,6 +306,7 @@
 		43B7CF6021DD2C4A00F08EDC /* nutesapp */ = {
 			isa = PBXGroup;
 			children = (
+				430C4748222D0ADD00A4650A /* nutesapp.entitlements */,
 				43B7CF6121DD2C4A00F08EDC /* AppDelegate.swift */,
 				43C1D0FA21DE2C04002D720D /* FirestoreManager.swift */,
 				43D5AC6D2217D4000061AD8A /* ChatManager.swift */,
@@ -389,7 +398,6 @@
 				43295CEC2209F20000F6C74B /* UIViewController + listeners.swift */,
 				4364432E220ABEA6003D54D0 /* Observer.swift */,
 				4358027E221BCF6A004B1E83 /* UINavigationController + push completion.swift */,
-				43644330220AD3B7003D54D0 /* Loader.swift */,
 				43580280221BDAC2004B1E83 /* UnicodeScalar + Emoji detectors.swift */,
 				4312AE262222A9AC0042B2DF /* UIColor + Extensions.swift */,
 			);
@@ -466,6 +474,14 @@
 				TargetAttributes = {
 					43B7CF5D21DD2C4A00F08EDC = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 					43B7CF7121DD2C4B00F08EDC = {
 						CreatedOnToolsVersion = 10.1;
@@ -613,15 +629,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43BBDFCD22369713003AFED2 /* IGViewController.swift in Sources */,
 				43C1D11C21DE50C4002D720D /* Date + timeAgo.swift in Sources */,
 				43C1D11821DE5004002D720D /* Formatter + separator.swift in Sources */,
-				43644331220AD3B7003D54D0 /* Loader.swift in Sources */,
 				43C58F5D220820550002CF5B /* TimestampCell.swift in Sources */,
 				4312A9F02213E481006D6FE9 /* Identifier.swift in Sources */,
 				431236FE221ECEE000C52D9A /* CustomMessagesFlowLayout.swift in Sources */,
 				43C1D10621DE4543002D720D /* CommentViewModel.swift in Sources */,
 				438E895521E0A7E9006D20D0 /* SearchResultsViewController.swift in Sources */,
 				435CBBF521DDD4C300646A35 /* User.swift in Sources */,
+				43BBDFCF2236B39C003AFED2 /* TimelineViewController.swift in Sources */,
 				43C1D11A21DE506D002D720D /* ActionTimer.swift in Sources */,
 				43C1D11321DE4F17002D720D /* AttributedText.swift in Sources */,
 				43C1D0FB21DE2C04002D720D /* FirestoreManager.swift in Sources */,
@@ -642,6 +659,7 @@
 				433C58CF21E4DC2300BCD083 /* SearchSectionController.swift in Sources */,
 				43C58F5B2208160B0002CF5B /* UIViewController + keyboardNotifs.swift in Sources */,
 				430FB34421E3877B003C83D1 /* SearchCell.swift in Sources */,
+				432AB4A5223AA22500EB70A3 /* Avatar.swift in Sources */,
 				43295CED2209F20000F6C74B /* UIViewController + listeners.swift in Sources */,
 				43C1D10F21DE4EAB002D720D /* ActionCell.swift in Sources */,
 				431BCDB121F9E8E000B8C8A5 /* UserDataViewModel.swift in Sources */,
@@ -852,6 +870,7 @@
 			baseConfigurationReference = 5C5FB4C67B21E2162CA727F8 /* Pods-nutesapp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = nutesapp/nutesapp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y86S53Q2FU;
 				INFOPLIST_FILE = nutesapp/Info.plist;
@@ -872,6 +891,7 @@
 			baseConfigurationReference = 0664D9B09A2CBE49341984AE /* Pods-nutesapp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = nutesapp/nutesapp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y86S53Q2FU;
 				INFOPLIST_FILE = nutesapp/Info.plist;

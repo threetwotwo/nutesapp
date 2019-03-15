@@ -15,37 +15,37 @@ class DatabaseManager {
     
     //MARK: - User
     
-    func getPostCount(username: String, completion: @escaping (Int)->()) {
-        db.child("users").child(username).child("post_count").observeSingleEvent(of: .value) { (snap) in
+    func getPostCount(uid: String, completion: @escaping (Int)->()) {
+        db.child("users").child(uid).child("post_count").observeSingleEvent(of: .value) { (snap) in
             let count = snap.value as? Int ?? 0
             completion(count)
         }
     }
     
-    func getFollowerCount(username: String, completion: @escaping (Int)->()) {
-        db.child("users").child(username).child("follower_count").observeSingleEvent(of: .value) { (snap) in
+    func getFollowerCount(uid: String, completion: @escaping (Int)->()) {
+        db.child("users").child(uid).child("follower_count").observeSingleEvent(of: .value) { (snap) in
             let count = snap.value as? Int ?? 0
             completion(count)
         }
     }
     
-    func getFollowingCount(username: String, completion: @escaping (Int)->()) {
-        db.child("users").child(username).child("following_count").observeSingleEvent(of: .value) { (snap) in
+    func getFollowingCount(uid: String, completion: @escaping (Int)->()) {
+        db.child("users").child(uid).child("following_count").observeSingleEvent(of: .value) { (snap) in
             let count = snap.value as? Int ?? 0
             completion(count)
         }
     }
 
     
-    func getUserURL(username: String, completion: @escaping (String)->()) {
-        db.child("users").child(username).child("user_url").observeSingleEvent(of: .value) { (snap) in
+    func getUserURL(uid: String, completion: @escaping (String)->()) {
+        db.child("users").child(uid).child("photo_url").observeSingleEvent(of: .value) { (snap) in
             let url = snap.value as? String ?? ""
             completion(url)
         }
     }
     
-    func updateUserPic(username: String, url: String, completion: @escaping ()->()) {
-        db.child("users/\(username)/user_url").setValue(url) { (error, ref) in
+    func updateUserPic(uid: String, url: String, completion: @escaping ()->()) {
+        db.child("users/\(uid)/photo_url").setValue(url) { (error, ref) in
             guard error == nil else {
                 print(error?.localizedDescription ?? "Error updating url")
                 return
@@ -68,8 +68,9 @@ class DatabaseManager {
             let likeCount = data["like_count"] as? Int ?? 0
             let topComments = data["top_comments"] as? [NSDictionary]
             
+            //TODO: check username
             for topComment in topComments ?? [] {
-                let comment = Comment(username: topComment["username"] as? String ?? "", text: topComment["text"] as? String ?? "", likes: topComment["like_count"] as? Int ?? 0)
+                let comment = Comment(uid: topComment["uid"] as? String ?? "", text: topComment["text"] as? String ?? "", likes: topComment["like_count"] as? Int ?? 0)
                 comments.append(comment)
             }
             

@@ -46,8 +46,10 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
     func didTapMention(cell: CommentCell, mention: String) {
         print("didTapMention")
         if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: Identifier.storyboard.userVC) as? UserViewController {
-            vc.user = User(username: mention)
-            self.viewController?.navigationController?.pushViewController(vc, animated: true)
+            firestore.getUID(username: mention) { (uid) in
+                vc.user = User(uid: uid, username: mention)
+                self.viewController?.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
     
@@ -72,11 +74,11 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
             vc.replyingToView.isHidden = false
             let indexPath = vc.collectionView.indexPath(for: cell)
             
-            vc.commentTextField.text = "@\(comment.username) "
+            vc.commentTextField.text = "@\(comment.uid) "
             vc.replyingToConstraint.constant = 40
             vc.collectionView.scrollToItem(at: indexPath!, at: .bottom, animated: true)
         }
-        vc.replyingToLabel.text = "Replying to: \(comment.username)"
+        vc.replyingToLabel.text = "Replying to: \(comment.uid)"
     }
     
     //MARK: - init
@@ -93,8 +95,9 @@ class CommentSectionController: ListBindingSectionController<Comment>,ListBindin
     func sectionController(_ sectionController: ListBindingSectionController<ListDiffable>, viewModelsFor object: Any) -> [ListDiffable] {
         guard let object = object as? Comment else { fatalError() }
         comment = object
+
         let results: [ListDiffable] = [
-            CommentViewModel(username: object.username, text: object.text, timestamp: object.timestamp, didLike: object.didLike),
+            CommentViewModel(username: object.uid, text: object.text, timestamp: object.timestamp, didLike: object.didLike),
             ActionViewModel(likes: object.likes, followedUsernames: [], didLike: object.didLike, timestamp: object.timestamp.dateValue())
         ]
         return results

@@ -20,6 +20,7 @@ protocol CommentCellDelegate: class {
 class CommentCell: UICollectionViewCell, ListBindable {
     
     weak var delegate: CommentCellDelegate? = nil
+    let firestore = FirestoreManager.shared
     
     @IBOutlet weak var commentLabel: ActiveLabel!
     @IBOutlet weak var imageView: UIImageView?
@@ -41,8 +42,6 @@ class CommentCell: UICollectionViewCell, ListBindable {
     
     func bindViewModel(_ viewModel: Any) {
         
-        var username: String = ""
-        
         guard let viewModel = viewModel as? CommentViewModel else { return }
         
         //configure button
@@ -50,19 +49,19 @@ class CommentCell: UICollectionViewCell, ListBindable {
         let imageTitle = viewModel.didLike ? "heart_filled" : "heart_bordered"
         likeButton.setImage(UIImage(named: imageTitle), for: [])
         
-        commentLabel.attributedText = AttributedText.constructComment(username: viewModel.username, text: viewModel.text)
+        FirestoreManager.shared.getUsername(fromUID: viewModel.username) { (username) in
+            self.commentLabel.attributedText = AttributedText.constructComment(username: username, text: viewModel.text)
+        }
+
 //        commentTextView.resolveHashTags()
         commentLabel.font = UIFont.systemFont(ofSize: 15)
         
-        username = viewModel.username
-        
-        
         if let imageView = imageView {
             imageView.layer.cornerRadius = imageView.frame.size.width/2
-            DatabaseManager().getUserURL(username: username) { (url) in
-                if let url = URL(string: url) {
-                    imageView.sd_setImage(with: url)
-                }
+
+            firestore.getPhotoURL(uid: viewModel.username) { (url) in
+                print("photourl", url)
+                imageView.sd_setImage(with: url)
             }
         }
 

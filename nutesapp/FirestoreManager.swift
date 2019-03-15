@@ -20,6 +20,7 @@ final class FirestoreManager {
     //MARK: - Variables
     var db: Firestore!
     var currentUser: User!
+    var currentUserRef: DocumentReference!
     let defaults = UserDefaults.standard
     let encoder = JSONEncoder()
 
@@ -45,14 +46,14 @@ final class FirestoreManager {
     
     func setPostAsSeen(postID: String) {
         db.collection("users")
-        .document(currentUser.username)
+        .document(currentUser.uid)
         .collection("seen_posts")
         .document(postID)
         .setData(["timestamp" : Timestamp()])
 
 
         db.collection("users")
-        .document(currentUser.username)
+        .document(currentUser.uid)
         .collection("unseen_posts")
         .document(postID)
         .delete()
@@ -96,10 +97,12 @@ final class FirestoreManager {
             for document in documents {
                 
                 let id = document.documentID
-                let username = document.get("username") as! String
+                let data = document.data()
+                let uid = data["uid"] as? String ?? ""
+                let username = data["uid"] as? String ?? ""
                 var likeCount = 0
-                let timestamp = (document.get("timestamp") as? Timestamp)?.dateValue()
-                let postUrl = document.get("post_url") as! String
+                let timestamp = (data["timestamp"] as? Timestamp)?.dateValue()
+                let postUrl = data["post_url"] as? String ?? ""
                 var userURL = ""
                 
                 var topComments = [Comment]()
@@ -111,7 +114,7 @@ final class FirestoreManager {
                 print(snaps.keys, id)
                 
                 dsg.enter()
-                DatabaseManager().getUserURL(username: username, completion: { (url) in
+                DatabaseManager().getUserURL(uid: username, completion: { (url) in
                     userURL = url
                     dsg.leave()
                 })
@@ -138,6 +141,7 @@ final class FirestoreManager {
                 dsg.notify(queue: .main) {
                     let post = Post(
                         id: id,
+                        uid: uid,
                         username: username,
                         timestamp: timestamp!,
                         userURL: userURL,
@@ -158,13 +162,14 @@ final class FirestoreManager {
     
     func getPost(postID: String, data: [String:Any]) -> Post {
         let id = postID
+        let uid = data["uid"] as? String ?? ""
         let username = data["username"] as? String ?? ""
         let likeCount = data["like_count"] as? Int ?? 0
         let timestamp = (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
         let postUrl = data["post_url"] as? String ?? ""
         let userURL = ""
         
-        let post = Post(id: id, username: username, timestamp: timestamp, userURL: userURL, postURL: postUrl, likeCount: likeCount, followedUsernames: [], didLike: false, comments: [])
+        let post = Post(id: id, uid: uid, username: username, timestamp: timestamp, userURL: userURL, postURL: postUrl, likeCount: likeCount, followedUsernames: [], didLike: false, comments: [])
         
         return post
     }
@@ -207,23 +212,25 @@ final class FirestoreManager {
         }
     }
     
-    func getPosts(username: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[Post], _ lastSnapshot: DocumentSnapshot?) -> ()) {
+    func getPosts(uid: String, limit: Int, lastSnapshot: DocumentSnapshot? = nil, completion: @escaping (_ posts:[Post], _ lastSnapshot: DocumentSnapshot?) -> ()) {
         
         var query: Query
         
         //Pagination
         if lastSnapshot == nil {
             query = db
-                .collection("posts").whereField("username", isEqualTo: username)
+                .collection("posts").whereField("uid", isEqualTo: uid)
                 .order(by: "timestamp", descending: true)
                 .limit(to: limit)
         } else {
             query = db
-                .collection("posts").whereField("username", isEqualTo: username)
+                .collection("posts").whereField("uid", isEqualTo: uid)
                 .order(by: "timestamp", descending: true)
                 .limit(to: limit)
                 .start(afterDocument: lastSnapshot!)
         }
+        
+        print("queryPath:",query.debugDescription)
         
         query.getDocuments { (documents, error) in
             guard error == nil,
@@ -236,10 +243,14 @@ final class FirestoreManager {
             
             for document in documents {
                 let id = document.documentID
-                let username = document.get("username") as! String
+                
+                let data = document.data()
+                
+                let uid = data["uid"] as? String ?? ""
+                let username = data["username"] as? String ?? ""
                 var likeCount = 0
                 let timestamp = (document.get("timestamp") as? Timestamp)?.dateValue()
-                let postUrl = document.get("post_url") as! String
+                let postUrl = document.get("post_url") as? String ?? ""
                 var userURL = ""
                 
                 var topComments = [Comment]()
@@ -248,8 +259,8 @@ final class FirestoreManager {
                 var userDidLike = false
                 
                 dsg.enter()
-                DatabaseManager().getUserURL(username: username, completion: { (url) in
-                    userURL = url
+                self.getUser(username: username, completion: { (user) in
+                    userURL = user.url
                     dsg.leave()
                 })
                 
@@ -275,6 +286,7 @@ final class FirestoreManager {
                 dsg.notify(queue: .main) {
                     let post = Post(
                         id: id,
+                        uid: uid,
                         username: username,
                         timestamp: timestamp!,
                         userURL: userURL,
@@ -298,19 +310,25 @@ final class FirestoreManager {
     
     func createPost(imageData: Data) {
         //createdBy
+        let uid = currentUser.uid
         let username = currentUser.username
         
         //createdAt
         let timestamp = FieldValue.serverTimestamp()
         
-        //unique id
-        let postID = "\(username)_\(Timestamp.init().seconds)"
+        //firestore doc with auto generated id
+        let postRef = self.db.collection("posts").document()
+
+        //unique id which will be used for storage
+        let postID = postRef.documentID
         
         //Cloud Storage image ref
-        let imageRef = Storage.storage().reference().child(postID + ".jpg")
-        
+        let imageRef = Storage.storage().reference().child(postID)
+        //MIME type
+        let metaData = StorageMetadata()
+        metaData.contentType = "image/jpg"
         //put image in storage
-        imageRef.putData(imageData, metadata: nil) { (metadata, error) in
+        imageRef.putData(imageData, metadata: metaData) { (metadata, error) in
             
             imageRef.downloadURL(completion: { (downloadURL, error) in
                 guard error == nil,
@@ -319,13 +337,12 @@ final class FirestoreManager {
                     return
                 }
                 
-                let postRef = self.db.collection("posts").document()
-                
                 //create and update documents
                 self.db.runTransaction({ (transaction, errorPointer) -> Any? in
                     
                     transaction.setData([
                         "like_count": 0,
+                        "uid" : uid,
                         "username" : username,
                         "post_url" : postURL,
                         "timestamp" : timestamp,
@@ -373,10 +390,11 @@ final class FirestoreManager {
     }
     
     func like(postID: String, completion: @escaping ()->()) {
+        let uid = currentUser.uid
         let username = currentUser.username
         let likeRef = db.collection("posts").document(postID).collection("likes").document(username)
         let data: [String:Any] = [
-            "post_id" : postID,
+            "uid" : uid,
             "username" : username,
             "timestamp" : FieldValue.serverTimestamp()
         ]
@@ -488,13 +506,9 @@ final class FirestoreManager {
     
     func comment(comment: Comment, post: Post, text: String, completion: (()->())? = nil) {
         
-        let username = currentUser.username
-        let timestamp = comment.timestamp
-        let commentID = "\(username)_\(timestamp.seconds)"
-        
         let postRef = db.collection("posts").document(post.id)
-        let commentRef = postRef.collection("comments").document(commentID)
-        
+        let commentRef = postRef.collection("comments").document()
+
         let parentID: Any = comment.parentID == nil ? NSNull() : comment.parentID ?? ""
 
         db.runTransaction({ (transaction, errorPointer) -> Any? in
@@ -503,7 +517,7 @@ final class FirestoreManager {
                 "like_count": 0,
                 "parent_id" : parentID,
                 "post_id" : post.id,
-                "username" : username,
+                "uid" : self.currentUser.uid,
                 "text" : text,
                 "timestamp" : comment.timestamp
                 ], forDocument: commentRef)
@@ -519,17 +533,17 @@ final class FirestoreManager {
     
     func like(comment: Comment, completion: (()->())? = nil) {
         
-        let username = currentUser.username
+        let uid = currentUser.uid
         let timestamp = FieldValue.serverTimestamp()
 
         let likeRef = db
             .collection("posts").document(comment.postID)
             .collection("comments").document(comment.id)
-            .collection("likes").document(username)
+            .collection("likes").document(uid)
         
         db.runTransaction({ (transaction, errorPointer) -> Any? in
             transaction.setData([
-                "username" : username,
+                "uid" : uid,
                 "timestamp" : timestamp,
                 "text" : comment.text
                 ], forDocument: likeRef)
@@ -548,7 +562,7 @@ final class FirestoreManager {
         let likeRef = db
             .collection("posts").document(comment.postID)
             .collection("comments").document(comment.id)
-            .collection("likes").document(currentUser.username)
+            .collection("likes").document(currentUser.uid)
         
         db.runTransaction({ (transaction, errorPointer) -> Any? in
             transaction.deleteDocument(likeRef)
@@ -562,6 +576,7 @@ final class FirestoreManager {
         }
     }
     
+    //? 
     func userDidLikeComment(postID: String, commentID: String,  completion: @escaping (Bool)->()) {
         let username = currentUser.username
         let likeRef = db.collection("posts")
@@ -609,8 +624,8 @@ final class FirestoreManager {
                         
                         let data = document.data()
                         let parentID = data["parent_id"] as? String
-                        let postID = data["post_id"] as! String
-                        let username = data["username"] as! String
+                        let postID = data["post_id"] as? String ?? ""
+                        let uid = data["uid"] as? String ?? ""
                         let text = data["text"] as! String
                         let timestamp = data["timestamp"] as? Timestamp
                         
@@ -630,7 +645,7 @@ final class FirestoreManager {
                         })
                         
                         dsg.notify(queue: .main, execute: {
-                            let comment = Comment(parentID: parentID, commentID: document.documentID, postID: postID, username: username, text: text, likes: commentLikes, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike)
+                            let comment = Comment(parentID: parentID, commentID: document.documentID, postID: postID, uid: uid, text: text, likes: commentLikes, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike)
                             comments.append(comment)
                         })
                     }
@@ -641,11 +656,14 @@ final class FirestoreManager {
         }
     }
     
-    
+    //MARK: - Get comments from a post, paginated if provided a doc snapshot
+
     func getComments(postID: String, limit: Int, after: DocumentSnapshot? = nil, completion: @escaping ([Comment], DocumentSnapshot?)->()) {
         
         let query: Query
         
+        //field "parent_id" == null indicates that we are getting root comments
+        //unlike replies in which their "parent_id" field is assigned to the comments that they are replying to
         if after == nil {
             query = db.collection("posts").document(postID).collection("comments").whereField("parent_id", isEqualTo: NSNull())
                 .order(by: "like_count", descending: true)
@@ -671,9 +689,9 @@ final class FirestoreManager {
                 for document in documents {
                     
                     let data = document.data()
-                    let postID = data["post_id"] as! String
-                    let username = data["username"] as! String
-                    let text = data["text"] as! String
+                    let postID = data["post_id"] as? String ?? ""
+                    let uid = data["uid"] as? String ?? ""
+                    let text = data["text"] as? String ?? ""
                     let timestamp = data["timestamp"] as? Timestamp
                     let commentID = document.documentID
                     var commentDidLike = false
@@ -694,7 +712,7 @@ final class FirestoreManager {
                     })
                     
                     dsg.notify(queue: .main, execute: {
-                        let comment = Comment(parentID: nil, commentID: commentID, postID: postID, username: username, text: text, likes: likeCount, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike, replyCount: replyCount)
+                        let comment = Comment(parentID: nil, commentID: commentID, postID: postID, uid: uid, text: text, likes: likeCount, timestamp: timestamp ?? Timestamp(), didLike: commentDidLike, replyCount: replyCount)
                         comments.append(comment)
                     })
                 }
@@ -707,6 +725,23 @@ final class FirestoreManager {
         }
     }
     
+    //MARK: - Get uid from username
+    func getUID(username: String, completion: @escaping (String)->()) {
+        let query = db.collection("users").whereField("username", isEqualTo: username)
+        
+        query.getDocuments { (snap, error) in
+            guard error == nil,
+            let data = snap?.documents.first?.data() else {
+                print(error?.localizedDescription ?? "Error getting uid")
+                return
+            }
+            
+            let uid = data["uid"] as? String ?? ""
+            completion(uid)
+        }
+    }
+    
+    
     //MARK: - Get username from uid
     func getUsername(fromUID uid: String, completion: @escaping (String)->()) {
         db.collection("users").document(uid).getDocument { (document, error) in
@@ -715,27 +750,43 @@ final class FirestoreManager {
                 return
             }
             if let data = document.data(){
-                let username = data["username"] as! String
+                let username = data["username"] as? String ?? ""
                 completion(username)
             }
         }
     }
     
-    //MARK: - Get profile pic for username
+    //MARK: - Get photo url
+    func getPhotoURL(uid: String, completion: @escaping (URL?)->()) {
+        db.collection("users").document(uid).getDocument { (snap, error) in
+            guard error == nil, let data = snap?.data() else {
+                print(error?.localizedDescription ?? "Error getting user doc")
+                return
+            }
+            
+            let url = data["photo_url"] as? URL
+            
+            completion(url)
+        }
+    }
 
     func getProfileURL(username: String, completion: @escaping (URL?)->()) {
         self.getUserInfo(username: username) { (data) in
-            let url = data["url"] as? URL
+            let url = data["photo_url"] as? URL
             completion(url)
         }
     }
     
-    //MARK: - update profile pic
+    //MARK: - Update photo url
     
-    func updateProfile(image: UIImage, completion: @escaping ()->()) {
+    func updateProfile(image: UIImage, completion: @escaping (URL?)->()) {
         //Storage ref
-        let imageRef = Storage.storage().reference().child("profiles").child(currentUser.username + ".jpg")
-        
+        let imagesRef = Storage.storage().reference().child("profiles")
+        let fileName = currentUser.uid
+        let imageRef = imagesRef.child(fileName)
+        let userRef = db.collection("users").document(self.currentUser.uid)
+
+        //TODO: determine max img size
         guard let imageData = image.jpegData(compressionQuality: 0.25) else {return}
         
         imageRef.putData(imageData, metadata: nil) { (metadata, error) in
@@ -744,17 +795,81 @@ final class FirestoreManager {
                 print(error?.localizedDescription ?? "Error putting data")
                 return
             }
-            
+            let dsg = DispatchGroup()
+
             imageRef.downloadURL(completion: { (url, error) in
-                DatabaseManager().updateUserPic(username: self.currentUser.username, url: url?.absoluteString ?? "", completion: {
-                    completion()
+                
+                //Update FIRAuth user's photoURL
+                dsg.enter()
+                let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
+                changeRequest?.photoURL = url
+                changeRequest?.commitChanges { (error) in
+                    if error == nil {
+                        print(url?.absoluteString ?? "")
+                    }
+                    dsg.leave()
+                }
+                
+                //Update Firestore
+                dsg.enter()
+                //Firestore user ref
+                guard let urlString = url?.absoluteString else { return }
+                
+                userRef.updateData(["photo_url" : urlString], completion: { (error) in
+                    print("updateData", urlString)
+                    dsg.leave()
+                })
+                
+                //Update RTDB
+                dsg.enter()
+                DatabaseManager().updateUserPic(uid: self.currentUser.uid, url: url?.absoluteString ?? "", completion: {
+                    dsg.leave()
+                })
+                
+                dsg.notify(queue: .main, execute: {
+                    completion(url)
                 })
             })
         }
 
     }
 
-    //MARK: - Get a user
+    //MARK: - Get a user object
+    
+    //Parses a user object from the data of a firestore doc
+    func getUser(doc: QueryDocumentSnapshot, completion: @escaping (User)->()) {
+        let data = doc.data()
+        
+        let uid = data["uid"] as? String ?? ""
+        let username = data["username"] as? String ?? ""
+        let fullname = data["fullname"] as? String ?? ""
+        let email = data["email"] as? String ?? ""
+        var followers = 0
+        let photoURL = data["photo_url"] as? String ?? ""
+        
+        let dsg = DispatchGroup()
+        
+        //get followers
+        dsg.enter()
+        DatabaseManager().getFollowerCount(uid: uid, completion: { (count) in
+            followers = count
+            dsg.leave()
+        })
+ 
+        
+        dsg.notify(queue: .main, execute: {
+            let user = User(
+                uid: uid,
+                fullname: fullname,
+                email: email,
+                username: username,
+                url: photoURL,
+                followerCount: followers
+            )
+            completion(user)
+        })
+    }
+    
     func getUser(username: String, completion: @escaping (User)->()) {
         db.collection("users").whereField("username", isEqualTo: username).getDocuments { (snap, error) in
             
@@ -763,52 +878,25 @@ final class FirestoreManager {
                 return
             }
             
-            let data = document.data()
-            
-            let uid = data["uid"] as? String
-            let fullname = data["fullname"] as? String
-            let email = data["email"] as? String
-            var followers = 0
-            var userUrl = data["url"] as? String ?? ""
-            var isFollowingUser: Bool = false
-            
-            let dsg = DispatchGroup()
-            
-            if self.currentUser != nil && username != self.currentUser.username {
-                dsg.enter()
-                self.isFollowing(follower: self.currentUser.username, followed: username, completion: { (isFollowing) in
-                    dsg.leave()
-                    isFollowingUser = isFollowing
-                })
-            }
-            
-            dsg.enter()
-            DatabaseManager().getFollowerCount(username: username, completion: { (count) in
-                followers = count
-                dsg.leave()
-            })
-            
-            dsg.enter()
-            DatabaseManager().getUserURL(username: username, completion: { (url) in
-                userUrl = url
-                dsg.leave()
-            })
-            
-            dsg.notify(queue: .main, execute: {
-                let user = User(
-                    uid: uid ?? "",
-                    fullname: fullname ?? "",
-                    email: email ?? "",
-                    username: username,
-                    url: userUrl,
-                    followerCount: followers
-                )
+            self.getUser(doc: document, completion: { (user) in
                 completion(user)
             })
         }
     }
     
-    //MARK: - Get a user's info
+    //MARK: - Get user ref
+    func getUserRef(uid: String, completion: @escaping(DocumentReference)->()) {
+        db.collection("users").whereField("uid", isEqualTo: uid).getDocuments { (snap, error) in
+            guard error == nil,
+            let doc = snap?.documents.first else {
+                print(error?.localizedDescription ?? "Error getting user ref")
+                return
+            }
+            completion(doc.reference)
+        }
+    }
+    
+    //MARK: - Get user data
     func getUserInfo(username: String, completion: @escaping (_ data: [String:Any]) -> ()) {
         db.collection("users").whereField("username", isEqualTo: username).getDocuments  { (snap, error) in
             guard let document = snap?.documents.first else {
@@ -837,10 +925,10 @@ final class FirestoreManager {
     //MARK: - Follow/Unfollow
     func follow(user: User, completion: @escaping ()->()) {
         
-        let follower = self.currentUser.username
-        let followed = user.username
+        let follower = self.currentUser.uid
+        let followed = user.uid
         
-        db.collection("relationships").document("\(follower)_\(followed)").setData([
+        db.collection("relationships").document().setData([
             "follower" : follower,
             "followed" : followed,
             "timestamp" : FieldValue.serverTimestamp()
@@ -850,22 +938,23 @@ final class FirestoreManager {
                 return
             }
             
-            if var savedUsers = self.defaults.array(forKey: "savedUsers") as? [User] {
-                savedUsers.append(user)
-                if let encoded = try? self.encoder.encode(savedUsers) {
-                    self.defaults.set(encoded, forKey: "savedUsers")
-                }
-            }
-            
+            //TODO: implement a logical local cache
+//            if var savedUsers = self.defaults.array(forKey: "savedUsers") as? [User] {
+//                savedUsers.append(user)
+//                if let encoded = try? self.encoder.encode(savedUsers) {
+//                    self.defaults.set(encoded, forKey: "savedUsers")
+//                }
+//            }
+            completion()
         }
         
     }
     
-    func followUser(withUsername followed: String, completion: @escaping ()->()) {
-        let follower = self.currentUser.username
-        db.collection("relationships").document("\(follower)_\(followed)").setData([
+    func follow(uid: String, completion: @escaping ()->()) {
+        let follower = self.currentUser.uid
+        db.collection("relationships").document().setData([
             "follower" : follower,
-            "followed" : followed,
+            "followed" : uid,
             "timestamp" : FieldValue.serverTimestamp()
         ]) { error in
             guard error == nil else {
@@ -876,29 +965,43 @@ final class FirestoreManager {
         }
     }
     
-    func unfollowUser(withUsername followed: String, completion: @escaping ()->()) {
-        let follower = self.currentUser.username
-        db.collection("relationships").document("\(follower)_\(followed)").delete { (error) in
-            guard error == nil else {
-                print("error unfollowing user")
+    func unfollow(uid: String, completion: @escaping ()->()) {
+        let follower = self.currentUser.uid
+        
+        let query = db.collection("relationships")
+        .whereField("follower", isEqualTo: follower)
+        .whereField("followed", isEqualTo: uid)
+
+        query.getDocuments { (snap, error) in
+            guard error == nil,
+            let doc = snap?.documents.first else {
+                print(error?.localizedDescription ?? "Error finding relationship")
                 return
             }
+            
+            doc.reference.delete()
+            
             completion()
         }
     }
     
     //MARK: - Get followed users
     func isFollowing(follower: String, followed: String, completion: @escaping (Bool)->()) {
-        let relationshipID = follower + "_" + followed
-        db.collection("relationships").document(relationshipID).getDocument { (document, error) in
-            if let document = document {
-                completion(document.exists)
+        let query = db.collection("relationships")
+            .whereField("follower", isEqualTo: follower)
+            .whereField("followed", isEqualTo: followed)
+        query.getDocuments { (snap, error) in
+            guard error == nil,
+            let doc = snap?.documents else {
+                print(error?.localizedDescription ?? "Error finding relationships")
+                return
             }
+            completion(doc.first?.exists ?? false)
         }
     }
     
-    func getFollowedUsers(for username: String, completion: @escaping ([QueryDocumentSnapshot]) -> ()) {
-        db.collection("relationships").whereField("follower", isEqualTo: username).getDocuments { (documents, error) in
+    func getFollowedUsers(for uid: String, completion: @escaping ([QueryDocumentSnapshot]) -> ()) {
+        db.collection("relationships").whereField("follower", isEqualTo: uid).getDocuments { (documents, error) in
             guard error == nil,
                 let documents = documents?.documents else {
                     print(error?.localizedDescription ?? "Error finding followed users")
@@ -921,20 +1024,25 @@ final class FirestoreManager {
     }
     
     func createUser(withEmail email: String, fullname:String, username: String, password: String, completion: @escaping () -> ()) {
+        
+        //FIR Auth create user
         Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
             guard error == nil else {
                 print(error?.localizedDescription ?? "error in creating user")
+                //TODO: UI to show error
                 return
             }
             
             guard let email = authResult?.user.email,
-                let uid = Auth.auth().currentUser?.uid else { return }
+                let uid = authResult?.user.uid else { return }
             
-            let userRef = self.db.collection("users").document(username)
+            //create user doc using uid as the docID, as opposed to using username which can be changed
+            let userRef = self.db.collection("users").document(uid)
             
             self.db.runTransaction({ (transaction, errorPointer) -> Any? in
              
                 transaction.setData([
+                    "uid" : uid,
                     "email" : email,
                     "fullname" : fullname,
                     "username" : username,
@@ -945,7 +1053,7 @@ final class FirestoreManager {
             }, completion: { (object, error) in
                 if error == nil {
                     self.currentUser = User(uid: uid, fullname: fullname, email: email, username: username, url: "", followerCount: 0)
-                    self.defaults.set(username, forKey: "username")
+//                    self.defaults.set(username, forKey: "username")
                     completion()
                 }
             })
@@ -953,21 +1061,40 @@ final class FirestoreManager {
         }
     }
     
+    //Sign in method using username and password
+    //TODO: save password method
     func signIn(forUsername username: String, password: String, completion: @escaping () -> ()) {
-        
+        //get user data from username
         getUser(username: username) { (user) in
-
+            //FIR sign in using email and password
             Auth.auth().signIn(withEmail: user.email, password: password) { (result, error) in
               
                 guard error == nil else {
                     print(error?.localizedDescription ?? "error in logging in")
+                    //TODO: UI to show error
                     return
                 }
                 
                 UserDefaultsManager().updateCurrentUser(user: user)
                 self.currentUser = user
                 completion()
+//                self.getUserRef(uid: user.uid, completion: { (ref) in
+//                    print(ref.path)
+//                    self.currentUserRef = ref
+//                    completion()
+//                })
             }
+            
+        }
+    }
+    
+    func signOut(completion: @escaping ()->()) {
+        do {
+            try Auth.auth().signOut()
+            self.currentUser = nil
+            completion()
+        } catch let signOutError as NSError {
+            print ("Error signing out: %@", signOutError)
         }
     }
     
